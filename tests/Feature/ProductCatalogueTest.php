@@ -3,6 +3,7 @@
 use App\Actions\Inventory\AdjustInventoryAction;
 use App\Actions\Inventory\TransferStockAction;
 use App\Models\Branch;
+use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Inventory;
 use App\Models\InventoryTransaction;
@@ -14,6 +15,7 @@ use App\Models\StockAdjustment;
 use App\Models\StockAdjustmentItem;
 use App\Models\StockTransfer;
 use App\Models\StockTransferItem;
+use App\Models\Supplier;
 use App\Models\Tenant;
 use Illuminate\Support\Str;
 
@@ -166,6 +168,42 @@ test('customer groups can be created for a tenant', function () {
     expect($group->tenant_id)->toBe($tenant->id)
         ->and($group->name)->toBe('VIP Retailers')
         ->and($group->discount_rate)->toBe('12.5000');
+});
+
+test('customers and suppliers can be created for a tenant', function () {
+    $tenant = Tenant::factory()->create();
+    $group = CustomerGroup::factory()->create(['tenant_id' => $tenant->id]);
+
+    $customer = Customer::query()->create([
+        'tenant_id' => $tenant->id,
+        'customer_group_id' => $group->id,
+        'name' => 'Alice Johnson',
+        'email' => 'alice@example.com',
+        'phone' => '555-0102',
+        'address' => '42 Market Street',
+        'credit_limit' => '2500.0000',
+        'outstanding_balance' => '125.5000',
+        'loyalty_points' => 120,
+        'is_active' => true,
+    ]);
+
+    $supplier = Supplier::query()->create([
+        'tenant_id' => $tenant->id,
+        'name' => 'Prime Wholesale',
+        'email' => 'supplier@example.com',
+        'phone' => '555-0202',
+        'address' => '9 Supply Road',
+        'tax_number' => 'TX-88442',
+        'outstanding_balance' => '650.2500',
+        'is_active' => true,
+    ]);
+
+    expect($customer->tenant_id)->toBe($tenant->id)
+        ->and($customer->customer_group_id)->toBe($group->id)
+        ->and($customer->credit_limit)->toBe('2500.0000')
+        ->and($supplier->tenant_id)->toBe($tenant->id)
+        ->and($supplier->tax_number)->toBe('TX-88442')
+        ->and($supplier->outstanding_balance)->toBe('650.2500');
 });
 
 test('inventory adjustment and stock transfer actions update branch stock and ledger', function () {

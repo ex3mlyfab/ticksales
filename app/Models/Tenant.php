@@ -134,6 +134,46 @@ class Tenant extends Model
     }
 
     /**
+     * Get the customers for the tenant.
+     */
+    public function customers()
+    {
+        return $this->hasMany(Customer::class);
+    }
+
+    /**
+     * Get the suppliers for the tenant.
+     */
+    public function suppliers()
+    {
+        return $this->hasMany(Supplier::class);
+    }
+
+    /**
+     * Get the purchase orders for the tenant.
+     */
+    public function purchaseOrders()
+    {
+        return $this->hasMany(PurchaseOrder::class);
+    }
+
+    /**
+     * Get the purchases for the tenant.
+     */
+    public function purchases()
+    {
+        return $this->hasMany(Purchase::class);
+    }
+
+    /**
+     * Get the purchase returns for the tenant.
+     */
+    public function purchaseReturns()
+    {
+        return $this->hasMany(PurchaseReturn::class);
+    }
+
+    /**
      * Get the audit logs for the tenant.
      */
     public function auditLogs()
