@@ -20,6 +20,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/products', [ProductController::class, 'index']);
+        Route::get('/products/search', [ProductController::class, 'search']);
+        Route::get('/products/{product}', [ProductController::class, 'show']);
         Route::get('/product-categories', [ProductCategoryController::class, 'index']);
         Route::get('/inventory', [InventoryController::class, 'index']);
         Route::get('/customers', [CustomerController::class, 'index']);
