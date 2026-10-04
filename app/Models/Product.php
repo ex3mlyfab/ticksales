@@ -134,4 +134,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductBarcode::class);
     }
+
+    /**
+     * Get the inventory snapshots for the product.
+     */
+    public function inventories(): HasMany
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }

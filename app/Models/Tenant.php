@@ -86,6 +86,22 @@ class Tenant extends Model
     }
 
     /**
+     * Get the branches for the tenant.
+     */
+    public function branches()
+    {
+        return $this->hasMany(Branch::class);
+    }
+
+    /**
+     * Get the inventory snapshots for the tenant.
+     */
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
+    /**
      * Get the product categories for the tenant.
      */
     public function productCategories()
