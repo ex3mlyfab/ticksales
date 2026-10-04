@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\InventoryController;
+use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\SaleController;
@@ -28,5 +29,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/registers/{register}/open', [RegisterController::class, 'open']);
         Route::post('/registers/{register}/close', [RegisterController::class, 'close']);
         Route::post('/registers/{register}/cash-movement', [RegisterController::class, 'cashMovement']);
+        Route::get('/payment-methods', [PaymentMethodController::class, 'index']);
     });
 });
