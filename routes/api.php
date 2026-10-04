@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\PaymentMethodController;
 use App\Http\Controllers\Api\ProductController;
@@ -15,6 +16,7 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['web', 'auth', 'tenant'])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
+        Route::get('/dashboard', [DashboardController::class, 'index']);
         Route::get('/products', [ProductController::class, 'index']);
         Route::get('/inventory', [InventoryController::class, 'index']);
         Route::get('/customers', [CustomerController::class, 'index']);
