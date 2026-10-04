@@ -106,4 +106,28 @@ class Branch extends Model
     {
         return $this->hasMany(StockTransfer::class, 'to_branch_id');
     }
+
+    /**
+     * Get the POS registers for the branch.
+     */
+    public function registers(): HasMany
+    {
+        return $this->hasMany(Register::class);
+    }
+
+    /**
+     * Get the active register sessions for the branch.
+     */
+    public function registerSessions(): HasMany
+    {
+        return $this->hasMany(RegisterSession::class);
+    }
+
+    /**
+     * Get the sales for the branch.
+     */
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
 }

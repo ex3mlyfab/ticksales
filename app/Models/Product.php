@@ -166,4 +166,12 @@ class Product extends Model
     {
         return $this->hasMany(StockTransferItem::class);
     }
+
+    /**
+     * Get the sale line items for the product.
+     */
+    public function saleItems(): HasMany
+    {
+        return $this->hasMany(SaleItem::class);
+    }
 }

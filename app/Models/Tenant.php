@@ -174,6 +174,38 @@ class Tenant extends Model
     }
 
     /**
+     * Get the sales for the tenant.
+     */
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    /**
+     * Get the payment methods for the tenant.
+     */
+    public function paymentMethods()
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
+
+    /**
+     * Get the POS registers for the tenant.
+     */
+    public function registers()
+    {
+        return $this->hasMany(Register::class);
+    }
+
+    /**
+     * Get the register sessions for the tenant.
+     */
+    public function registerSessions()
+    {
+        return $this->hasMany(RegisterSession::class);
+    }
+
+    /**
      * Get the audit logs for the tenant.
      */
     public function auditLogs()
