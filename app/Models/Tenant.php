@@ -110,6 +110,22 @@ class Tenant extends Model
     }
 
     /**
+     * Get the settings for the tenant.
+     */
+    public function tenantSetting()
+    {
+        return $this->hasOne(TenantSetting::class);
+    }
+
+    /**
+     * Get the branding for the tenant.
+     */
+    public function tenantBranding()
+    {
+        return $this->hasOne(TenantBranding::class);
+    }
+
+    /**
      * Get the product categories for the tenant.
      */
     public function productCategories()

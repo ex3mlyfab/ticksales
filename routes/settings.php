@@ -24,6 +24,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
+    Route::inertia('settings/tenant', 'settings/tenant')->name('tenant.settings');
+    Route::inertia('settings/branding', 'settings/branding')->name('tenant.branding');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {

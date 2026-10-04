@@ -111,6 +111,7 @@ class HandleInertiaRequests extends Middleware
 
     protected function resolveBranding(mixed $tenant): array
     {
+        $branding = $tenant?->tenantBranding()->first();
         $name = config('app.name');
 
         if ($tenant !== null) {
@@ -119,14 +120,14 @@ class HandleInertiaRequests extends Middleware
 
         return [
             'name' => $name,
-            'logo_path' => null,
-            'favicon_path' => null,
-            'primary_color' => '#111827',
-            'secondary_color' => '#f5f5f4',
-            'accent_color' => '#0f172a',
-            'sidebar_style' => 'default',
-            'border_radius' => '0.625rem',
-            'theme_preset' => 'neutral',
+            'logo_path' => $branding?->logo_path ?? null,
+            'favicon_path' => $branding?->favicon_path ?? null,
+            'primary_color' => $branding?->primary_color ?? '#111827',
+            'secondary_color' => $branding?->secondary_color ?? '#f5f5f4',
+            'accent_color' => $branding?->accent_color ?? '#0f172a',
+            'sidebar_style' => $branding?->sidebar_style ?? 'default',
+            'border_radius' => $branding?->border_radius ?? '0.625rem',
+            'theme_preset' => $branding?->theme_preset ?? 'neutral',
         ];
     }
 }
