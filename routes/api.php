@@ -4,6 +4,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\RegisterController;
+use App\Http\Controllers\Api\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -18,5 +20,13 @@ Route::prefix('v1')->group(function () {
         Route::post('/customers', [CustomerController::class, 'store']);
         Route::get('/customers/{customer}', [CustomerController::class, 'show']);
         Route::put('/customers/{customer}', [CustomerController::class, 'update']);
+        Route::get('/sales', [SaleController::class, 'index']);
+        Route::post('/sales', [SaleController::class, 'store']);
+        Route::get('/sales/{sale}', [SaleController::class, 'show']);
+        Route::get('/registers', [RegisterController::class, 'index']);
+        Route::get('/registers/{register}/session', [RegisterController::class, 'session']);
+        Route::post('/registers/{register}/open', [RegisterController::class, 'open']);
+        Route::post('/registers/{register}/close', [RegisterController::class, 'close']);
+        Route::post('/registers/{register}/cash-movement', [RegisterController::class, 'cashMovement']);
     });
 });

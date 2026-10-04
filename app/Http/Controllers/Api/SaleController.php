@@ -106,7 +106,7 @@ class SaleController extends Controller
         $totalAmount = collect($items)->sum(fn (array $item) => (float) ($item['total_amount'] ?? 0));
         $paidAmount = collect($payments)->sum(fn (array $item) => (float) ($item['amount'] ?? 0));
 
-        $sale = DB::transaction(function () use ($tenant, $validated, $branch, $subtotal, $discountAmount, $taxAmount, $totalAmount, $paidAmount) {
+        $sale = DB::transaction(function () use ($request, $tenant, $validated, $branch, $subtotal, $discountAmount, $taxAmount, $totalAmount, $paidAmount) {
             $saleModel = Sale::query()->create([
                 'tenant_id' => $tenant?->id,
                 'branch_id' => $branch->id,
