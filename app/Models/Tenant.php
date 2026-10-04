@@ -102,6 +102,14 @@ class Tenant extends Model
     }
 
     /**
+     * Get the audit logs for the tenant.
+     */
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
+    /**
      * Get the product categories for the tenant.
      */
     public function productCategories()

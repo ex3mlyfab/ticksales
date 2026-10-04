@@ -88,4 +88,12 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
             ->withPivot(['role_id', 'is_owner', 'is_active', 'joined_at'])
             ->withTimestamps();
     }
+
+    /**
+     * Get the audit logs created by the user.
+     */
+    public function auditLogs(): HasMany
+    {
+        return $this->hasMany(AuditLog::class);
+    }
 }
