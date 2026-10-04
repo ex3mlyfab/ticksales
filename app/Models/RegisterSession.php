@@ -121,4 +121,12 @@ class RegisterSession extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    /**
+     * Get the cash movements recorded during this session.
+     */
+    public function cashMovements(): HasMany
+    {
+        return $this->hasMany(CashMovement::class);
+    }
 }

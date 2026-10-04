@@ -214,6 +214,30 @@ class Tenant extends Model
     }
 
     /**
+     * Get the expense categories for the tenant.
+     */
+    public function expenseCategories()
+    {
+        return $this->hasMany(ExpenseCategory::class);
+    }
+
+    /**
+     * Get the expenses for the tenant.
+     */
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
+
+    /**
+     * Get the cash movements for the tenant.
+     */
+    public function cashMovements()
+    {
+        return $this->hasMany(CashMovement::class);
+    }
+
+    /**
      * Get the audit logs for the tenant.
      */
     public function auditLogs()

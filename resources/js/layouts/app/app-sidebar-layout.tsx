@@ -2,6 +2,7 @@ import { AppContent } from '@/components/app-content';
 import { AppShell } from '@/components/app-shell';
 import { AppSidebar } from '@/components/app-sidebar';
 import { AppSidebarHeader } from '@/components/app-sidebar-header';
+import { PwaStatus } from '@/components/pwa-status';
 import type { AppLayoutProps } from '@/types';
 
 export default function AppSidebarLayout({
@@ -13,7 +14,10 @@ export default function AppSidebarLayout({
             <AppSidebar />
             <AppContent variant="sidebar" className="min-w-0 overflow-x-clip">
                 <AppSidebarHeader breadcrumbs={breadcrumbs} />
-                {children}
+                <div className="space-y-3 px-4 pb-4 pt-2">
+                    <PwaStatus />
+                    {children}
+                </div>
             </AppContent>
         </AppShell>
     );

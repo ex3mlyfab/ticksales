@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
+import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
 export default defineConfig({
@@ -26,6 +27,40 @@ export default defineConfig({
         tailwindcss(),
         wayfinder({
             formVariants: true,
+        }),
+        VitePWA({
+            registerType: 'autoUpdate',
+            injectRegister: 'auto',
+            devOptions: {
+                enabled: true,
+            },
+            manifest: {
+                name: 'TickSales POS',
+                short_name: 'TickSales',
+                description: 'Retail sales, inventory, and cashier workflows for modern stores.',
+                start_url: '/',
+                scope: '/',
+                display: 'standalone',
+                background_color: '#f8fafc',
+                theme_color: '#0f172a',
+                icons: [
+                    {
+                        src: '/favicon.svg',
+                        sizes: 'any',
+                        type: 'image/svg+xml',
+                        purpose: 'any maskable',
+                    },
+                    {
+                        src: '/apple-touch-icon.png',
+                        sizes: '180x180',
+                        type: 'image/png',
+                    },
+                ],
+            },
+            workbox: {
+                globPatterns: ['**/*.{js,css,html,svg,png,jpg,jpeg,woff2}'],
+                navigateFallback: null,
+            },
         }),
     ]),
     server: {
