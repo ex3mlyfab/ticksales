@@ -142,4 +142,12 @@ class Sale extends Model
     {
         return $this->hasMany(SalePayment::class);
     }
+
+    /**
+     * Get the sale returns associated with this sale.
+     */
+    public function returns(): HasMany
+    {
+        return $this->hasMany(SaleReturn::class);
+    }
 }

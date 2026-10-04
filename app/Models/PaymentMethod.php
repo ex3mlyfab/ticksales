@@ -66,4 +66,12 @@ class PaymentMethod extends Model
     {
         return $this->hasMany(SalePayment::class);
     }
+
+    /**
+     * Get the refunds issued with this payment method.
+     */
+    public function saleReturns(): HasMany
+    {
+        return $this->hasMany(SaleReturn::class, 'refund_method_id');
+    }
 }

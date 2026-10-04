@@ -130,4 +130,12 @@ class Branch extends Model
     {
         return $this->hasMany(Sale::class);
     }
+
+    /**
+     * Get the sale returns processed by the branch.
+     */
+    public function saleReturns(): HasMany
+    {
+        return $this->hasMany(SaleReturn::class);
+    }
 }

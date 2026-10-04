@@ -206,6 +206,14 @@ class Tenant extends Model
     }
 
     /**
+     * Get the sale returns for the tenant.
+     */
+    public function saleReturns()
+    {
+        return $this->hasMany(SaleReturn::class);
+    }
+
+    /**
      * Get the audit logs for the tenant.
      */
     public function auditLogs()
