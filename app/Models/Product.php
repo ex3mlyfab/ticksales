@@ -142,4 +142,28 @@ class Product extends Model
     {
         return $this->hasMany(Inventory::class);
     }
+
+    /**
+     * Get the inventory transactions for the product.
+     */
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
+    /**
+     * Get stock adjustment items for the product.
+     */
+    public function stockAdjustmentItems(): HasMany
+    {
+        return $this->hasMany(StockAdjustmentItem::class);
+    }
+
+    /**
+     * Get stock transfer items for the product.
+     */
+    public function stockTransferItems(): HasMany
+    {
+        return $this->hasMany(StockTransferItem::class);
+    }
 }

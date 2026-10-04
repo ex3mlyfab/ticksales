@@ -74,4 +74,36 @@ class Branch extends Model
     {
         return $this->hasMany(Inventory::class);
     }
+
+    /**
+     * Get the inventory transactions for the branch.
+     */
+    public function inventoryTransactions(): HasMany
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
+    /**
+     * Get the stock adjustments for the branch.
+     */
+    public function stockAdjustments(): HasMany
+    {
+        return $this->hasMany(StockAdjustment::class);
+    }
+
+    /**
+     * Get stock transfers originating from the branch.
+     */
+    public function outgoingStockTransfers(): HasMany
+    {
+        return $this->hasMany(StockTransfer::class, 'from_branch_id');
+    }
+
+    /**
+     * Get stock transfers received by the branch.
+     */
+    public function incomingStockTransfers(): HasMany
+    {
+        return $this->hasMany(StockTransfer::class, 'to_branch_id');
+    }
 }

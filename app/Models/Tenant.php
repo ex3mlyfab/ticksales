@@ -102,6 +102,38 @@ class Tenant extends Model
     }
 
     /**
+     * Get the inventory transactions for the tenant.
+     */
+    public function inventoryTransactions()
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
+
+    /**
+     * Get the stock adjustments for the tenant.
+     */
+    public function stockAdjustments()
+    {
+        return $this->hasMany(StockAdjustment::class);
+    }
+
+    /**
+     * Get the stock transfers for the tenant.
+     */
+    public function stockTransfers()
+    {
+        return $this->hasMany(StockTransfer::class);
+    }
+
+    /**
+     * Get the customer groups for the tenant.
+     */
+    public function customerGroups()
+    {
+        return $this->hasMany(CustomerGroup::class);
+    }
+
+    /**
      * Get the audit logs for the tenant.
      */
     public function auditLogs()
