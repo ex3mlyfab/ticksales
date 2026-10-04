@@ -140,4 +140,12 @@ class Tenant extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
+
+    /**
+     * Get the product barcodes for the tenant.
+     */
+    public function productBarcodes()
+    {
+        return $this->hasMany(ProductBarcode::class);
+    }
 }

@@ -126,4 +126,12 @@ class Product extends Model
     {
         return $this->hasMany(ProductVariant::class);
     }
+
+    /**
+     * Get the barcodes for the product.
+     */
+    public function barcodes(): HasMany
+    {
+        return $this->hasMany(ProductBarcode::class);
+    }
 }

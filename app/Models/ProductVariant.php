@@ -76,4 +76,12 @@ class ProductVariant extends Model
     {
         return $this->belongsTo(Product::class);
     }
+
+    /**
+     * Get the barcodes for the product variant.
+     */
+    public function barcodes()
+    {
+        return $this->hasMany(ProductBarcode::class, 'variant_id');
+    }
 }
