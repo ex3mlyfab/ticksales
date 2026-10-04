@@ -84,4 +84,60 @@ class Tenant extends Model
     {
         return $this->hasMany(TenantUser::class);
     }
+
+    /**
+     * Get the product categories for the tenant.
+     */
+    public function productCategories()
+    {
+        return $this->hasMany(ProductCategory::class);
+    }
+
+    /**
+     * Get the product brands for the tenant.
+     */
+    public function productBrands()
+    {
+        return $this->hasMany(ProductBrand::class);
+    }
+
+    /**
+     * Get the product units for the tenant.
+     */
+    public function productUnits()
+    {
+        return $this->hasMany(ProductUnit::class);
+    }
+
+    /**
+     * Get the tax rates for the tenant.
+     */
+    public function taxRates()
+    {
+        return $this->hasMany(TaxRate::class);
+    }
+
+    /**
+     * Get the discounts for the tenant.
+     */
+    public function discounts()
+    {
+        return $this->hasMany(Discount::class);
+    }
+
+    /**
+     * Get the products for the tenant.
+     */
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    /**
+     * Get the product variants for the tenant.
+     */
+    public function productVariants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
 }
