@@ -54,7 +54,7 @@
 | POS-039 | Phase 3 | StockTransfer + items models + migration + CRUD | Pending | High | | |
 | POS-040 | Phase 3 | AdjustInventoryAction | Pending | Critical | | |
 | POS-041 | Phase 3 | TransferStockAction | Pending | High | | |
-| POS-042 | Phase 4 | CustomerGroup model + migration + CRUD | In Progress | Medium | 2026-10-29 | |
+| POS-042 | Phase 4 | CustomerGroup model + migration + CRUD | Completed | Medium | 2026-10-29 | |
 | POS-043 | Phase 4 | Customer model + migration + CRUD | Pending | High | | |
 | POS-044 | Phase 4 | Supplier model + migration + CRUD | Pending | High | | |
 | POS-045 | Phase 5 | PurchaseOrder + items models + migration + CRUD | Pending | Medium | | |
@@ -310,3 +310,16 @@
 **Result:** TaxRate suite passes 9/9. Frontend rebuilt (wayfinder regenerated, pages in Vite manifest), Pint clean.  
 **Next session start:** finish POS-042 (customer-groups/edit + customers/create + customers/edit pages, customer CRUD tests), POS-033 — Discount, or POS-090 — Subscription model + HasSubscription trait  
 **Notes:** Full suite state after this session: 135 tests / 135 passing (126/126 before POS-032's 9 new tests).
+
+### 2026-10-29 — Session 10
+**Work done:** POS-042 — CustomerGroup + Customer CRUD (completed)  
+**Outcome:** Both backends were already in place (controllers with tenant 403 checks, form requests, routes with `{customerGroup}` / `{customer}` params, factories, migrations). Completed with:
+
+1. **Created the three missing Inertia pages**: `customer-groups/edit.tsx` (renders the `group` prop the controller passes; edits name, description, discount rate, is_active), `customers/create.tsx` + `customers/edit.tsx` (fields: name, customer group via native `<select>` of the `groups` prop, email, phone, address, credit limit, loyalty points, is_active). No page previously used the Radix Select, and the customer-groups create page already used a plain styled `<textarea>`, so a native styled `<select>` follows that precedent.
+2. **Requests aligned with server-derived tenant**: relaxed `tenant_id` to `nullable` in `StoreCustomerRequest` / `UpdateCustomerRequest`, matching the controllers (which take the tenant from middleware attributes) and the Session 9 TaxRate change.
+3. **Fixed a UX bug in `customer-groups/create.tsx`**: the Radix `Checkbox` used `onChange`, which Radix ignores — unchecking "Active" would never register. Switched to `onCheckedChange` like the other pages.
+4. **Created `tests/Feature/CustomerTest.php`** (9 tests): auth redirect, index 200, create (with group + email), create with optionals omitted (nullable group/email, loyalty points default 0), update, soft-delete, and tenant isolation 403 on edit / update / destroy, mirroring the CustomerGroupTest conventions.
+
+**Result:** CustomerTest passes 9/9, CustomerGroupTest passes 6/6. Frontend rebuilt (new pages in Vite manifest, wayfinder regenerated), Pint clean.  
+**Next session start:** POS-033 — Discount CRUD, POS-034 — Product model + migration + CRUD (Critical, Phase 2), or POS-090 — Subscription model + HasSubscription trait  
+**Notes:** Full suite state after this session: 144 tests / 144 passing.

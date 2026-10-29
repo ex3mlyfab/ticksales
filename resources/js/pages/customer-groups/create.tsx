@@ -84,7 +84,9 @@ export default function CustomerGroupCreatePage() {
                                         id="is_active"
                                         name="is_active"
                                         checked={form.data.is_active}
-                                        onChange={(e) => form.setData('is_active', e.target.checked)}
+                                        onCheckedChange={(checked) =>
+                                            form.setData('is_active', checked === true)
+                                        }
                                     />
                                     <Label htmlFor="is_active" className="text-sm">
                                         Active
