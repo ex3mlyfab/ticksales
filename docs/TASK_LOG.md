@@ -45,8 +45,8 @@
 | POS-030 | Phase 2 | ProductBrand model + migration + CRUD | Completed | High | 2026-10-23 | 2026-10-29 |
 | POS-031 | Phase 2 | ProductUnit model + migration + CRUD | Completed | High | 2026-10-29 | 2026-10-29 |
 | POS-032 | Phase 2 | TaxRate model + migration + CRUD | Completed | High | 2026-10-29 | |
-| POS-033 | Phase 2 | Discount model + migration + CRUD | Pending | High | | |
-| POS-034 | Phase 2 | Product model + migration + CRUD | Pending | Critical | | |
+| POS-033 | Phase 2 | Discount model + migration + CRUD | Completed | High | 2026-10-29 | |
+| POS-034 | Phase 2 | Product model + migration + CRUD | Completed | Critical | 2026-10-29 | |
 | POS-035 | Phase 2 | ProductVariant model + migration + CRUD | Pending | High | | |
 | POS-036 | Phase 3 | Inventory model + migration | Pending | Critical | | |
 | POS-037 | Phase 3 | InventoryTransaction model + migration | Pending | Critical | | |
@@ -323,3 +323,22 @@
 **Result:** CustomerTest passes 9/9, CustomerGroupTest passes 6/6. Frontend rebuilt (new pages in Vite manifest, wayfinder regenerated), Pint clean.  
 **Next session start:** POS-033 — Discount CRUD, POS-034 — Product model + migration + CRUD (Critical, Phase 2), or POS-090 — Subscription model + HasSubscription trait  
 **Notes:** Full suite state after this session: 144 tests / 144 passing.
+
+### 2026-10-29 — Session 11
+**Work done:** POS-034 — Product model + migration + CRUD (completed)  
+**Outcome:** Model, migration, factory, controller, routes (`{product}` correctly bound), requests, pages (index/create/edit) and API resource already existed from earlier sessions. Completed with three fixes plus the CRUD suite:
+
+1. **Malformed unique rules (critical)**: `StoreProductRequest` / `UpdateProductRequest` used `'unique:products,sku,NULL,id,tenant_id'` — the `tenant_id` was passed as the where-column but the where-value was missing, so Laravel's `getExtraConditions` threw `Undefined array key 1` on **every** store with a sku (500 response). Replaced with `Rule::unique('products')->where('tenant_id', $tenantId)` scoped to the tenant from middleware attributes, and `->ignore($productId)` on update.
+2. **Requests aligned with server-derived tenant**: `tenant_id` relaxed to `nullable` (Session 9/10 pattern).
+3. **Controller matched nullable rules**: `ProductController` hard-accessed `$validated['brand_id']` / `category_id` / `unit_id` / `tax_rate_id`, which are nullable in validation and absent from partial payloads → `Undefined array key` 500. All four now fall back to `?? null` in store and update.
+4. **Created `tests/Feature/ProductTest.php`** (8 tests): auth redirect, index 200, full create (all four relations + sku/barcode + decimal cast `19.9900`), update, soft-delete, and tenant isolation 403 on edit / update / destroy, mirroring the established conventions.
+
+**Result:** ProductTest passes 8/8; the three pre-existing catalogue suites (ProductCatalogueTest, ProductCatalogAdvancedTest, ProductBarcodeTest) remain green after the rule change; Pint clean.  
+**Next session start:** POS-033 — Discount CRUD, POS-035 — ProductVariant, POS-036 — Inventory model + migration (Critical), or POS-090 — Subscription model + HasSubscription trait  
+**Notes:** Full suite state after this session: 152 tests / 152 passing.
+
+### 2026-10-29 — Session 12
+**Work done:** POS-033 — Discount model + migration + CRUD (complete; verification only)  
+**Outcome:** The whole module already existed and satisfies the spec — no code changes were required. Verified empirically: `DiscountTest` passes 6/6 and covers auth redirect, index 200, create (% type), update (fixed type), soft-delete, and the cross-tenant edit 403. Routes in `routes/discounts.php` are correctly bound (`{discount}` matches the controller's `Discount $discount`), and `DiscountController` enforces tenant 403s on edit / update / destroy. The Inertia pages (`discounts/index|create|edit`) exist and the index renders 200.  
+**Next session start:** POS-035 — ProductVariant CRUD, POS-036 — Inventory model + migration (Critical), POS-047 — Supplier CRUD, or POS-090 — Subscription model + HasSubscription trait  
+**Notes:** Full suite state: 152 tests / 152 passing.

@@ -85,10 +85,10 @@ class ProductController extends Controller
 
         $product = Product::query()->create([
             'tenant_id' => $tenant?->id,
-            'category_id' => $validated['category_id'],
-            'brand_id' => $validated['brand_id'],
-            'unit_id' => $validated['unit_id'],
-            'tax_rate_id' => $validated['tax_rate_id'],
+            'category_id' => $validated['category_id'] ?? null,
+            'brand_id' => $validated['brand_id'] ?? null,
+            'unit_id' => $validated['unit_id'] ?? null,
+            'tax_rate_id' => $validated['tax_rate_id'] ?? null,
             'name' => $validated['name'],
             'sku' => $validated['sku'] ?? null,
             'barcode' => $validated['barcode'] ?? null,
@@ -163,10 +163,10 @@ class ProductController extends Controller
         $validated = $request->validated();
 
         $product->update([
-            'category_id' => $validated['category_id'],
-            'brand_id' => $validated['brand_id'],
-            'unit_id' => $validated['unit_id'],
-            'tax_rate_id' => $validated['tax_rate_id'],
+            'category_id' => $validated['category_id'] ?? null,
+            'brand_id' => $validated['brand_id'] ?? null,
+            'unit_id' => $validated['unit_id'] ?? null,
+            'tax_rate_id' => $validated['tax_rate_id'] ?? null,
             'name' => $validated['name'],
             'sku' => $validated['sku'] ?? null,
             'barcode' => $validated['barcode'] ?? null,

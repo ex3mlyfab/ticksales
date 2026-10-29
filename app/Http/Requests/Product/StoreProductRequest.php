@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
@@ -21,15 +22,19 @@ class StoreProductRequest extends FormRequest
      */
     public function rules(): array
     {
+        $tenantId = $this->attributes->get('tenant')?->id;
+
+        $uniqueInTenant = fn () => Rule::unique('products')->where(fn ($query) => $query->where('tenant_id', $tenantId));
+
         return [
-            'tenant_id' => ['required', 'string', 'exists:tenants,id'],
+            'tenant_id' => ['nullable', 'string', 'exists:tenants,id'],
             'category_id' => ['nullable', 'string', 'exists:product_categories,id'],
             'brand_id' => ['nullable', 'string', 'exists:product_brands,id'],
             'unit_id' => ['nullable', 'string', 'exists:product_units,id'],
             'tax_rate_id' => ['nullable', 'string', 'exists:tax_rates,id'],
             'name' => ['required', 'string', 'max:255'],
-            'sku' => ['nullable', 'string', 'max:50', 'unique:products,sku,NULL,id,tenant_id'],
-            'barcode' => ['nullable', 'string', 'max:100', 'unique:products,barcode,NULL,id,tenant_id'],
+            'sku' => ['nullable', 'string', 'max:50', $uniqueInTenant()],
+            'barcode' => ['nullable', 'string', 'max:100', $uniqueInTenant()],
             'description' => ['nullable', 'string'],
             'cost_price' => ['required', 'numeric', 'min:0'],
             'selling_price' => ['required', 'numeric', 'min:0'],
