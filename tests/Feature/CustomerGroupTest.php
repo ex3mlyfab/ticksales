@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Tenant;
 use App\Models\User;

@@ -66,7 +66,7 @@ class PurchaseController extends Controller
         $validated = $request->validated();
 
         // use ReceivePurchaseAction for consistent stock update and purchase creation
-        ReceivePurchaseAction::execute([
+        app(ReceivePurchaseAction::class)->execute([
             'tenant_id' => $tenant?->id,
             'purchase_order_id' => $validated['purchase_order_id'] ?? null,
             'branch_id' => $validated['branch_id'],

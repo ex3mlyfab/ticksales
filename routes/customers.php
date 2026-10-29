@@ -9,9 +9,9 @@ Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('customer-groups', [CustomerGroupController::class, 'index'])->name('customer-groups.index');
     Route::get('customer-groups/create', [CustomerGroupController::class, 'create'])->name('customer-groups.create');
     Route::post('customer-groups', [CustomerGroupController::class, 'store'])->name('customer-groups.store');
-    Route::get('customer-groups/{group}/edit', [CustomerGroupController::class, 'edit'])->name('customer-groups.edit');
-    Route::put('customer-groups/{group}', [CustomerGroupController::class, 'update'])->name('customer-groups.update');
-    Route::delete('customer-groups/{group}', [CustomerGroupController::class, 'destroy'])->name('customer-groups.destroy');
+    Route::get('customer-groups/{customerGroup}/edit', [CustomerGroupController::class, 'edit'])->name('customer-groups.edit');
+    Route::put('customer-groups/{customerGroup}', [CustomerGroupController::class, 'update'])->name('customer-groups.update');
+    Route::delete('customer-groups/{customerGroup}', [CustomerGroupController::class, 'destroy'])->name('customer-groups.destroy');
 
     // Customers
     Route::get('customers', [CustomerController::class, 'index'])->name('customers.index');

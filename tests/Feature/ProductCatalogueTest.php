@@ -167,7 +167,7 @@ test('customer groups can be created for a tenant', function () {
 
     expect($group->tenant_id)->toBe($tenant->id)
         ->and($group->name)->toBe('VIP Retailers')
-        ->and($group->discount_rate)->toBe('12.5000');
+        ->and($group->discount_rate)->toBe(12.5);
 });
 
 test('customers and suppliers can be created for a tenant', function () {

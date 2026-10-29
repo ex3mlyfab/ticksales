@@ -61,7 +61,7 @@ export default function InventoryIndexPage({ inventory }: Props) {
                                         <tr key={row.id} className="hover:bg-muted/30">
                                             <td className="px-3 py-2 text-sm">
                                                 <Link
-                                                    href={route('inventory.show', row.id)}
+                                                    href={route('inventory.show', row.product_id)}
                                                     className="font-medium hover:text-foreground"
                                                 >
                                                     {row.product_name}

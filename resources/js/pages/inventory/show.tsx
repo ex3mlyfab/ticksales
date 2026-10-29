@@ -1,16 +1,17 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
+import Link from '@/components/link';
+
+interface Product {
+    id: string;
+    name: string;
+}
 
 interface InventoryRow {
     id: string;
     branch_name: string | null;
     variant_name: string | null;
     quantity: number;
-}
-
-interface Product {
-    id: string;
-    name: string;
 }
 
 interface Props {
@@ -21,17 +22,25 @@ interface Props {
 export default function InventoryShowPage({ product, inventory }: Props) {
     return (
         <>
-            <Head title={`Stock — ${product.name}`} />
+            <Head title={`Inventory — ${product.name}`} />
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title={`Stock: ${product.name}`}
-                    description="View all stock records for this product across branches."
+                    title={product.name}
+                    description="Current stock levels for this product across your branches."
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold">Stock Records</h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-lg font-semibold">Stock by Branch</h2>
+                        <Link
+                            href="/inventory"
+                            className="text-sm text-muted-foreground hover:text-foreground"
+                        >
+                            Back to inventory
+                        </Link>
+                    </div>
 
                     <div className="mt-4 overflow-x-auto">
                         <table className="w-full">
@@ -46,7 +55,7 @@ export default function InventoryShowPage({ product, inventory }: Props) {
                                 {inventory.length === 0 ? (
                                     <tr>
                                         <td colSpan={3} className="px-3 py-8 text-center text-sm text-muted-foreground">
-                                            No stock records found for this product.
+                                            No stock recorded for this product yet.
                                         </td>
                                     </tr>
                                 ) : (
@@ -72,6 +81,9 @@ InventoryShowPage.layout = {
         {
             title: 'Inventory',
             href: '/inventory',
+        },
+        {
+            title: product?.name ?? 'Product',
         },
     ],
 };

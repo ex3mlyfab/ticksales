@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * @property string $tenant_id
  * @property string $name
  * @property string|null $description
- * @property string $discount_rate
+ * @property float $discount_rate
  * @property bool $is_active
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -48,7 +48,7 @@ class CustomerGroup extends Model
     protected function casts(): array
     {
         return [
-            'discount_rate' => 'decimal:4',
+            'discount_rate' => 'float',
             'is_active' => 'boolean',
         ];
     }

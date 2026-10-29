@@ -243,7 +243,7 @@ class PurchaseOrderController extends Controller
         abort_unless($purchaseOrder->status === 'draft', 403, 'Only draft orders can be posted.');
 
         // Convert to a Purchase using ReceivePurchaseAction
-        ReceivePurchaseAction::execute([
+        app(ReceivePurchaseAction::class)->execute([
             'tenant_id' => $tenant?->id,
             'purchase_order_id' => $purchaseOrder->id,
             'branch_id' => $purchaseOrder->branch_id,

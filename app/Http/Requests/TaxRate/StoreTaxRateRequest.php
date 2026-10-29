@@ -22,7 +22,7 @@ class StoreTaxRateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tenant_id' => ['required', 'string', 'exists:tenants,id'],
+            'tenant_id' => ['nullable', 'string', 'exists:tenants,id'],
             'name' => ['required', 'string', 'max:255'],
             'rate' => ['required', 'numeric', 'min:0', 'max:100'],
             'is_inclusive' => ['nullable', 'boolean'],

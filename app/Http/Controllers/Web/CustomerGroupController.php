@@ -91,7 +91,7 @@ class CustomerGroupController extends Controller
             'name' => $validated['name'],
             'description' => $validated['description'] ?? null,
             'discount_rate' => $validated['discount_rate'],
-            'is_active' => $validated['is_active'],
+            'is_active' => $validated['is_active'] ?? $customerGroup->is_active,
         ]);
 
         $auditService->updated($customerGroup, $validated);
