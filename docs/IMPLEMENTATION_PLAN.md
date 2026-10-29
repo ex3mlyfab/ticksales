@@ -252,6 +252,24 @@ branches.view, branches.create, branches.update
 - `resources/js/pages/settings/tenant.tsx`
 - `resources/js/pages/settings/branding.tsx`
 
+### 1.11 — Subscription Management (New)
+
+**Objective:** Add subscription plans, trial periods, and billing status to tenants.
+
+**Database changes:** Enhance `tenants` table with `status` field; no new table needed — leverages existing `plan` and `trial_ends_at` columns.
+
+**Files to create:**
+- `app/Models/Subscription.php` — thin model wrapping tenant subscription state
+- `app/Concerns/HasSubscription.php` — trait with plan status, trial eligibility, and feature-gate methods
+- `database/seeders/PlanSeeder.php` — seed default subscription plans (Basic, Pro, Enterprise)
+
+**Acceptance criteria:**
+- Tenant `plan` field maps to one of the seeded plan names
+- `trial_ends_at` tracks trial expiration
+- `status` reflects: `active`, `trialing`, `past_due`, `canceled`, `expired`
+- `$tenant->isTrialing()` and `$tenant->isActive()` work via the trait
+- Feature gates (e.g., `canManageBranches()`, `canExportReports()`) respect the plan tier
+
 ---
 
 ## Phase 2 — Product Catalogue

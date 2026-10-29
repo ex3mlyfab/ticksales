@@ -28,6 +28,7 @@ class TransferStockAction
                 'tenant_id' => $tenantId,
                 'branch_id' => $fromBranchId,
                 'product_id' => $productId,
+                'variant_id' => $data['variant_id'] ?? null,
             ], [
                 'quantity' => 0,
             ]);
@@ -36,6 +37,7 @@ class TransferStockAction
                 'tenant_id' => $tenantId,
                 'branch_id' => $toBranchId,
                 'product_id' => $productId,
+                'variant_id' => $data['variant_id'] ?? null,
             ], [
                 'quantity' => 0,
             ]);

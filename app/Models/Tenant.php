@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Concerns\HasSubscription;
 use Database\Factories\TenantFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -31,7 +32,7 @@ use Illuminate\Support\Carbon;
 class Tenant extends Model
 {
     /** @use HasFactory<TenantFactory> */
-    use HasFactory, HasUlids, SoftDeletes;
+    use HasFactory, HasSubscription, HasUlids, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.

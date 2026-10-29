@@ -48,3 +48,15 @@ function something()
 {
     // ..
 }
+
+use App\Models\Tenant;
+use App\Models\TenantUser;
+use App\Models\User;
+
+function attachUserToTenant(User $user, Tenant $tenant): void
+{
+    TenantUser::query()->create([
+        'tenant_id' => $tenant->id,
+        'user_id' => $user->id,
+    ]);
+}

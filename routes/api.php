@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\InventoryController;
 use App\Http\Controllers\Api\PaymentMethodController;
+use App\Http\Controllers\Api\ProductBrandController;
 use App\Http\Controllers\Api\ProductCategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RegisterController;
@@ -23,6 +24,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/products/search', [ProductController::class, 'search']);
         Route::get('/products/{product}', [ProductController::class, 'show']);
         Route::get('/product-categories', [ProductCategoryController::class, 'index']);
+        Route::get('/product-brands', [ProductBrandController::class, 'index']);
         Route::get('/inventory', [InventoryController::class, 'index']);
         Route::get('/customers', [CustomerController::class, 'index']);
         Route::post('/customers', [CustomerController::class, 'store']);

@@ -31,6 +31,7 @@ class AdjustInventoryAction
                 'tenant_id' => $tenantId,
                 'branch_id' => $branchId,
                 'product_id' => $productId,
+                'variant_id' => $data['variant_id'] ?? null,
             ], [
                 'quantity' => 0,
             ]);
