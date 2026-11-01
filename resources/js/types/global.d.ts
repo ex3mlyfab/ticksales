@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { Branch, Branding, Tenant } from '@/types/navigation';
 
 declare module 'react' {
     interface InputHTMLAttributes<T> {
@@ -12,6 +13,11 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            tenant?: Tenant | null;
+            tenants?: Tenant[];
+            branch?: Branch | null;
+            branding?: Branding;
+            permissions?: string[];
             [key: string]: unknown;
         };
     }

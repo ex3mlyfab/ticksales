@@ -2,14 +2,18 @@
 
 namespace App\Actions\Sales;
 
-use App\Models\Inventory;
-use App\Models\InventoryTransaction;
+use App\Actions\Inventory\AdjustInventoryAction;
+use App\Models\Branch;
+use App\Models\Customer;
+use App\Models\PaymentMethod;
+use App\Models\Product;
 use App\Models\RegisterSession;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\SalePayment;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class CreateSaleAction
 {
@@ -39,6 +43,11 @@ class CreateSaleAction
             if ($existingSale) {
                 return $existingSale;
             }
+
+            // Every referenced record must belong to the active tenant, so a
+            // caller can never attach another tenant's product, customer,
+            // register session, branch, or payment method to this sale.
+            self::assertOwnedByTenant($tenantId, $branchId, $registerSessionId, $customerId, $items, $payments);
 
             // Validate open register session
             if ($registerSessionId) {
@@ -70,7 +79,7 @@ class CreateSaleAction
                 'branch_id' => $branchId,
                 'register_session_id' => $registerSessionId,
                 'customer_id' => $customerId,
-                'reference_no' => 'SALE-'.now()->format('Y-m-d').'-'.str_pad((string) Sale::where('tenant_id', $tenantId)->count(), 6, '0', STR_PAD_LEFT),
+                'reference_no' => 'SALE-'.now()->format('YmdHis').'-'.strtoupper(Str::random(4)),
                 'idempotency_key' => $idempotencyKey,
                 'status' => 'completed',
                 'subtotal' => $subtotal,
@@ -108,32 +117,19 @@ class CreateSaleAction
                     'total_amount' => $itemTotal,
                 ]);
 
-                // Decrement inventory
-                $inventory = Inventory::query()->firstOrCreate(
-                    [
-                        'tenant_id' => $tenantId,
-                        'branch_id' => $branchId,
-                        'product_id' => $item['product_id'],
-                        'variant_id' => $item['variant_id'] ?? null,
-                    ],
-                    ['quantity' => 0]
+                // Decrement inventory and record the stock ledger entry.
+                AdjustInventoryAction::handle(
+                    tenantId: $tenantId,
+                    branchId: $branchId,
+                    productId: $item['product_id'],
+                    variantId: $item['variant_id'] ?? null,
+                    quantityChanged: -$item['quantity'],
+                    referenceType: Sale::class,
+                    referenceId: $sale->id,
+                    type: 'sale',
+                    note: 'Stock sold on '.$sale->reference_no,
+                    createdBy: $soldBy,
                 );
-
-                $inventory->lockForUpdate();
-                $inventory->decrement('quantity', $item['quantity']);
-                $inventory->save();
-
-                InventoryTransaction::query()->create([
-                    'tenant_id' => $tenantId,
-                    'branch_id' => $branchId,
-                    'product_id' => $item['product_id'],
-                    'variant_id' => $item['variant_id'] ?? null,
-                    'quantity' => -$item['quantity'],
-                    'type' => 'sale',
-                    'reference_id' => $sale->id,
-                    'reference_type' => Sale::class,
-                    'note' => 'Stock sold on '.$sale->reference_no,
-                ]);
             }
 
             foreach ($payments as $payment) {
@@ -147,5 +143,44 @@ class CreateSaleAction
 
             return $sale;
         });
+    }
+
+    /**
+     * Ensure every referenced record belongs to the given tenant.
+     *
+     * @param  array<int, array<string, mixed>>  $items
+     * @param  array<int, array<string, mixed>>  $payments
+     */
+    private static function assertOwnedByTenant(
+        string $tenantId,
+        ?string $branchId,
+        ?string $registerSessionId,
+        ?string $customerId,
+        array $items,
+        array $payments,
+    ): void {
+        if ($branchId !== null && ! Branch::query()->where('tenant_id', $tenantId)->whereKey($branchId)->exists()) {
+            throw ValidationException::withMessages(['branch_id' => 'The selected branch is invalid.']);
+        }
+
+        if ($registerSessionId !== null && ! RegisterSession::query()->where('tenant_id', $tenantId)->whereKey($registerSessionId)->exists()) {
+            throw ValidationException::withMessages(['register_session_id' => 'The selected register session is invalid.']);
+        }
+
+        if ($customerId !== null && ! Customer::query()->where('tenant_id', $tenantId)->whereKey($customerId)->exists()) {
+            throw ValidationException::withMessages(['customer_id' => 'The selected customer is invalid.']);
+        }
+
+        foreach ($items as $item) {
+            if (! Product::query()->where('tenant_id', $tenantId)->whereKey($item['product_id'])->exists()) {
+                throw ValidationException::withMessages(['items' => 'One of the selected products is invalid.']);
+            }
+        }
+
+        foreach ($payments as $payment) {
+            if (! PaymentMethod::query()->where('tenant_id', $tenantId)->whereKey($payment['payment_method_id'])->exists()) {
+                throw ValidationException::withMessages(['payments' => 'One of the selected payment methods is invalid.']);
+            }
+        }
     }
 }

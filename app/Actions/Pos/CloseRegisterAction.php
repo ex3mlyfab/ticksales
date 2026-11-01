@@ -3,6 +3,8 @@
 namespace App\Actions\Pos;
 
 use App\Models\RegisterSession;
+use App\Models\Sale;
+use App\Models\SalePayment;
 use Illuminate\Support\Facades\DB;
 
 class CloseRegisterAction
@@ -24,12 +26,28 @@ class CloseRegisterAction
                 throw new \RuntimeException('This register session is not open.');
             }
 
-            // Calculate expected balance = opening balance + total sales - total cash movements out + movements in
-            $totalSales = $session->sales()->sum('total_amount');
+            // Expected drawer balance only includes cash actually received.
+            // Card / mobile-money payments never enter the cash drawer, so
+            // they are excluded; change handed back reduces the drawer.
+            $cashInFromSales = SalePayment::query()
+                ->whereHas('sale', fn ($q) => $q->where('register_session_id', $session->id))
+                ->whereHas('paymentMethod', fn ($q) => $q->where('type', 'cash'))
+                ->sum('amount');
+
+            $cashChangeGiven = Sale::query()
+                ->where('register_session_id', $session->id)
+                ->whereHas('payments.paymentMethod', fn ($q) => $q->where('type', 'cash'))
+                ->sum('change_amount');
+
             $cashIn = $session->cashMovements()->where('type', 'in')->sum('amount');
             $cashOut = $session->cashMovements()->where('type', 'out')->sum('amount');
 
-            $expectedBalance = (float) $session->opening_balance + (float) $totalSales + (float) $cashIn - (float) $cashOut;
+            $expectedBalance = (float) $session->opening_balance
+                + (float) $cashInFromSales
+                - (float) $cashChangeGiven
+                + (float) $cashIn
+                - (float) $cashOut;
+
             $variance = (float) $actualBalance - $expectedBalance;
 
             $session->update([

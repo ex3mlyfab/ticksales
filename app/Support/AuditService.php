@@ -35,10 +35,13 @@ class AuditService
         ?array $oldValues = null,
         ?array $newValues = null,
         ?string $ipAddress = null,
-        ?string $userAgent = null
+        ?string $userAgent = null,
+        ?Tenant $tenant = null
     ): AuditLog {
-        // Get tenant from request attributes (set by SetTenantContext middleware)
-        $tenant = $this->currentTenant();
+        // Get tenant from request attributes (set by SetTenantContext middleware),
+        // or fall back to an explicitly supplied tenant (e.g. platform-admin
+        // operations on a specific tenant).
+        $tenant ??= $this->currentTenant();
 
         // Get branch from session or request
         $branchId = $this->currentBranchId($tenant);

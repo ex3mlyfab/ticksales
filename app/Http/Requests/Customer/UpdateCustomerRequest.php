@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Customer;
 
+use App\Http\Requests\Concerns\ScopesValidationToTenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateCustomerRequest extends FormRequest
 {
+    use ScopesValidationToTenant;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,7 +26,7 @@ class UpdateCustomerRequest extends FormRequest
     {
         return [
             'tenant_id' => ['nullable', 'string', 'exists:tenants,id'],
-            'customer_group_id' => ['nullable', 'string', 'exists:customer_groups,id'],
+            'customer_group_id' => ['nullable', 'string', $this->existsInTenant('customer_groups')],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'phone' => ['nullable', 'string', 'max:50'],

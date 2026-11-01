@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Models\Branch;
+use App\Models\Tenant;
 use App\Support\TenantContext;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
@@ -39,7 +40,7 @@ class HandleInertiaRequests extends Middleware
     {
         $tenant = $request->attributes->get('tenant') ?? app(TenantContext::class)->getTenant();
         $branch = $this->resolveBranch($request, $tenant);
-        $permissions = $request->user()?->permissions()?->pluck('name')->values()->all() ?? [];
+        $permissions = $request->user()?->permissions($tenant)?->pluck('name')->values()->all() ?? [];
         $branding = $this->resolveBranding($tenant);
 
         return [
@@ -49,6 +50,7 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'tenant' => $this->serializeTenant($tenant),
+            'tenants' => $this->serializeTenants($request),
             'branch' => $this->serializeBranch($branch),
             'permissions' => $permissions,
             'branding' => $branding,
@@ -129,5 +131,34 @@ class HandleInertiaRequests extends Middleware
             'border_radius' => $branding?->border_radius ?? '0.625rem',
             'theme_preset' => $branding?->theme_preset ?? 'neutral',
         ];
+    }
+
+    /**
+     * List the user's active tenants so the UI can switch between them.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    protected function serializeTenants(Request $request): array
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return [];
+        }
+
+        $activeTenantId = app(TenantContext::class)->getTenant()?->id;
+
+        return $user->tenants()
+            ->wherePivot('is_active', true)
+            ->orderBy('tenants.name')
+            ->get()
+            ->map(fn (Tenant $tenant) => [
+                'id' => $tenant->id,
+                'name' => $tenant->name,
+                'slug' => $tenant->slug,
+                'currency' => $tenant->currency,
+                'is_current' => $tenant->id === $activeTenantId,
+            ])
+            ->all();
     }
 }

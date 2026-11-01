@@ -7,12 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StockAdjustment\PostStockAdjustmentRequest;
 use App\Http\Requests\StockAdjustment\StoreStockAdjustmentRequest;
 use App\Models\Branch;
+use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\StockAdjustment;
 use App\Models\StockAdjustmentItem;
 use App\Support\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -86,7 +88,14 @@ class StockAdjustmentController extends Controller
                 ->where('tenant_id', $tenant?->id)
                 ->findOrFail($item['product_id']);
 
-            $quantityBefore = 0.0;
+            $inventory = Inventory::query()
+                ->where('tenant_id', $tenant?->id)
+                ->where('branch_id', $validated['branch_id'])
+                ->where('product_id', $product->id)
+                ->where('variant_id', $item['variant_id'] ?? null)
+                ->first();
+
+            $quantityBefore = (float) ($inventory?->quantity ?? 0);
             $quantityAdjusted = (float) $item['quantity_adjusted'];
             $quantityAfter = $quantityBefore + $quantityAdjusted;
 
@@ -121,25 +130,33 @@ class StockAdjustmentController extends Controller
             return to_route('stock-adjustments.index');
         }
 
-        $stockAdjustment->update([
-            'status' => 'posted',
-            'adjusted_at' => now(),
-        ]);
+        try {
+            DB::transaction(function () use ($stockAdjustment, $tenant) {
+                $stockAdjustment->update([
+                    'status' => 'posted',
+                    'adjusted_at' => now(),
+                ]);
 
-        // Debit or credit based on quantity_adjusted sign
-        foreach ($stockAdjustment->items as $item) {
-            // Update inventory for each item
-            AdjustInventoryAction::handle(
-                tenantId: $tenant->id,
-                branchId: $stockAdjustment->branch_id,
-                productId: $item->product_id,
-                variantId: $item->variant_id,
-                quantityChanged: $item->quantity_adjusted,
-                referenceType: 'stock_adjustment',
-                referenceId: $stockAdjustment->id,
-                type: 'adjustment',
-                note: $stockAdjustment->reason,
-            );
+                // Debit or credit based on quantity_adjusted sign.
+                foreach ($stockAdjustment->items as $item) {
+                    AdjustInventoryAction::handle(
+                        tenantId: $tenant->id,
+                        branchId: $stockAdjustment->branch_id,
+                        productId: $item->product_id,
+                        variantId: $item->variant_id,
+                        quantityChanged: $item->quantity_adjusted,
+                        referenceType: 'stock_adjustment',
+                        referenceId: $stockAdjustment->id,
+                        type: 'adjustment',
+                        note: $stockAdjustment->reason,
+                        requireSufficientStock: true,
+                    );
+                }
+            });
+        } catch (\RuntimeException $e) {
+            Inertia::flash('toast', ['type' => 'error', 'message' => $e->getMessage()]);
+
+            return back();
         }
 
         $auditService->updated($stockAdjustment, ['event' => 'stock_adjustment.posted']);

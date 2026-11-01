@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Branch;
 use App\Models\Inventory;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Tenant;
 use App\Support\TenantContext;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -15,16 +17,51 @@ use Inertia\Response;
 class DashboardController extends Controller
 {
     /**
-     * Show the tenant dashboard.
+     * Show the dashboard for the active tenant.
      */
     public function index(): Response
     {
-        $tenant = Tenant::query()->find(session('active_tenant_id'))
-            ?? auth()->user()?->tenants()->whereKey(session('active_tenant_id'))->first()
-            ?? app(TenantContext::class)->getTenant();
+        // The active tenant is always the user's own tenant: SetTenantContext
+        // only ever resolves tenants the user belongs to.
+        $tenant = app(TenantContext::class)->getTenant();
 
-        $branchId = session('active_branch_id');
+        $branchId = $tenant !== null ? $this->resolveBranchId(request(), $tenant) : null;
 
+        return $this->renderDashboard($tenant, $branchId);
+    }
+
+    /**
+     * Show the dashboard for an explicitly requested tenant.
+     *
+     * This is the per-tenant entry point: a user lands on the dashboard of the
+     * tenant they chose (URL `/t/{tenant}/dashboard`), which also becomes the
+     * active tenant for the rest of the session.
+     */
+    public function show(Request $request, Tenant $tenant): Response
+    {
+        $user = $request->user();
+
+        $isPlatformAdmin = (bool) $user?->is_platform_admin;
+        $isActiveMember = (bool) $user?->tenants()
+            ->wherePivot('is_active', true)
+            ->whereKey($tenant->id)
+            ->exists();
+
+        // A non-member must not learn the tenant exists.
+        abort_unless($isPlatformAdmin || $isActiveMember, 404);
+
+        $request->session()->put('active_tenant_id', $tenant->id);
+
+        $branchId = $this->resolveBranchId($request, $tenant);
+
+        return $this->renderDashboard($tenant, $branchId);
+    }
+
+    /**
+     * Render the dashboard for the given tenant and branch.
+     */
+    protected function renderDashboard(?Tenant $tenant, ?string $branchId): Response
+    {
         $stats = $this->buildStats($tenant, $branchId);
         $topProducts = $this->buildTopProducts($tenant, $branchId);
         $lowStock = $this->buildLowStock($tenant, $branchId);
@@ -34,6 +71,31 @@ class DashboardController extends Controller
             'topProducts' => $topProducts,
             'lowStock' => $lowStock,
         ]);
+    }
+
+    /**
+     * Resolve the branch to scope the dashboard to, preferring the session
+     * branch when it belongs to the tenant and otherwise falling back to the
+     * tenant's main branch.
+     */
+    protected function resolveBranchId(Request $request, Tenant $tenant): ?string
+    {
+        $branchId = $request->session()->get('active_branch_id');
+
+        if ($branchId !== null && Branch::query()->where('tenant_id', $tenant->id)->whereKey($branchId)->exists()) {
+            return $branchId;
+        }
+
+        $branch = Branch::query()->where('tenant_id', $tenant->id)->where('is_main', true)->first()
+            ?? Branch::query()->where('tenant_id', $tenant->id)->first();
+
+        if ($branch !== null) {
+            $request->session()->put('active_branch_id', $branch->id);
+
+            return $branch->id;
+        }
+
+        return null;
     }
 
     /**

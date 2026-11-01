@@ -25,19 +25,20 @@ class RefundSaleAction
     public function execute(array $data): SaleReturn
     {
         return DB::transaction(function () use ($data) {
-            $sale = Sale::query()->with(['items', 'returns.items'])->findOrFail($data['sale_id']);
+            $sale = Sale::query()->with(['items', 'returns.items'])->whereKey($data['sale_id'])->firstOrFail();
             $tenantId = $data['tenant_id'] ?? $sale->tenant_id;
             $branchId = $data['branch_id'] ?? $sale->branch_id;
             $reason = $data['reason'] ?? 'Sale refund';
             $returnedBy = $data['returned_by'] ?? $sale->sold_by;
 
             $requested = $this->requestedQuantities($data['items'] ?? null);
+            $alreadyReturned = $this->alreadyReturnedByKey($sale);
 
             $refundAmount = 0.0;
             $returnItems = [];
 
             foreach ($sale->items as $item) {
-                $quantityToRefund = $this->quantityToRefund($item, $requested);
+                $quantityToRefund = $this->quantityToRefund($item, $requested, $alreadyReturned);
                 if ($quantityToRefund <= 0) {
                     continue;
                 }
@@ -101,7 +102,7 @@ class RefundSaleAction
                 );
             }
 
-            $sale->status = $this->isFullyRefunded($sale, $returnItems) ? 'refunded' : 'partially_refunded';
+            $sale->status = $this->isFullyRefunded($sale, $returnItems, $alreadyReturned) ? 'refunded' : 'partially_refunded';
             $sale->save();
 
             AuditLog::query()->create([
@@ -141,8 +142,11 @@ class RefundSaleAction
 
     /**
      * How much of a sale line to refund on this return.
+     *
+     * @param  array<string, float>  $requested
+     * @param  array<string, float>  $alreadyReturned
      */
-    private function quantityToRefund(SaleItem $item, array $requested): float
+    private function quantityToRefund(SaleItem $item, array $requested, array $alreadyReturned): float
     {
         if ($requested === []) {
             return (float) $item->quantity;
@@ -156,18 +160,32 @@ class RefundSaleAction
         }
 
         // Cap at the remaining returnable quantity (sold minus already returned).
-        $alreadyReturned = 0.0;
-        foreach ($item->sale->returns ?? [] as $existingReturn) {
+        $remaining = (float) $item->quantity - ($alreadyReturned[$key] ?? 0);
+
+        return max(0, min($requestedQty, $remaining));
+    }
+
+    /**
+     * Total quantity of each sale line already returned on earlier returns.
+     *
+     * Keyed by `product_id|variant_id`, so a sale with many items and many
+     * prior returns only needs one pass over the already-eager-loaded relations
+     * instead of one per line.
+     *
+     * @return array<string, float>
+     */
+    private function alreadyReturnedByKey(Sale $sale): array
+    {
+        $map = [];
+
+        foreach ($sale->returns ?? [] as $existingReturn) {
             foreach ($existingReturn->items as $existingItem) {
-                if ($existingItem->product_id === $item->product_id && ($existingItem->variant_id ?? null) === ($item->variant_id ?? null)) {
-                    $alreadyReturned += (float) $existingItem->quantity;
-                }
+                $key = ($existingItem->product_id).'|'.($existingItem->variant_id ?? null);
+                $map[$key] = ($map[$key] ?? 0) + (float) $existingItem->quantity;
             }
         }
 
-        $remaining = (float) $item->quantity - $alreadyReturned;
-
-        return max(0, min($requestedQty, $remaining));
+        return $map;
     }
 
     /**
@@ -197,8 +215,9 @@ class RefundSaleAction
      * Whether every sale line is fully returned after this return.
      *
      * @param  array<int, array<string, mixed>>  $returnItems
+     * @param  array<string, float>  $alreadyReturned
      */
-    private function isFullyRefunded(Sale $sale, array $returnItems): bool
+    private function isFullyRefunded(Sale $sale, array $returnItems, array $alreadyReturned): bool
     {
         $newlyReturned = [];
         foreach ($returnItems as $item) {
@@ -209,16 +228,7 @@ class RefundSaleAction
         foreach ($sale->items as $item) {
             $key = ($item->product_id).'|'.($item->variant_id ?? '');
 
-            $alreadyReturned = 0.0;
-            foreach ($sale->returns ?? [] as $existingReturn) {
-                foreach ($existingReturn->items as $existingItem) {
-                    if ($existingItem->product_id === $item->product_id && ($existingItem->variant_id ?? null) === ($item->variant_id ?? null)) {
-                        $alreadyReturned += (float) $existingItem->quantity;
-                    }
-                }
-            }
-
-            $totalReturned = $alreadyReturned + ($newlyReturned[$key] ?? 0);
+            $totalReturned = ($alreadyReturned[$key] ?? 0) + ($newlyReturned[$key] ?? 0);
 
             if ($totalReturned < (float) $item->quantity - 0.0001) {
                 return false;

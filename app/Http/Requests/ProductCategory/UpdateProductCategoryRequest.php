@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\ProductCategory;
 
+use App\Http\Requests\Concerns\ScopesValidationToTenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateProductCategoryRequest extends FormRequest
 {
+    use ScopesValidationToTenant;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,7 +26,7 @@ class UpdateProductCategoryRequest extends FormRequest
     {
         return [
             'tenant_id' => ['required', 'string'],
-            'parent_id' => ['nullable', 'string', 'exists:product_categories,id'],
+            'parent_id' => ['nullable', 'string', $this->existsInTenant('product_categories')],
             'name' => ['required', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],

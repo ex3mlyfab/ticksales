@@ -26,8 +26,9 @@ class AdjustInventoryAction
         ?string $note = null,
         string|float|int|null $unitCost = null,
         ?int $createdBy = null,
+        bool $requireSufficientStock = false,
     ): void {
-        DB::transaction(function () use ($tenantId, $branchId, $productId, $variantId, $quantityChanged, $referenceType, $referenceId, $type, $note, $unitCost, $createdBy) {
+        DB::transaction(function () use ($tenantId, $branchId, $productId, $variantId, $quantityChanged, $referenceType, $referenceId, $type, $note, $unitCost, $createdBy, $requireSufficientStock) {
             $inventory = Inventory::query()
                 ->where('tenant_id', $tenantId)
                 ->where('branch_id', $branchId)
@@ -44,6 +45,18 @@ class AdjustInventoryAction
                     'variant_id' => $variantId,
                     'quantity' => 0,
                 ]);
+            }
+
+            $change = (float) $quantityChanged;
+
+            if ($requireSufficientStock && $change < 0 && ((float) $inventory->quantity + $change) < 0) {
+                throw new \RuntimeException(sprintf(
+                    'Insufficient stock for %s (%s): %s available, %s requested.',
+                    $productId,
+                    $variantId ?? 'default variant',
+                    $inventory->quantity,
+                    abs($change),
+                ));
             }
 
             $inventory->increment('quantity', $quantityChanged);

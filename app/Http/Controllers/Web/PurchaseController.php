@@ -66,17 +66,23 @@ class PurchaseController extends Controller
         $validated = $request->validated();
 
         // use ReceivePurchaseAction for consistent stock update and purchase creation
-        app(ReceivePurchaseAction::class)->execute([
-            'tenant_id' => $tenant?->id,
-            'purchase_order_id' => $validated['purchase_order_id'] ?? null,
-            'branch_id' => $validated['branch_id'],
-            'supplier_id' => $validated['supplier_id'],
-            'purchase_date' => $validated['purchase_date'],
-            'invoice_no' => $validated['invoice_no'] ?? null,
-            'paid_amount' => $validated['paid_amount'] ?? 0,
-            'notes' => $validated['notes'] ?? null,
-            'items' => $validated['items'],
-        ]);
+        try {
+            app(ReceivePurchaseAction::class)->execute([
+                'tenant_id' => $tenant?->id,
+                'purchase_order_id' => $validated['purchase_order_id'] ?? null,
+                'branch_id' => $validated['branch_id'],
+                'supplier_id' => $validated['supplier_id'],
+                'purchase_date' => $validated['purchase_date'],
+                'invoice_no' => $validated['invoice_no'] ?? null,
+                'paid_amount' => $validated['paid_amount'] ?? 0,
+                'notes' => $validated['notes'] ?? null,
+                'items' => $validated['items'],
+            ]);
+        } catch (\RuntimeException $e) {
+            Inertia::flash('toast', ['type' => 'error', 'message' => $e->getMessage()]);
+
+            return back();
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Purchase recorded and stock received.')]);
 

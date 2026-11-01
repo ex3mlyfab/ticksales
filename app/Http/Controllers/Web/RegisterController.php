@@ -23,6 +23,7 @@ class RegisterController extends Controller
         $registers = Register::query()
             ->where('tenant_id', $tenant?->id)
             ->with('branch')
+            ->withCount('sessions')
             ->orderBy('name')
             ->paginate(20);
 

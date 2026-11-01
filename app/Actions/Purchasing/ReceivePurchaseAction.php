@@ -22,6 +22,11 @@ class ReceivePurchaseAction
     private static function receiveExisting(array $data): Purchase
     {
         $purchase = Purchase::query()->where('tenant_id', $data['tenant_id'] ?? '')->findOrFail($data['purchase_id']);
+
+        if ($purchase->status === 'completed') {
+            throw new \RuntimeException('This purchase has already been received.');
+        }
+
         $purchase->loadMissing('items');
         foreach ($purchase->items as $item) {
             self::addStock(tenantId: $purchase->tenant_id, branchId: $data['branch_id'] ?? $purchase->branch_id, productId: $item->product_id, variantId: $item->variant_id, quantity: $item->quantity, unitCost: $item->unit_cost, note: 'Stock received', reference: $purchase);
@@ -37,6 +42,19 @@ class ReceivePurchaseAction
         $branchId = $data['branch_id'];
         $supplierId = $data['supplier_id'];
         $purchaseOrderId = $data['purchase_order_id'] ?? null;
+
+        // Prevent receiving the same purchase order twice (double stock).
+        if ($purchaseOrderId !== null && $purchaseOrderId !== '') {
+            $alreadyReceived = Purchase::query()
+                ->where('tenant_id', $tenantId)
+                ->where('purchase_order_id', $purchaseOrderId)
+                ->exists();
+
+            if ($alreadyReceived) {
+                throw new \RuntimeException('This purchase order has already been received.');
+            }
+        }
+
         $purchaseDate = $data['purchase_date'] ?? now()->toDateString();
         $invoiceNo = $data['invoice_no'] ?? null;
         $paidAmount = $data['paid_amount'] ?? 0;

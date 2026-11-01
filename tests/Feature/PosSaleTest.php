@@ -15,6 +15,7 @@ use App\Models\SaleItem;
 use App\Models\SalePayment;
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 use function Pest\Laravel\actingAs;
 
@@ -348,7 +349,7 @@ test('offline sale sync is idempotent via the web store endpoint', function () {
                 'amount' => 12.00,
             ],
         ],
-        'idempotency_key' => 'offline-sync-001',
+        'idempotency_key' => (string) Str::uuid(),
         'synced_from_offline' => true,
         'offline_created_at' => now()->subHour()->toIso8601String(),
     ];

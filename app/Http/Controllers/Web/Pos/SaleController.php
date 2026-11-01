@@ -14,6 +14,7 @@ use App\Models\TaxRate;
 use App\Models\TenantBranding;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -77,11 +78,13 @@ class SaleController extends Controller
         $tenant = $request->attributes->get('tenant');
         $user = $request->user();
 
+        $tenantId = $tenant?->id;
+
         $validated = $request->validate([
-            'register_session_id' => ['nullable', 'string', 'exists:register_sessions,id'],
-            'customer_id' => ['nullable', 'string', 'exists:customers,id'],
+            'register_session_id' => ['nullable', 'string', Rule::exists('register_sessions', 'id')->where(fn ($q) => $q->where('tenant_id', $tenantId))],
+            'customer_id' => ['nullable', 'string', Rule::exists('customers', 'id')->where(fn ($q) => $q->where('tenant_id', $tenantId))],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'string', 'exists:products,id'],
+            'items.*.product_id' => ['required', 'string', Rule::exists('products', 'id')->where(fn ($q) => $q->where('tenant_id', $tenantId))],
             'items.*.variant_id' => ['nullable', 'string'],
             'items.*.name' => ['nullable', 'string'],
             'items.*.sku' => ['nullable', 'string'],
@@ -90,13 +93,13 @@ class SaleController extends Controller
             'items.*.tax_rate' => ['nullable', 'numeric', 'min:0'],
             'items.*.discount_amount' => ['nullable', 'numeric', 'min:0'],
             'payments' => ['required', 'array', 'min:1'],
-            'payments.*.payment_method_id' => ['required', 'string', 'exists:payment_methods,id'],
+            'payments.*.payment_method_id' => ['required', 'string', Rule::exists('payment_methods', 'id')->where(fn ($q) => $q->where('tenant_id', $tenantId))],
             'payments.*.amount' => ['required', 'numeric', 'min:0'],
             'payments.*.reference' => ['nullable', 'string'],
             'discount_amount' => ['nullable', 'numeric', 'min:0'],
             'note' => ['nullable', 'string'],
-            'branch_id' => ['nullable', 'string', 'exists:branches,id'],
-            'idempotency_key' => ['nullable', 'string', 'max:255'],
+            'branch_id' => ['nullable', 'string', Rule::exists('branches', 'id')->where(fn ($q) => $q->where('tenant_id', $tenantId))],
+            'idempotency_key' => ['nullable', 'uuid'],
             'synced_from_offline' => ['nullable', 'boolean'],
             'offline_created_at' => ['nullable', 'date'],
         ]);

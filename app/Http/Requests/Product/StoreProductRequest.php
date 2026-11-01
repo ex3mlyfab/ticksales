@@ -2,11 +2,14 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Http\Requests\Concerns\ScopesValidationToTenant;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
+    use ScopesValidationToTenant;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -28,10 +31,10 @@ class StoreProductRequest extends FormRequest
 
         return [
             'tenant_id' => ['nullable', 'string', 'exists:tenants,id'],
-            'category_id' => ['nullable', 'string', 'exists:product_categories,id'],
-            'brand_id' => ['nullable', 'string', 'exists:product_brands,id'],
-            'unit_id' => ['nullable', 'string', 'exists:product_units,id'],
-            'tax_rate_id' => ['nullable', 'string', 'exists:tax_rates,id'],
+            'category_id' => ['nullable', 'string', $this->existsInTenant('product_categories')],
+            'brand_id' => ['nullable', 'string', $this->existsInTenant('product_brands')],
+            'unit_id' => ['nullable', 'string', $this->existsInTenant('product_units')],
+            'tax_rate_id' => ['nullable', 'string', $this->existsInTenant('tax_rates')],
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['nullable', 'string', 'max:50', $uniqueInTenant()],
             'barcode' => ['nullable', 'string', 'max:100', $uniqueInTenant()],

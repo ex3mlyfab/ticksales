@@ -10,6 +10,7 @@ use App\Models\Sale;
 use App\Models\SaleReturn;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -21,7 +22,7 @@ class SaleReturnController extends Controller
 
         $returns = SaleReturn::query()
             ->where('tenant_id', $tenant?->id)
-            ->with(['sale', 'branch', 'returnedBy', 'refundMethod'])
+            ->with(['sale.customer', 'branch', 'returnedBy', 'refundMethod', 'items.product'])
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
@@ -60,11 +61,11 @@ class SaleReturnController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'sale_id' => ['required', 'string', 'exists:sales,id'],
-            'refund_method_id' => ['nullable', 'string', 'exists:payment_methods,id'],
+            'sale_id' => ['required', 'string', Rule::exists('sales', 'id')->where(fn ($q) => $q->where('tenant_id', $tenant?->id))],
+            'refund_method_id' => ['nullable', 'string', Rule::exists('payment_methods', 'id')->where(fn ($q) => $q->where('tenant_id', $tenant?->id))],
             'reason' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'string', 'exists:products,id'],
+            'items.*.product_id' => ['required', 'string', Rule::exists('products', 'id')->where(fn ($q) => $q->where('tenant_id', $tenant?->id))],
             'items.*.variant_id' => ['nullable', 'string'],
             'items.*.quantity' => ['required', 'numeric', 'min:0.0001'],
         ]);

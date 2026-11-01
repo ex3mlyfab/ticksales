@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Inventory\AdjustInventoryAction;
 use App\Http\Controllers\Controller;
 use App\Models\Branch;
 use App\Models\Customer;
@@ -65,7 +66,7 @@ class SaleController extends Controller
             'customer_id' => ['nullable', 'string'],
             'reference_no' => ['required', 'string', 'max:255', Rule::unique('sales', 'reference_no')->where(fn ($query) => $query->where('tenant_id', $tenant?->id))],
             'idempotency_key' => ['required', 'uuid'],
-            'status' => ['sometimes', 'string', 'in:completed,refunded,partial,voided'],
+            'status' => ['sometimes', 'string', 'in:completed,refunded,partially_refunded,voided'],
             'note' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
             'items.*.product_id' => ['required', 'string'],
@@ -145,6 +146,20 @@ class SaleController extends Controller
                     'tax_rate' => number_format((float) ($item['tax_rate'] ?? 0), 4, '.', ''),
                     'total_amount' => number_format((float) ($item['total_amount'] ?? 0), 4, '.', ''),
                 ]);
+
+                // Keep stock in sync with the web POS path.
+                AdjustInventoryAction::handle(
+                    tenantId: $tenant?->id,
+                    branchId: $branch->id,
+                    productId: $product->id,
+                    variantId: $item['variant_id'] ?? null,
+                    quantityChanged: -((float) $item['quantity']),
+                    referenceType: Sale::class,
+                    referenceId: $saleModel->id,
+                    type: 'sale',
+                    note: 'Stock sold on '.$saleModel->reference_no,
+                    createdBy: $request->user()?->id,
+                );
             }
 
             foreach ($validated['payments'] as $payment) {

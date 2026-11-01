@@ -8,6 +8,7 @@ Route::get('/', LandingController::class)->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/t/{tenant}/dashboard', [DashboardController::class, 'show'])->name('dashboard.tenant');
 });
 
 require __DIR__.'/admin.php';

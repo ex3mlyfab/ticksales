@@ -16,7 +16,7 @@ class RegisterResource extends JsonResource
             'branch_name' => $this->branch?->name,
             'name' => $this->name,
             'is_active' => $this->is_active,
-            'sessions_count' => $this->sessions()->count(),
+            'sessions_count' => $this->sessions_count ?? $this->sessions()->count(),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

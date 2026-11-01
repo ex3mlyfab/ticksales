@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Web\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
+use App\Support\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -44,7 +45,7 @@ class TenantController extends Controller
     /**
      * Store a newly created tenant in storage.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, AuditService $auditService): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -63,6 +64,14 @@ class TenantController extends Controller
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
 
         $tenant = Tenant::query()->create($validated);
+
+        $auditService->log(
+            event: 'tenant.created',
+            auditableType: Tenant::class,
+            auditableId: $tenant->id,
+            newValues: $tenant->getAttributes(),
+            tenant: $tenant,
+        );
 
         return redirect()->route('admin.tenants.show', $tenant)
             ->with('success', 'Tenant created successfully.');
@@ -105,7 +114,7 @@ class TenantController extends Controller
     /**
      * Update the specified tenant in storage.
      */
-    public function update(Request $request, Tenant $tenant): RedirectResponse
+    public function update(Request $request, Tenant $tenant, AuditService $auditService): RedirectResponse
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -125,6 +134,15 @@ class TenantController extends Controller
 
         $tenant->update($validated);
 
+        $auditService->log(
+            event: 'tenant.updated',
+            auditableType: Tenant::class,
+            auditableId: $tenant->id,
+            oldValues: array_intersect_key($tenant->getOriginal(), $tenant->getChanges()),
+            newValues: $tenant->getChanges(),
+            tenant: $tenant,
+        );
+
         return redirect()->route('admin.tenants.show', $tenant)
             ->with('success', 'Tenant updated successfully.');
     }
@@ -132,8 +150,16 @@ class TenantController extends Controller
     /**
      * Remove the specified tenant from storage.
      */
-    public function destroy(Tenant $tenant): RedirectResponse
+    public function destroy(Tenant $tenant, AuditService $auditService): RedirectResponse
     {
+        $auditService->log(
+            event: 'tenant.deleted',
+            auditableType: Tenant::class,
+            auditableId: $tenant->id,
+            oldValues: $tenant->getAttributes(),
+            tenant: $tenant,
+        );
+
         $tenant->delete();
 
         return redirect()->route('admin.tenants.index')

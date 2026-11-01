@@ -49,14 +49,34 @@ function something()
     // ..
 }
 
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\Tenant;
 use App\Models\TenantUser;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 
 function attachUserToTenant(User $user, Tenant $tenant): void
 {
+    // Attach an owner-level role carrying every permission. Without this the
+    // permission middleware (routes use `permission:...`) would 403 these
+    // feature tests. Permission-denial tests create a member without the role.
+    foreach (PermissionSeeder::PERMISSIONS as $permission) {
+        Permission::firstOrCreate(['name' => $permission]);
+    }
+
+    $role = Role::firstOrCreate(
+        ['name' => 'tenant_owner'],
+        ['description' => 'Test owner with all permissions'],
+    );
+    $role->permissions()->sync(Permission::pluck('id'));
+
     TenantUser::query()->create([
         'tenant_id' => $tenant->id,
         'user_id' => $user->id,
+        'role_id' => $role->id,
+        'is_owner' => true,
+        'is_active' => true,
+        'joined_at' => now(),
     ]);
 }

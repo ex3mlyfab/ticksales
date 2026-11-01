@@ -13,6 +13,7 @@ use App\Models\StockTransferItem;
 use App\Support\AuditService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -112,37 +113,46 @@ class StockTransferController extends Controller
             return to_route('stock-transfers.index');
         }
 
-        $stockTransfer->update([
-            'status' => 'posted',
-            'transferred_at' => now(),
-        ]);
+        try {
+            DB::transaction(function () use ($stockTransfer, $tenant) {
+                $stockTransfer->update([
+                    'status' => 'posted',
+                    'transferred_at' => now(),
+                ]);
 
-        foreach ($stockTransfer->items as $item) {
-            // Subtract from source branch
-            AdjustInventoryAction::handle(
-                tenantId: $tenant->id,
-                branchId: $stockTransfer->from_branch_id,
-                productId: $item->product_id,
-                variantId: $item->variant_id,
-                quantityChanged: -$item->quantity,
-                referenceType: 'stock_transfer',
-                referenceId: $stockTransfer->id,
-                type: 'transfer_out',
-                note: $stockTransfer->note,
-            );
+                foreach ($stockTransfer->items as $item) {
+                    // Subtract from source branch (guard against negative stock).
+                    AdjustInventoryAction::handle(
+                        tenantId: $tenant->id,
+                        branchId: $stockTransfer->from_branch_id,
+                        productId: $item->product_id,
+                        variantId: $item->variant_id,
+                        quantityChanged: -$item->quantity,
+                        referenceType: 'stock_transfer',
+                        referenceId: $stockTransfer->id,
+                        type: 'transfer_out',
+                        note: $stockTransfer->note,
+                        requireSufficientStock: true,
+                    );
 
-            // Add to destination branch
-            AdjustInventoryAction::handle(
-                tenantId: $tenant->id,
-                branchId: $stockTransfer->to_branch_id,
-                productId: $item->product_id,
-                variantId: $item->variant_id,
-                quantityChanged: $item->quantity,
-                referenceType: 'stock_transfer',
-                referenceId: $stockTransfer->id,
-                type: 'transfer_in',
-                note: $stockTransfer->note,
-            );
+                    // Add to destination branch.
+                    AdjustInventoryAction::handle(
+                        tenantId: $tenant->id,
+                        branchId: $stockTransfer->to_branch_id,
+                        productId: $item->product_id,
+                        variantId: $item->variant_id,
+                        quantityChanged: $item->quantity,
+                        referenceType: 'stock_transfer',
+                        referenceId: $stockTransfer->id,
+                        type: 'transfer_in',
+                        note: $stockTransfer->note,
+                    );
+                }
+            });
+        } catch (\RuntimeException $e) {
+            Inertia::flash('toast', ['type' => 'error', 'message' => $e->getMessage()]);
+
+            return back();
         }
 
         $auditService->updated($stockTransfer, ['event' => 'stock_transfer.posted']);

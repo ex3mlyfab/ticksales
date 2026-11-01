@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\StockAdjustment;
 
+use App\Http\Requests\Concerns\ScopesValidationToTenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreStockAdjustmentRequest extends FormRequest
 {
+    use ScopesValidationToTenant;
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -23,11 +26,11 @@ class StoreStockAdjustmentRequest extends FormRequest
     {
         return [
             'tenant_id' => ['required', 'string', 'exists:tenants,id'],
-            'branch_id' => ['required', 'string', 'exists:branches,id'],
+            'branch_id' => ['required', 'string', $this->existsInTenant('branches')],
             'reason' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'string', 'exists:products,id'],
-            'items.*.variant_id' => ['nullable', 'string', 'exists:product_variants,id'],
+            'items.*.product_id' => ['required', 'string', $this->existsInTenant('products')],
+            'items.*.variant_id' => ['nullable', 'string', $this->existsInTenant('product_variants')],
             'items.*.quantity_adjusted' => ['required', 'numeric', 'not_in:0'],
             'items.*.unit_cost' => ['nullable', 'numeric', 'min:0'],
         ];

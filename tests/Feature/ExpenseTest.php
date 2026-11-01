@@ -236,7 +236,8 @@ test('cross-tenant expense operations return 403', function () {
             'amount' => 1,
             'expense_date' => now()->toDateString(),
         ])
-        ->assertForbidden();
+        ->assertRedirect()
+        ->assertSessionHasErrors('branch_id');
 
     actingAs($user)
         ->withSession(['active_tenant_id' => $tenantA->id])

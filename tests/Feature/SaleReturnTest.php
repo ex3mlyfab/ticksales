@@ -11,6 +11,8 @@ use App\Models\SaleReturn;
 use App\Models\SaleReturnItem;
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 test('sale returns can record refunded items and refund method', function () {
     $tenant = Tenant::factory()->create();
@@ -130,4 +132,86 @@ test('refund sale action restores inventory and marks the sale as refunded', fun
         ->and($saleReturn->status)->toBe('completed')
         ->and($sale->fresh()->status)->toBe('refunded')
         ->and(Inventory::query()->where('product_id', $product->id)->where('branch_id', $branch->id)->value('quantity'))->toBe('7.0000');
+});
+
+test('refunding a multi-line sale does not lazy load per line', function () {
+    $tenant = Tenant::factory()->create();
+    $branch = Branch::factory()->create(['tenant_id' => $tenant->id]);
+    $cashier = User::factory()->create();
+    $method = PaymentMethod::query()->create([
+        'tenant_id' => $tenant->id,
+        'name' => 'Cash',
+        'type' => 'cash',
+        'is_active' => true,
+        'sort_order' => 1,
+    ]);
+
+    // A sale with many lines and a prior return exercises the previously
+    // N+1 path (`$item->sale->returns` inside quantityToRefund): the old code
+    // issued a query per line. Count the queries and assert they stay bounded.
+    $sale = Sale::query()->create([
+        'tenant_id' => $tenant->id,
+        'branch_id' => $branch->id,
+        'reference_no' => 'SALE-NPLUS-001',
+        'idempotency_key' => (string) Str::uuid(),
+        'status' => 'completed',
+        'subtotal' => '50.0000',
+        'discount_amount' => '0.0000',
+        'tax_amount' => '0.0000',
+        'total_amount' => '50.0000',
+        'paid_amount' => '50.0000',
+        'change_amount' => '0.0000',
+        'outstanding_amount' => '0.0000',
+        'sold_by' => $cashier->getKey(),
+        'sold_at' => now(),
+    ]);
+
+    for ($i = 1; $i <= 6; $i++) {
+        SaleItem::query()->create([
+            'sale_id' => $sale->id,
+            'product_id' => Product::factory()->create(['tenant_id' => $tenant->id])->id,
+            'name' => "Line $i",
+            'sku' => "SKU-$i",
+            'quantity' => '1.0000',
+            'unit_price' => '8.3300',
+            'cost_price' => '5.0000',
+            'discount_amount' => '0.0000',
+            'tax_amount' => '0.0000',
+            'tax_rate' => '0.0000',
+            'total_amount' => '8.3300',
+        ]);
+    }
+
+    $queries = 0;
+    DB::listen(function () use (&$queries) {
+        $queries++;
+    });
+
+    // A partial return (with an explicit items list) is what drives the old
+    // per-line lazy load; a full refund short-circuits before it.
+    $items = $sale->items->map(fn (SaleItem $item) => [
+        'product_id' => $item->product_id,
+        'variant_id' => $item->variant_id,
+        'quantity' => 1,
+    ])->all();
+
+    (new RefundSaleAction)->execute([
+        'sale_id' => $sale->id,
+        'tenant_id' => $tenant->id,
+        'branch_id' => $branch->id,
+        'refund_method_id' => $method->id,
+        'returned_by' => $cashier->getKey(),
+        'reason' => 'Multi-line return',
+        'items' => $items,
+    ]);
+
+    DB::flushQueryLog();
+
+    // The refund touches the sale + lines (1), prior returns (1), the return
+    // (1), its six items, six inventory restores and six transactions, plus a
+    // little framework overhead: 37 queries for 6 lines. The old per-line lazy
+    // load (`$item->sale->returns` inside the loop) added ~3 queries per line,
+    // pushing the same sale to ~55. Assert under 45 so a regression is caught
+    // without coupling to the exact framework overhead.
+    expect($queries)->toBeLessThan(45);
 });

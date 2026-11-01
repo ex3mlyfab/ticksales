@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Purchase;
 
+use App\Http\Requests\Concerns\ScopesValidationToTenant;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePurchaseRequest extends FormRequest
 {
+    use ScopesValidationToTenant;
+
     public function authorize(): bool
     {
         return true;
@@ -15,17 +18,17 @@ class StorePurchaseRequest extends FormRequest
     {
         return [
             'tenant_id' => ['nullable', 'string', 'exists:tenants,id'],
-            'branch_id' => ['required', 'string', 'exists:branches,id'],
-            'supplier_id' => ['required', 'string', 'exists:suppliers,id'],
-            'purchase_order_id' => ['nullable', 'string', 'exists:purchase_orders,id'],
+            'branch_id' => ['required', 'string', $this->existsInTenant('branches')],
+            'supplier_id' => ['required', 'string', $this->existsInTenant('suppliers')],
+            'purchase_order_id' => ['nullable', 'string', $this->existsInTenant('purchase_orders')],
             'reference_no' => ['nullable', 'string'],
             'invoice_no' => ['nullable', 'string'],
             'purchase_date' => ['required', 'date'],
             'paid_amount' => ['nullable', 'numeric', 'min:0'],
             'notes' => ['nullable', 'string'],
             'items' => ['required', 'array', 'min:1'],
-            'items.*.product_id' => ['required', 'string', 'exists:products,id'],
-            'items.*.variant_id' => ['nullable', 'string', 'exists:product_variants,id'],
+            'items.*.product_id' => ['required', 'string', $this->existsInTenant('products')],
+            'items.*.variant_id' => ['nullable', 'string', $this->existsInTenant('product_variants')],
             'items.*.quantity' => ['required', 'numeric', 'min:0.0001'],
             'items.*.unit_cost' => ['required', 'numeric', 'min:0'],
             'items.*.tax_rate' => ['nullable', 'numeric', 'min:0'],

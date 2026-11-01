@@ -25,11 +25,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
-    Route::inertia('settings/tenant', 'settings/tenant')->name('tenant.settings');
-    Route::inertia('settings/branding', 'settings/branding')->name('tenant.branding');
+    Route::inertia('settings/tenant', 'settings/tenant')->name('tenant.settings')->middleware('permission:settings.view');
+    Route::inertia('settings/branding', 'settings/branding')->name('tenant.branding')->middleware('permission:settings.view');
 
-    Route::post('settings/branding', [TenantBrandingSettingsController::class, 'update'])->name('tenant.branding.update');
-    Route::delete('settings/branding', [TenantBrandingSettingsController::class, 'destroy'])->name('tenant.branding.destroy');
+    Route::post('settings/branding', [TenantBrandingSettingsController::class, 'update'])->name('tenant.branding.update')->middleware('permission:settings.update');
+    Route::delete('settings/branding', [TenantBrandingSettingsController::class, 'destroy'])->name('tenant.branding.destroy')->middleware('permission:settings.update');
 });
 
 Route::get('.well-known/passkey-endpoints', function () {

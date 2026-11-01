@@ -19,6 +19,7 @@ test('dashboard shows sales and inventory KPI data for the active tenant', funct
         'is_active' => true,
     ]);
     $user = User::factory()->create();
+    attachUserToTenant($user, $tenant);
 
     $product = Product::factory()->create([
         'tenant_id' => $tenant->id,

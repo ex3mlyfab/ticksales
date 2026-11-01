@@ -246,7 +246,8 @@ test('sale return rejects a sale from another tenant', function () {
             'sale_id' => $sale->id,
             'items' => [['product_id' => $product->id, 'variant_id' => null, 'quantity' => '1.0000']],
         ])
-        ->assertStatus(403);
+        ->assertRedirect()
+        ->assertSessionHasErrors(['sale_id']);
 
     expect(SaleReturn::query()->count())->toBe(0);
 });

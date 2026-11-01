@@ -10,6 +10,7 @@ use App\Models\CashMovement;
 use App\Models\RegisterSession;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -36,8 +37,8 @@ class RegisterSessionController extends Controller
         $user = $request->user();
 
         $validated = $request->validate([
-            'register_id' => ['required', 'string', 'exists:registers,id'],
-            'branch_id' => ['required', 'string', 'exists:branches,id'],
+            'register_id' => ['required', 'string', Rule::exists('registers', 'id')->where(fn ($q) => $q->where('tenant_id', $tenant?->id))],
+            'branch_id' => ['required', 'string', Rule::exists('branches', 'id')->where(fn ($q) => $q->where('tenant_id', $tenant?->id))],
             'opening_balance' => ['required', 'numeric', 'min:0'],
         ]);
 
