@@ -1,9 +1,12 @@
-import { Form, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 
 import { Button } from '@/components/ui/button';
+import Link from '@/components/link';
+import { store, index } from '@/routes/product-units';
+
 
 export default function ProductUnitCreatePage() {
     const form = useForm({
@@ -23,38 +26,47 @@ export default function ProductUnitCreatePage() {
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <Form
-                        onSubmit={form.post(route('product-units.store'))}
-                        className="space-y-6"
-                    >
-                        {({ processing, errors }) => (
-                            <>
+                    <form onSubmit={(e) => { e.preventDefault(); form.post(store.url()); }} className="space-y-6">
+                        {(() => { const { processing, errors } = form; return (<>
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
                                         name="name"
                                         value={form.data.name}
-                                        onChange={(e) => form.setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('name', e.target.value)
+                                        }
                                         placeholder="e.g. Kilogram, Piece, Box"
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">{errors.name}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
                                     )}
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="abbreviation">Abbreviation (optional)</Label>
+                                    <Label htmlFor="abbreviation">
+                                        Abbreviation (optional)
+                                    </Label>
                                     <Input
                                         id="abbreviation"
                                         name="abbreviation"
                                         value={form.data.abbreviation}
-                                        onChange={(e) => form.setData('abbreviation', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'abbreviation',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="e.g. kg, pcs, bx"
                                     />
                                     {errors.abbreviation && (
-                                        <p className="text-sm text-red-500">{errors.abbreviation}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.abbreviation}
+                                        </p>
                                     )}
                                 </div>
 
@@ -63,15 +75,14 @@ export default function ProductUnitCreatePage() {
                                         Create Unit
                                     </Button>
                                     <Link
-                                        href={route('product-units.index')}
+                                        href={index.url()}
                                         className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                                     >
                                         Cancel
                                     </Link>
                                 </div>
-                            </>
-                        )}
-                    </Form>
+                            </>); })()}
+                    </form>
                 </div>
             </div>
         </>

@@ -14,10 +14,12 @@ export default function TenantBrandingPage() {
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <h2 className="text-lg font-semibold">Brand customisation</h2>
+                    <h2 className="text-lg font-semibold">
+                        Brand customisation
+                    </h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                        Configure the logo, accent colors, sidebar styling, and theme preset for your
-                        storefront or admin experience.
+                        Configure the logo, accent colors, sidebar styling, and
+                        theme preset for your storefront or admin experience.
                     </p>
                 </div>
             </div>

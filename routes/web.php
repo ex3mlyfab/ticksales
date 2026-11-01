@@ -1,9 +1,10 @@
 <?php
 
 use App\Http\Controllers\Web\DashboardController;
+use App\Http\Controllers\Web\LandingController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'welcome')->name('home');
+Route::get('/', LandingController::class)->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -22,3 +23,7 @@ require __DIR__.'/inventory-management.php';
 require __DIR__.'/customers.php';
 require __DIR__.'/suppliers.php';
 require __DIR__.'/purchases.php';
+require __DIR__.'/pos.php';
+require __DIR__.'/sale-returns.php';
+require __DIR__.'/expenses.php';
+require __DIR__.'/reports.php';

@@ -18,7 +18,9 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $tenant = $request->attributes->get('tenant');
-        $branchId = $request->session()->get('active_branch_id');
+        $branchId = $request->header('X-Branch-ID')
+            ?? $request->query('branch_id')
+            ?? ($request->hasSession() ? $request->session()->get('active_branch_id') : null);
 
         $stats = $this->buildStats($tenant, $branchId);
         $topProducts = $this->buildTopProducts($tenant, $branchId);

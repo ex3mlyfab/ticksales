@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, destroy } from '@/routes/customer-groups';
+
 
 interface CustomerGroup {
     id: string;
@@ -36,9 +38,11 @@ export default function CustomerGroupIndexPage({ groups }: Props) {
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold">Customer Groups</h2>
+                        <h2 className="text-lg font-semibold">
+                            Customer Groups
+                        </h2>
                         <Link
-                            href={route('customer-groups.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             New Customer Group
@@ -57,9 +61,12 @@ export default function CustomerGroupIndexPage({ groups }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{group.name}</p>
+                                        <p className="font-medium">
+                                            {group.name}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
-                                            Discount: {group.discount_rate}% • {group.customer_count} customers
+                                            Discount: {group.discount_rate}% •{' '}
+                                            {group.customer_count} customers
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -70,21 +77,27 @@ export default function CustomerGroupIndexPage({ groups }: Props) {
                                                     : 'bg-gray-100 text-gray-800'
                                             }`}
                                         >
-                                            {group.is_active ? 'Active' : 'Inactive'}
+                                            {group.is_active
+                                                ? 'Active'
+                                                : 'Inactive'}
                                         </span>
                                         {group.is_active && (
                                             <form
-                                                action={route('customer-groups.destroy', group.id)}
+                                                action={destroy.url(group.id)}
                                                 method="POST"
                                             >
                                                 <button
                                                     type="submit"
                                                     className="text-sm text-red-500 hover:text-red-700"
-                                                    onClick="return confirm('Are you sure you want to delete this customer group?')"
+                                                    onClick={(e) => { if (!confirm('Are you sure you want to delete this customer group?')) e.preventDefault(); }}
                                                 >
                                                     Delete
                                                 </button>
-                                                <input type="hidden" name="_method" value="DELETE" />
+                                                <input
+                                                    type="hidden"
+                                                    name="_method"
+                                                    value="DELETE"
+                                                />
                                             </form>
                                         )}
                                     </div>

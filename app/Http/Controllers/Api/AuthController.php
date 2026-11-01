@@ -3,39 +3,48 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     /**
-     * Log in an authenticated API user.
+     * Exchange credentials for a Sanctum bearer token.
      */
-    public function login(Request $request)
+    public function login(Request $request): JsonResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+            'device_name' => ['nullable', 'string', 'max:255'],
         ]);
 
-        if (! Auth::guard('web')->attempt($credentials)) {
+        $user = User::query()
+            ->where('email', $credentials['email'])
+            ->first();
+
+        if ($user === null || ! Hash::check($credentials['password'], $user->password)) {
             return response()->json([
                 'message' => 'Invalid credentials.',
             ], 401);
         }
 
-        $request->session()->regenerate();
+        $token = $user->createToken($credentials['device_name'] ?? 'api');
 
         return response()->json([
             'message' => 'Authenticated.',
-            'user' => $this->serializeUser(Auth::user()),
+            'token' => $token->plainTextToken,
+            'user' => $this->serializeUser($user),
         ]);
     }
 
     /**
      * Get the current authenticated user profile.
      */
-    public function me(Request $request)
+    public function me(Request $request): JsonResponse
     {
         $tenant = $request->attributes->get('tenant');
 
@@ -51,14 +60,24 @@ class AuthController extends Controller
     }
 
     /**
-     * Log out the current authenticated API user.
+     * Revoke the token used to authenticate the request.
      */
-    public function logout(Request $request)
+    public function logout(Request $request): JsonResponse
     {
-        Auth::guard('web')->logout();
+        $token = $request->user()?->currentAccessToken();
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Bearer token requests: revoke the token. Session requests: the
+        // sanctum guard hands back a TransientToken which is a no-op here.
+        if ($token !== null && method_exists($token, 'delete')) {
+            $token->delete();
+        }
+
+        // First-party stateful clients may also carry a session.
+        if ($request->hasSession()) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([
             'message' => 'Logged out.',

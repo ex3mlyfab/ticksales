@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, edit } from '@/routes/tax-rates';
+
 
 interface TaxRate {
     id: string;
@@ -37,7 +39,7 @@ export default function TaxRateIndexPage({ taxRates }: Props) {
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Rates</h2>
                         <Link
-                            href={route('tax-rates.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             Create Rate
@@ -59,15 +61,21 @@ export default function TaxRateIndexPage({ taxRates }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{taxRate.name}</p>
+                                        <p className="font-medium">
+                                            {taxRate.name}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {taxRate.rate}%{taxRate.is_inclusive ? ' · inclusive' : ' · exclusive'}
-                                            {!taxRate.is_active && ' · inactive'}
+                                            {taxRate.rate}%
+                                            {taxRate.is_inclusive
+                                                ? ' · inclusive'
+                                                : ' · exclusive'}
+                                            {!taxRate.is_active &&
+                                                ' · inactive'}
                                         </p>
                                     </div>
                                     <div className="flex space-x-2">
                                         <Link
-                                            href={route('tax-rates.edit', taxRate.id)}
+                                            href={edit.url(taxRate.id)}
                                             className="text-sm text-muted-foreground hover:text-foreground"
                                         >
                                             Edit

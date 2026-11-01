@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, post, show, destroy } from '@/routes/purchase-orders';
+
 
 interface PurchaseOrderItem {
     id: string;
@@ -48,9 +50,11 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold">Purchase Orders</h2>
+                        <h2 className="text-lg font-semibold">
+                            Purchase Orders
+                        </h2>
                         <Link
-                            href={route('purchase-orders.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             New Purchase Order
@@ -69,9 +73,13 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{order.reference_no}</p>
+                                        <p className="font-medium">
+                                            {order.reference_no}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {order.supplier_name} • {order.branch_name} • {order.items.length} item(s)
+                                            {order.supplier_name} •{' '}
+                                            {order.branch_name} •{' '}
+                                            {order.items.length} item(s)
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -86,7 +94,7 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                         </span>
                                         {order.status === 'draft' && (
                                             <form
-                                                action={route('purchase-orders.post', order.id)}
+                                                action={post.url(order.id)}
                                                 method="POST"
                                             >
                                                 <button
@@ -98,7 +106,7 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                             </form>
                                         )}
                                         <Link
-                                            href={route('purchase-orders.show', order.id)}
+                                            href={show.url(order.id)}
                                             className="text-sm text-muted-foreground hover:text-foreground"
                                         >
                                             View
@@ -108,17 +116,21 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                                 e.preventDefault();
                                                 e.currentTarget.submit();
                                             }}
-                                            action={route('purchase-orders.destroy', order.id)}
+                                            action={destroy.url(order.id)}
                                             method="POST"
                                         >
                                             <button
                                                 type="submit"
                                                 className="text-sm text-red-500 hover:text-red-700"
-                                                onClick="return confirm('Are you sure you want to delete this purchase order?')"
+                                                onClick={(e) => { if (!confirm('Are you sure you want to delete this purchase order?')) e.preventDefault(); }}
                                             >
                                                 Delete
                                             </button>
-                                            <input type="hidden" name="_method" value="DELETE" />
+                                            <input
+                                                type="hidden"
+                                                name="_method"
+                                                value="DELETE"
+                                            />
                                         </form>
                                     </div>
                                 </div>

@@ -11,50 +11,54 @@ The architecture is a **modular Laravel monolith** — intentionally avoiding mi
 ## Technology Stack
 
 ### Backend
-| Concern | Technology |
-|---------|-----------|
-| Runtime | PHP 8.5 |
-| Framework | Laravel 13.34 |
-| Database | MySQL / MariaDB (SQLite in development) |
-| Authentication | Laravel Fortify + Passkeys + 2FA |
-| ORM | Laravel Eloquent |
-| Authorization | Laravel Policies + Gates |
-| Background Jobs | Laravel Queue (database driver) |
-| Notifications | Laravel Notifications |
-| Caching | Laravel Cache (database driver → Redis in production) |
-| Sessions | Laravel Sessions (database driver) |
-| File Storage | Laravel Filesystem |
-| API Auth | Laravel Sanctum (mobile clients) |
+
+| Concern         | Technology                                            |
+| --------------- | ----------------------------------------------------- |
+| Runtime         | PHP 8.5                                               |
+| Framework       | Laravel 13.34                                         |
+| Database        | MySQL / MariaDB (SQLite in development)               |
+| Authentication  | Laravel Fortify + Passkeys + 2FA                      |
+| ORM             | Laravel Eloquent                                      |
+| Authorization   | Laravel Policies + Gates                              |
+| Background Jobs | Laravel Queue (database driver)                       |
+| Notifications   | Laravel Notifications                                 |
+| Caching         | Laravel Cache (database driver → Redis in production) |
+| Sessions        | Laravel Sessions (database driver)                    |
+| File Storage    | Laravel Filesystem                                    |
+| API Auth        | Laravel Sanctum (mobile clients)                      |
 
 ### Frontend
-| Concern | Technology |
-|---------|-----------|
-| UI Framework | React 19 (strict mode) |
-| Language | TypeScript 5.7 (strict) |
-| SPA Bridge | Inertia.js v3 |
-| Styling | Tailwind CSS v4 |
+
+| Concern           | Technology                                      |
+| ----------------- | ----------------------------------------------- |
+| UI Framework      | React 19 (strict mode)                          |
+| Language          | TypeScript 5.7 (strict)                         |
+| SPA Bridge        | Inertia.js v3                                   |
+| Styling           | Tailwind CSS v4                                 |
 | Component Library | shadcn/ui (New York style, Radix UI primitives) |
-| Icons | Lucide React |
-| Notifications | Sonner (toasts) |
-| Route Helpers | Laravel Wayfinder (typed route functions) |
-| Bundler | Vite 8 (via vite-plus) |
-| Fonts | Instrument Sans (Bunny Fonts) |
-| Compiler | React Compiler (babel-plugin-react-compiler) |
+| Icons             | Lucide React                                    |
+| Notifications     | Sonner (toasts)                                 |
+| Route Helpers     | Laravel Wayfinder (typed route functions)       |
+| Bundler           | Vite 8 (via vite-plus)                          |
+| Fonts             | Instrument Sans (Bunny Fonts)                   |
+| Compiler          | React Compiler (babel-plugin-react-compiler)    |
 
 ### Mobile API
-| Concern | Technology |
-|---------|-----------|
-| Protocol | REST / JSON |
-| Auth | Laravel Sanctum (token-based) |
-| Versioning | `/api/v1/` prefix |
+
+| Concern    | Technology                    |
+| ---------- | ----------------------------- |
+| Protocol   | REST / JSON                   |
+| Auth       | Laravel Sanctum (token-based) |
+| Versioning | `/api/v1/` prefix             |
 
 ### Progressive Web App
-| Concern | Technology |
-|---------|-----------|
+
+| Concern        | Technology                |
+| -------------- | ------------------------- |
 | Service Worker | Workbox (vite-plugin-pwa) |
-| Manifest | Web App Manifest |
-| Offline Queue | IndexedDB + sync |
-| Install Prompt | BeforeInstallPromptEvent |
+| Manifest       | Web App Manifest          |
+| Offline Queue  | IndexedDB + sync          |
+| Install Prompt | BeforeInstallPromptEvent  |
 
 ---
 
@@ -110,39 +114,40 @@ The architecture is a **modular Laravel monolith** — intentionally avoiding mi
 
 The repository is a **fresh Laravel 13 + React + Inertia starter kit**. The following is already in place:
 
-| Area | Status | Notes |
-|------|--------|-------|
-| Laravel Framework | ✅ 13.34 | Fully configured |
-| PHP | ✅ 8.5 | Latest stable |
-| Inertia.js | ✅ v3.0 | SSR-capable, deferred props, instant visits |
-| React | ✅ 19 | Strict mode, React Compiler enabled |
-| TypeScript | ✅ 5.7 | Strict mode |
-| Tailwind CSS | ✅ v4 | With custom OKLCH color tokens |
-| shadcn/ui | ✅ New York | Sidebar, Sheet, Dialog, Select, Tooltip, Sonner etc. |
-| Lucide Icons | ✅ | |
-| Wayfinder | ✅ | Typed route functions generated |
-| Fortify | ✅ | Login, Register, Reset, Verify Email, 2FA, Passkeys |
-| Passkeys / WebAuthn | ✅ | web-auth/webauthn-lib installed |
-| App Layout | ✅ | Sidebar layout with collapsible sidebar |
-| Auth Layout | ✅ | Card, simple, split variants |
-| Settings Routes | ✅ | Profile, Security, Appearance |
-| Sessions (DB) | ✅ | |
-| Queue (DB) | ✅ | |
-| Cache (DB) | ✅ | |
-| Pest Testing | ✅ | v5.3, auth tests exist |
-| PHPStan / Larastan | ✅ | Level configured |
-| Laravel Pint | ✅ | Code formatting |
-| User Model | ✅ | With 2FA, Passkeys, MustVerifyEmail |
-| ULID Primary Keys | ✅ | Project skill enforces ULID on all new models |
-| Multi-tenancy | ❌ | Not implemented |
-| RBAC | ❌ | Not implemented |
-| POS Domain | ❌ | Not implemented |
-| API v1 | ❌ | Not implemented |
-| PWA | ❌ | Not implemented |
-| Audit Logging | ❌ | Not implemented |
-| Branding System | ❌ | Not implemented |
+| Area                | Status      | Notes                                                |
+| ------------------- | ----------- | ---------------------------------------------------- |
+| Laravel Framework   | ✅ 13.34    | Fully configured                                     |
+| PHP                 | ✅ 8.5      | Latest stable                                        |
+| Inertia.js          | ✅ v3.0     | SSR-capable, deferred props, instant visits          |
+| React               | ✅ 19       | Strict mode, React Compiler enabled                  |
+| TypeScript          | ✅ 5.7      | Strict mode                                          |
+| Tailwind CSS        | ✅ v4       | With custom OKLCH color tokens                       |
+| shadcn/ui           | ✅ New York | Sidebar, Sheet, Dialog, Select, Tooltip, Sonner etc. |
+| Lucide Icons        | ✅          |                                                      |
+| Wayfinder           | ✅          | Typed route functions generated                      |
+| Fortify             | ✅          | Login, Register, Reset, Verify Email, 2FA, Passkeys  |
+| Passkeys / WebAuthn | ✅          | web-auth/webauthn-lib installed                      |
+| App Layout          | ✅          | Sidebar layout with collapsible sidebar              |
+| Auth Layout         | ✅          | Card, simple, split variants                         |
+| Settings Routes     | ✅          | Profile, Security, Appearance                        |
+| Sessions (DB)       | ✅          |                                                      |
+| Queue (DB)          | ✅          |                                                      |
+| Cache (DB)          | ✅          |                                                      |
+| Pest Testing        | ✅          | v5.3, auth tests exist                               |
+| PHPStan / Larastan  | ✅          | Level configured                                     |
+| Laravel Pint        | ✅          | Code formatting                                      |
+| User Model          | ✅          | With 2FA, Passkeys, MustVerifyEmail                  |
+| ULID Primary Keys   | ✅          | Project skill enforces ULID on all new models        |
+| Multi-tenancy       | ❌          | Not implemented                                      |
+| RBAC                | ❌          | Not implemented                                      |
+| POS Domain          | ❌          | Not implemented                                      |
+| API v1              | ❌          | Not implemented                                      |
+| PWA                 | ❌          | Not implemented                                      |
+| Audit Logging       | ❌          | Not implemented                                      |
+| Branding System     | ❌          | Not implemented                                      |
 
 **Key Observations:**
+
 - The `users` table currently uses auto-incrementing integer ID. New application models will use ULID string PKs per the project skill. The existing `users` table migration is a framework migration and is exempt per the ULID skill (Rule 4).
 - No `docs/` directory existed previously.
 - No `routes/api.php` exists yet.
@@ -154,6 +159,7 @@ The repository is a **fresh Laravel 13 + React + Inertia starter kit**. The foll
 ## Directory Structure
 
 ### Current (starter)
+
 ```
 ticksales/
 ├── app/
@@ -192,6 +198,7 @@ ticksales/
 ```
 
 ### Target (after full implementation)
+
 ```
 ticksales/
 ├── app/
@@ -259,6 +266,7 @@ ticksales/
 ## Application Architecture Patterns
 
 ### Controller → Action → Model Pattern
+
 Controllers stay thin. Domain logic lives in `Actions/` (single-purpose classes) or `Services/` (stateful multi-step processes). Models handle Eloquent relationships and scopes only.
 
 ```
@@ -272,9 +280,11 @@ HTTP Request
 ```
 
 ### Tenant Context
+
 Every authenticated request carries a resolved `Tenant` object. A middleware resolves the active tenant from the authenticated user's membership and injects it into the request lifecycle. All tenant-scoped queries use an Eloquent global scope or explicit `where('tenant_id', ...)` clauses.
 
 ### Authorization Hierarchy
+
 ```
 Platform Super Admin
     └── Tenant Admin
@@ -288,22 +298,23 @@ Server-side enforcement via Laravel Policies. Frontend enforcement via Inertia s
 
 ## Key Design Decisions
 
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Multi-tenancy strategy | Shared DB / tenant_id scoping | Simpler ops, easier backups, sufficient isolation for SMB SaaS |
-| Primary keys | ULID strings | Project enforced skill; globally unique, URL-safe, sortable |
-| Mobile API auth | Laravel Sanctum tokens | Stateless, revocable, device-level tokens |
-| Offline strategy | IndexedDB queue + sync | Safe offline POS without pretending transactions are committed |
-| Branding | CSS custom properties | Zero-recompile tenant theming |
-| RBAC | Custom roles/permissions (no Spatie) | Full control, simpler than dependency on external package |
-| Inventory accounting | Ledger-style transactions | Full audit trail, reconstructable history |
-| PWA | Vite PWA plugin (Workbox) | Proven toolchain, service worker generation |
+| Decision               | Choice                               | Rationale                                                      |
+| ---------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| Multi-tenancy strategy | Shared DB / tenant_id scoping        | Simpler ops, easier backups, sufficient isolation for SMB SaaS |
+| Primary keys           | ULID strings                         | Project enforced skill; globally unique, URL-safe, sortable    |
+| Mobile API auth        | Laravel Sanctum tokens               | Stateless, revocable, device-level tokens                      |
+| Offline strategy       | IndexedDB queue + sync               | Safe offline POS without pretending transactions are committed |
+| Branding               | CSS custom properties                | Zero-recompile tenant theming                                  |
+| RBAC                   | Custom roles/permissions (no Spatie) | Full control, simpler than dependency on external package      |
+| Inventory accounting   | Ledger-style transactions            | Full audit trail, reconstructable history                      |
+| PWA                    | Vite PWA plugin (Workbox)            | Proven toolchain, service worker generation                    |
 
 ---
 
 ## Security Posture
 
 See [`SECURITY.md`](./SECURITY.md) for full details. Key principles:
+
 - Tenant isolation enforced at query level (never trusted from client input)
 - All authorization server-side via Policies
 - CSRF protection on all state-changing web routes
@@ -327,13 +338,13 @@ See [`SECURITY.md`](./SECURITY.md) for full details. Key principles:
 
 ## Related Documents
 
-| Document | Purpose |
-|----------|---------|
-| [`MULTI_TENANCY.md`](./MULTI_TENANCY.md) | Tenant isolation strategy and implementation |
-| [`DATABASE_DESIGN.md`](./DATABASE_DESIGN.md) | ERD, schema, relationships |
-| [`API_ARCHITECTURE.md`](./API_ARCHITECTURE.md) | Mobile API design and conventions |
-| [`SECURITY.md`](./SECURITY.md) | Security controls and threat model |
-| [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md) | UI components, tokens, patterns |
-| [`PWA_ARCHITECTURE.md`](./PWA_ARCHITECTURE.md) | PWA, offline, and sync strategy |
-| [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) | Phase-by-phase implementation plan |
-| [`TASK_LOG.md`](./TASK_LOG.md) | Living implementation journal |
+| Document                                             | Purpose                                      |
+| ---------------------------------------------------- | -------------------------------------------- |
+| [`MULTI_TENANCY.md`](./MULTI_TENANCY.md)             | Tenant isolation strategy and implementation |
+| [`DATABASE_DESIGN.md`](./DATABASE_DESIGN.md)         | ERD, schema, relationships                   |
+| [`API_ARCHITECTURE.md`](./API_ARCHITECTURE.md)       | Mobile API design and conventions            |
+| [`SECURITY.md`](./SECURITY.md)                       | Security controls and threat model           |
+| [`DESIGN_SYSTEM.md`](./DESIGN_SYSTEM.md)             | UI components, tokens, patterns              |
+| [`PWA_ARCHITECTURE.md`](./PWA_ARCHITECTURE.md)       | PWA, offline, and sync strategy              |
+| [`IMPLEMENTATION_PLAN.md`](./IMPLEMENTATION_PLAN.md) | Phase-by-phase implementation plan           |
+| [`TASK_LOG.md`](./TASK_LOG.md)                       | Living implementation journal                |

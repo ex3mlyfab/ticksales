@@ -33,7 +33,9 @@ export default function InventoryShowPage({ product, inventory }: Props) {
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold">Stock by Branch</h2>
+                        <h2 className="text-lg font-semibold">
+                            Stock by Branch
+                        </h2>
                         <Link
                             href="/inventory"
                             className="text-sm text-muted-foreground hover:text-foreground"
@@ -46,24 +48,43 @@ export default function InventoryShowPage({ product, inventory }: Props) {
                         <table className="w-full">
                             <thead className="border-b bg-muted/50">
                                 <tr>
-                                    <th className="px-3 py-2 text-left text-xs font-medium uppercase text-muted-foreground">Branch</th>
-                                    <th className="px-3 py-2 text-left text-xs font-medium uppercase text-muted-foreground">Variant</th>
-                                    <th className="px-3 py-2 text-right text-xs font-medium uppercase text-muted-foreground">Quantity</th>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
+                                        Branch
+                                    </th>
+                                    <th className="px-3 py-2 text-left text-xs font-medium text-muted-foreground uppercase">
+                                        Variant
+                                    </th>
+                                    <th className="px-3 py-2 text-right text-xs font-medium text-muted-foreground uppercase">
+                                        Quantity
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y">
                                 {inventory.length === 0 ? (
                                     <tr>
-                                        <td colSpan={3} className="px-3 py-8 text-center text-sm text-muted-foreground">
-                                            No stock recorded for this product yet.
+                                        <td
+                                            colSpan={3}
+                                            className="px-3 py-8 text-center text-sm text-muted-foreground"
+                                        >
+                                            No stock recorded for this product
+                                            yet.
                                         </td>
                                     </tr>
                                 ) : (
                                     inventory.map((row) => (
-                                        <tr key={row.id} className="hover:bg-muted/30">
-                                            <td className="px-3 py-2 text-sm">{row.branch_name}</td>
-                                            <td className="px-3 py-2 text-sm">{row.variant_name || '—'}</td>
-                                            <td className="px-3 py-2 text-right text-sm font-medium">{row.quantity}</td>
+                                        <tr
+                                            key={row.id}
+                                            className="hover:bg-muted/30"
+                                        >
+                                            <td className="px-3 py-2 text-sm">
+                                                {row.branch_name}
+                                            </td>
+                                            <td className="px-3 py-2 text-sm">
+                                                {row.variant_name || '—'}
+                                            </td>
+                                            <td className="px-3 py-2 text-right text-sm font-medium">
+                                                {row.quantity}
+                                            </td>
                                         </tr>
                                     ))
                                 )}
@@ -83,7 +104,7 @@ InventoryShowPage.layout = {
             href: '/inventory',
         },
         {
-            title: product?.name ?? 'Product',
+            title: 'Details',
         },
     ],
 };

@@ -14,20 +14,20 @@ TickSales is designed as a **Progressive Web App (PWA)** that can be installed o
 
 ## PWA Requirements Checklist
 
-| Requirement | Status | Notes |
-|-------------|--------|-------|
-| Web App Manifest | Planned | `public/manifest.webmanifest` |
-| Service Worker | Planned | Via `vite-plugin-pwa` (Workbox) |
-| HTTPS | Required in production | |
-| App Shell Cache | Planned | Static assets cached |
-| Installability prompt | Planned | `BeforeInstallPromptEvent` |
-| Icons (multiple sizes) | Planned | 192px, 512px minimum |
-| Splash screens | Planned | |
-| Offline fallback page | Planned | |
-| Network status indicator | Planned | React hook + UI component |
-| Offline transaction queue | Planned | IndexedDB via idb library |
-| Sync on reconnect | Planned | Background sync or manual trigger |
-| Push notifications | Future | Not in initial scope |
+| Requirement               | Status                 | Notes                             |
+| ------------------------- | ---------------------- | --------------------------------- |
+| Web App Manifest          | Planned                | `public/manifest.webmanifest`     |
+| Service Worker            | Planned                | Via `vite-plugin-pwa` (Workbox)   |
+| HTTPS                     | Required in production |                                   |
+| App Shell Cache           | Planned                | Static assets cached              |
+| Installability prompt     | Planned                | `BeforeInstallPromptEvent`        |
+| Icons (multiple sizes)    | Planned                | 192px, 512px minimum              |
+| Splash screens            | Planned                |                                   |
+| Offline fallback page     | Planned                |                                   |
+| Network status indicator  | Planned                | React hook + UI component         |
+| Offline transaction queue | Planned                | IndexedDB via idb library         |
+| Sync on reconnect         | Planned                | Background sync or manual trigger |
+| Push notifications        | Future                 | Not in initial scope              |
 
 ---
 
@@ -36,16 +36,19 @@ TickSales is designed as a **Progressive Web App (PWA)** that can be installed o
 Using **Workbox** (via `vite-plugin-pwa`) with the following caching strategies:
 
 ### App Shell (Static Assets)
+
 - **Strategy:** Cache First → Network Update
 - **Assets:** JS bundles, CSS, fonts, icons
 - **Behavior:** Serves cached version immediately; updates in background
 
 ### API Requests
+
 - **Strategy:** Network First → Cache Fallback (read-only endpoints)
 - **Cached endpoints:** `/api/v1/products`, `/api/v1/payment-methods`, `/api/v1/product-categories`
 - **Non-cached:** Write endpoints (sales, etc.) — must go to network or queue
 
 ### Navigation (HTML)
+
 - **Strategy:** Network First → Offline Fallback Page
 - **Fallback:** A static "You're offline" page with sync status
 
@@ -64,9 +67,22 @@ Using **Workbox** (via `vite-plugin-pwa`) with the following caching strategies:
     "background_color": "#ffffff",
     "theme_color": "#0f172a",
     "icons": [
-        { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
-        { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
-        { "src": "/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+        {
+            "src": "/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon-512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
     ],
     "shortcuts": [
         {
@@ -75,7 +91,7 @@ Using **Workbox** (via `vite-plugin-pwa`) with the following caching strategies:
             "icons": [{ "src": "/icons/shortcut-pos.png", "sizes": "96x96" }]
         }
     ],
-    "screenshots": [ ]
+    "screenshots": []
 }
 ```
 
@@ -110,8 +126,8 @@ Connectivity restored
 
 ```typescript
 interface OfflineSale {
-    localId: string;           // Client-generated ULID
-    idempotencyKey: string;    // UUID v4 — sent to server
+    localId: string; // Client-generated ULID
+    idempotencyKey: string; // UUID v4 — sent to server
     tenantId: string;
     branchId: string;
     registerSessionId: string;
@@ -123,18 +139,18 @@ interface OfflineSale {
     taxAmount: number;
     totalAmount: number;
     note: string | null;
-    soldBy: number;            // User ID
-    offlineCreatedAt: string;  // ISO 8601
+    soldBy: number; // User ID
+    offlineCreatedAt: string; // ISO 8601
     syncStatus: 'pending' | 'syncing' | 'synced' | 'failed' | 'conflict';
     syncedAt: string | null;
     syncError: string | null;
-    serverId: string | null;   // Returned by server on success
+    serverId: string | null; // Returned by server on success
 }
 
 interface OfflineSaleItem {
     productId: string;
     variantId: string | null;
-    name: string;              // Snapshot
+    name: string; // Snapshot
     sku: string | null;
     quantity: number;
     unitPrice: number;
@@ -154,6 +170,7 @@ interface OfflineSaleItem {
 ### Conflict Handling
 
 If a sale cannot be synced:
+
 - Mark as `sync_failed` or `conflict`
 - Show clear error to cashier with the reason
 - Allow cashier to review and either retry or void the transaction
@@ -180,7 +197,9 @@ A persistent `NetworkStatusBanner` component displayed in the app shell:
 function useNetworkStatus() {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
     const [pendingCount, setPendingCount] = useState(0);
-    const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'failed'>('idle');
+    const [syncStatus, setSyncStatus] = useState<'idle' | 'syncing' | 'failed'>(
+        'idle',
+    );
 
     // Listen to online/offline events
     // Poll IndexedDB for pending count
@@ -196,15 +215,15 @@ function useNetworkStatus() {
 
 The following data is cached locally for offline POS operation:
 
-| Data | Cache | TTL | Notes |
-|------|-------|-----|-------|
-| Products (active) | IndexedDB | 24h | Full catalogue |
-| Product categories | IndexedDB | 24h | |
-| Payment methods | IndexedDB | 24h | |
-| Current user | IndexedDB | Session | |
-| Active branch | IndexedDB | Session | |
-| Register session | IndexedDB | Session | |
-| Customers (recent) | IndexedDB | 24h | Recent 500 |
+| Data               | Cache     | TTL     | Notes          |
+| ------------------ | --------- | ------- | -------------- |
+| Products (active)  | IndexedDB | 24h     | Full catalogue |
+| Product categories | IndexedDB | 24h     |                |
+| Payment methods    | IndexedDB | 24h     |                |
+| Current user       | IndexedDB | Session |                |
+| Active branch      | IndexedDB | Session |                |
+| Register session   | IndexedDB | Session |                |
+| Customers (recent) | IndexedDB | 24h     | Recent 500     |
 
 A background refresh updates the cache every 15 minutes while online.
 
@@ -236,6 +255,7 @@ When the browser detects connectivity:
 ## Push Notifications (Future)
 
 Low stock alerts, payment received notifications, and system alerts are planned for a future phase using the Push API and Laravel Notifications. This requires:
+
 - Push subscription management
 - Web Push credentials in environment
 - Laravel notification channels
@@ -248,16 +268,17 @@ This is **explicitly out of scope for the initial implementation**.
 
 ```typescript
 // vite.config.ts (planned addition)
-import { VitePWA } from 'vite-plugin-pwa'
+import { VitePWA } from 'vite-plugin-pwa';
 
 VitePWA({
     registerType: 'autoUpdate',
-    manifest: { /* ... */ },
+    manifest: {/* ... */},
     workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
             {
-                urlPattern: /^\/api\/v1\/(products|payment-methods|product-categories)/,
+                urlPattern:
+                    /^\/api\/v1\/(products|payment-methods|product-categories)/,
                 handler: 'NetworkFirst',
                 options: {
                     cacheName: 'api-cache',
@@ -266,19 +287,19 @@ VitePWA({
             },
         ],
     },
-})
+});
 ```
 
 ---
 
 ## Sync Status UI States
 
-| Status | UI | Color |
-|--------|----|-------|
-| Online, no queue | Silent | — |
-| Offline | Banner: "You're offline" | Amber |
-| Offline, has queue | Banner: "N transactions pending sync" | Amber |
-| Syncing | Banner with spinner: "Syncing..." | Blue |
-| Sync complete | Toast: "All synced" (auto-dismiss) | Green |
-| Sync failed | Persistent banner + Retry button | Red |
-| Conflict | Alert + Review button | Orange |
+| Status             | UI                                    | Color  |
+| ------------------ | ------------------------------------- | ------ |
+| Online, no queue   | Silent                                | —      |
+| Offline            | Banner: "You're offline"              | Amber  |
+| Offline, has queue | Banner: "N transactions pending sync" | Amber  |
+| Syncing            | Banner with spinner: "Syncing..."     | Blue   |
+| Sync complete      | Toast: "All synced" (auto-dismiss)    | Green  |
+| Sync failed        | Persistent banner + Retry button      | Red    |
+| Conflict           | Alert + Review button                 | Orange |

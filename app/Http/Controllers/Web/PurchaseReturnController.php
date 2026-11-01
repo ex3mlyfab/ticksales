@@ -258,11 +258,11 @@ class PurchaseReturnController extends Controller
                         'product_id' => $item->product_id,
                         'variant_id' => $item->variant_id,
                     ],
-                    ['outstanding_balance' => 0, 'stock_level' => 0]
+                    ['quantity' => 0]
                 );
 
                 $inventory->lockForUpdate();
-                $inventory->decrement('stock_level', $item->quantity);
+                $inventory->decrement('quantity', $item->quantity);
                 $inventory->save();
 
                 // Log inventory transaction
@@ -275,7 +275,7 @@ class PurchaseReturnController extends Controller
                     'type' => 'purchase_return',
                     'reference_id' => $purchaseReturn->id,
                     'reference_type' => PurchaseReturn::class,
-                    'notes' => 'Stock returned to supplier '.$purchaseReturn->reference_no,
+                    'note' => 'Stock returned to supplier '.$purchaseReturn->reference_no,
                 ]);
             }
 

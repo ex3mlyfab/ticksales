@@ -14,7 +14,7 @@ class StorePurchaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tenant_id' => ['required', 'string', 'exists:tenants,id'],
+            'tenant_id' => ['nullable', 'string', 'exists:tenants,id'],
             'branch_id' => ['required', 'string', 'exists:branches,id'],
             'supplier_id' => ['required', 'string', 'exists:suppliers,id'],
             'purchase_order_id' => ['nullable', 'string', 'exists:purchase_orders,id'],

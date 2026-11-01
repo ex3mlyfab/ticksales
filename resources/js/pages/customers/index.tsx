@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, edit, destroy } from '@/routes/customers';
+
 
 interface Customer {
     id: string;
@@ -39,7 +41,7 @@ export default function CustomerIndexPage({ customers }: Props) {
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Customers</h2>
                         <Link
-                            href={route('customers.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             New Customer
@@ -58,7 +60,9 @@ export default function CustomerIndexPage({ customers }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{customer.name}</p>
+                                        <p className="font-medium">
+                                            {customer.name}
+                                        </p>
                                         {customer.group_name && (
                                             <p className="text-sm text-muted-foreground">
                                                 Group: {customer.group_name}
@@ -78,10 +82,12 @@ export default function CustomerIndexPage({ customers }: Props) {
                                                     : 'bg-gray-100 text-gray-800'
                                             }`}
                                         >
-                                            {customer.is_active ? 'Active' : 'Inactive'}
+                                            {customer.is_active
+                                                ? 'Active'
+                                                : 'Inactive'}
                                         </span>
                                         <Link
-                                            href={route('customers.edit', customer.id)}
+                                            href={edit.url(customer.id)}
                                             className="text-sm text-muted-foreground hover:text-foreground"
                                         >
                                             Edit
@@ -91,17 +97,21 @@ export default function CustomerIndexPage({ customers }: Props) {
                                                 e.preventDefault();
                                                 e.currentTarget.submit();
                                             }}
-                                            action={route('customers.destroy', customer.id)}
+                                            action={destroy.url(customer.id)}
                                             method="POST"
                                         >
                                             <button
                                                 type="submit"
                                                 className="text-sm text-red-500 hover:text-red-700"
-                                                onClick="return confirm('Are you sure you want to delete this customer?')"
+                                                onClick={(e) => { if (!confirm('Are you sure you want to delete this customer?')) e.preventDefault(); }}
                                             >
                                                 Delete
                                             </button>
-                                            <input type="hidden" name="_method" value="DELETE" />
+                                            <input
+                                                type="hidden"
+                                                name="_method"
+                                                value="DELETE"
+                                            />
                                         </form>
                                     </div>
                                 </div>

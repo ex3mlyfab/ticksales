@@ -3,7 +3,9 @@
 namespace App\Providers;
 
 use App\Support\TenantContext;
+use App\View\Components\InertiaApp;
 use Carbon\CarbonImmutable;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
@@ -25,6 +27,16 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->configureInertiaShell();
+    }
+
+    /**
+     * Override the Inertia app shell component so the inline page-data script
+     * carries the Content-Security-Policy nonce (strict CSP support).
+     */
+    protected function configureInertiaShell(): void
+    {
+        Blade::component(InertiaApp::class, 'inertia::app');
     }
 
     /**

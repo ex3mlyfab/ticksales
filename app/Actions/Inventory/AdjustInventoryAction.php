@@ -11,6 +11,60 @@ use Illuminate\Support\Facades\DB;
 class AdjustInventoryAction
 {
     /**
+     * Apply a stock quantity change to a single product/variant at a branch and log it.
+     * This static form is used by stock adjustment and stock transfer posting.
+     */
+    public static function handle(
+        string $tenantId,
+        string $branchId,
+        string $productId,
+        ?string $variantId = null,
+        string|float|int $quantityChanged = 0,
+        string $referenceType = 'stock_adjustment',
+        ?string $referenceId = null,
+        string $type = 'adjustment',
+        ?string $note = null,
+        string|float|int|null $unitCost = null,
+        ?int $createdBy = null,
+    ): void {
+        DB::transaction(function () use ($tenantId, $branchId, $productId, $variantId, $quantityChanged, $referenceType, $referenceId, $type, $note, $unitCost, $createdBy) {
+            $inventory = Inventory::query()
+                ->where('tenant_id', $tenantId)
+                ->where('branch_id', $branchId)
+                ->where('product_id', $productId)
+                ->where('variant_id', $variantId)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $inventory) {
+                $inventory = Inventory::query()->create([
+                    'tenant_id' => $tenantId,
+                    'branch_id' => $branchId,
+                    'product_id' => $productId,
+                    'variant_id' => $variantId,
+                    'quantity' => 0,
+                ]);
+            }
+
+            $inventory->increment('quantity', $quantityChanged);
+
+            InventoryTransaction::query()->create([
+                'tenant_id' => $tenantId,
+                'branch_id' => $branchId,
+                'product_id' => $productId,
+                'variant_id' => $variantId,
+                'quantity' => $quantityChanged,
+                'unit_cost' => $unitCost,
+                'type' => $type,
+                'reference_type' => $referenceType,
+                'reference_id' => $referenceId,
+                'note' => $note,
+                'created_by' => $createdBy,
+            ]);
+        });
+    }
+
+    /**
      * Adjust inventory for a single product within a branch.
      *
      * @param  array<string, mixed>  $data

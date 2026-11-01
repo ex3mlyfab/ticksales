@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, post, destroy } from '@/routes/stock-transfers';
+
 
 interface TransferItem {
     id: string;
@@ -46,7 +48,7 @@ export default function StockTransferIndexPage({ transfers }: Props) {
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Transfers</h2>
                         <Link
-                            href={route('stock-transfers.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             New Transfer
@@ -65,9 +67,12 @@ export default function StockTransferIndexPage({ transfers }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{transfer.reference_no}</p>
+                                        <p className="font-medium">
+                                            {transfer.reference_no}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {transfer.from_branch_name} → {transfer.to_branch_name}
+                                            {transfer.from_branch_name} →{' '}
+                                            {transfer.to_branch_name}
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -82,7 +87,7 @@ export default function StockTransferIndexPage({ transfers }: Props) {
                                         </span>
                                         {transfer.status === 'pending' && (
                                             <form
-                                                action={route('stock-transfers.post', transfer.id)}
+                                                action={post.url(transfer.id)}
                                                 method="POST"
                                             >
                                                 <button
@@ -98,17 +103,21 @@ export default function StockTransferIndexPage({ transfers }: Props) {
                                                 e.preventDefault();
                                                 e.currentTarget.submit();
                                             }}
-                                            action={route('stock-transfers.destroy', transfer.id)}
+                                            action={destroy.url(transfer.id)}
                                             method="POST"
                                         >
                                             <button
                                                 type="submit"
                                                 className="text-sm text-red-500 hover:text-red-700"
-                                                onClick="return confirm('Are you sure you want to delete this transfer?')"
+                                                onClick={(e) => { if (!confirm('Are you sure you want to delete this transfer?')) e.preventDefault(); }}
                                             >
                                                 Delete
                                             </button>
-                                            <input type="hidden" name="_method" value="DELETE" />
+                                            <input
+                                                type="hidden"
+                                                name="_method"
+                                                value="DELETE"
+                                            />
                                         </form>
                                     </div>
                                 </div>

@@ -37,7 +37,8 @@ export default defineConfig({
             manifest: {
                 name: 'TickSales POS',
                 short_name: 'TickSales',
-                description: 'Retail sales, inventory, and cashier workflows for modern stores.',
+                description:
+                    'Retail sales, inventory, and cashier workflows for modern stores.',
                 start_url: '/',
                 scope: '/',
                 display: 'standalone',

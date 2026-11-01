@@ -6,17 +6,18 @@
 
 TickSales uses a **single database with a `tenant_id` column on every tenant-scoped table**. This is the appropriate strategy for an SMB SaaS POS platform because:
 
-| Factor | Shared DB/Tables | Separate DBs |
-|--------|-----------------|--------------|
-| Operational complexity | Low | High |
-| Backup/restore | Simple (one DB) | One backup per tenant |
-| Cross-tenant reporting (platform admin) | Easy | Complex |
-| Tenant isolation | Via application + scopes | Via infrastructure |
-| Scale to many tenants | Excellent | DB provisioning overhead |
-| Data leakage risk | Mitigated by scopes + tests | Mitigated by isolation |
-| Cost | Low | Higher (multiple DB connections) |
+| Factor                                  | Shared DB/Tables            | Separate DBs                     |
+| --------------------------------------- | --------------------------- | -------------------------------- |
+| Operational complexity                  | Low                         | High                             |
+| Backup/restore                          | Simple (one DB)             | One backup per tenant            |
+| Cross-tenant reporting (platform admin) | Easy                        | Complex                          |
+| Tenant isolation                        | Via application + scopes    | Via infrastructure               |
+| Scale to many tenants                   | Excellent                   | DB provisioning overhead         |
+| Data leakage risk                       | Mitigated by scopes + tests | Mitigated by isolation           |
+| Cost                                    | Low                         | Higher (multiple DB connections) |
 
 The risk of cross-tenant data leakage is mitigated through:
+
 1. Eloquent global scopes applied automatically
 2. Dedicated `TenantContext` middleware
 3. Policies enforcing tenant membership
@@ -48,6 +49,7 @@ Platform
 ## Core Tables
 
 ### `tenants`
+
 ```sql
 id            char(26) PK (ULID)
 name          string
@@ -68,7 +70,9 @@ deleted_at    timestamp nullable (soft delete)
 ```
 
 ### `tenant_users`
+
 Junction table linking users to tenants with role and branch context.
+
 ```sql
 id         char(26) PK (ULID)
 tenant_id  char(26) FK → tenants
@@ -85,6 +89,7 @@ UNIQUE(tenant_id, user_id)
 > **Note:** `user_id` references the existing `users` table which uses integer PK (framework-managed, exempt from ULID skill Rule 4). Use `foreignId('user_id')` for this specific FK only.
 
 ### `branches`
+
 ```sql
 id          char(26) PK (ULID)
 tenant_id   char(26) FK → tenants
@@ -116,9 +121,15 @@ Applied to all authenticated web and API routes. Resolves the active tenant from
 3. If not set or invalid → resolve user's first active tenant
 4. Inject resolved Tenant into request and app container
 
-// Resolution strategy (API — from Sanctum token):
-1. Token has tenant_id embedded in abilities OR
-2. Tenant ID passed as X-Tenant-ID header (validated against membership)
+// Resolution strategy (API — session or Sanctum bearer token):
+1. Check session for 'active_tenant_id' (stateful/first-party requests)
+2. Fall back to the 'tenant_id' request input
+3. Fall back to the X-Tenant-ID request header
+4. If not set or invalid → resolve user's first active tenant
+5. Inject resolved Tenant into request and app container
+
+// Stateless bearer-token requests carry no session store, so steps 1 and the
+// session write-back are skipped; steps 2–4 still apply.
 ```
 
 ### Middleware: `SetBranchContext`
@@ -139,6 +150,7 @@ Applied to routes requiring branch-level context (POS sales, register sessions).
 ### Approach: Manual Scoping (No Global Scope Package)
 
 Every model that is tenant-scoped will include a `BelongsToTenant` trait that:
+
 1. Automatically injects `tenant_id` on model creation
 2. Provides a `forTenant(Tenant $tenant)` scope helper
 
@@ -201,6 +213,7 @@ User → belongs to → [Tenant A, Tenant B]
 ```
 
 On tenant switch:
+
 1. Validate user has membership in target tenant
 2. Update session `active_tenant_id`
 3. Clear branch context
@@ -210,21 +223,21 @@ On tenant switch:
 
 ## Data Ownership Map
 
-| Table Group | Scope | Notes |
-|-------------|-------|-------|
-| users | Platform | Shared; `tenant_users` provides tenant membership |
-| tenants | Platform | Managed by platform admin |
-| roles | Tenant | Each tenant defines their own roles |
-| permissions | Platform | Defined by platform; tenants assign to roles |
-| branches | Tenant | |
-| products | Tenant | Shared across branches by default |
-| inventory | Tenant + Branch | Stock quantities are branch-specific |
-| customers | Tenant | |
-| suppliers | Tenant | |
-| sales | Tenant + Branch | |
-| purchases | Tenant + Branch | |
-| expenses | Tenant + Branch | |
-| registers | Tenant + Branch | |
-| audit_logs | Tenant + Platform | Platform admin sees all; tenant admin sees own |
-| tenant_settings | Tenant | |
-| tenant_branding | Tenant | |
+| Table Group     | Scope             | Notes                                             |
+| --------------- | ----------------- | ------------------------------------------------- |
+| users           | Platform          | Shared; `tenant_users` provides tenant membership |
+| tenants         | Platform          | Managed by platform admin                         |
+| roles           | Tenant            | Each tenant defines their own roles               |
+| permissions     | Platform          | Defined by platform; tenants assign to roles      |
+| branches        | Tenant            |                                                   |
+| products        | Tenant            | Shared across branches by default                 |
+| inventory       | Tenant + Branch   | Stock quantities are branch-specific              |
+| customers       | Tenant            |                                                   |
+| suppliers       | Tenant            |                                                   |
+| sales           | Tenant + Branch   |                                                   |
+| purchases       | Tenant + Branch   |                                                   |
+| expenses        | Tenant + Branch   |                                                   |
+| registers       | Tenant + Branch   |                                                   |
+| audit_logs      | Tenant + Platform | Platform admin sees all; tenant admin sees own    |
+| tenant_settings | Tenant            |                                                   |
+| tenant_branding | Tenant            |                                                   |

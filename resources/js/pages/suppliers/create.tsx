@@ -1,10 +1,12 @@
-import { Form, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Checkbox, Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 
 import { Button } from '@/components/ui/button';
 import Link from '@/components/link';
+import { store, index } from '@/routes/suppliers';
+
 
 export default function SupplierCreatePage() {
     const form = useForm({
@@ -28,12 +30,8 @@ export default function SupplierCreatePage() {
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <Form
-                        onSubmit={form.post(route('suppliers.store'))}
-                        className="space-y-6"
-                    >
-                        {({ processing, errors }) => (
-                            <>
+                    <form onSubmit={(e) => { e.preventDefault(); form.post(store.url()); }} className="space-y-6">
+                        {(() => { const { processing, errors } = form; return (<>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
                                         <Label htmlFor="name">Name *</Label>
@@ -41,11 +39,20 @@ export default function SupplierCreatePage() {
                                             id="name"
                                             name="name"
                                             value={form.data.name}
-                                            onChange={(e) => form.setData('name', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'name',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="Supplier name"
                                             required
                                         />
-                                        {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                                        {errors.name && (
+                                            <p className="text-sm text-red-500">
+                                                {errors.name}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="grid gap-2">
@@ -55,10 +62,19 @@ export default function SupplierCreatePage() {
                                             name="email"
                                             type="email"
                                             value={form.data.email}
-                                            onChange={(e) => form.setData('email', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'email',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="contact@supplier.com"
                                         />
-                                        {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+                                        {errors.email && (
+                                            <p className="text-sm text-red-500">
+                                                {errors.email}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -69,22 +85,42 @@ export default function SupplierCreatePage() {
                                             id="phone"
                                             name="phone"
                                             value={form.data.phone}
-                                            onChange={(e) => form.setData('phone', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'phone',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="+1 (555) 123-4567"
                                         />
-                                        {errors.phone && <p className="text-sm text-red-500">{errors.phone}</p>}
+                                        {errors.phone && (
+                                            <p className="text-sm text-red-500">
+                                                {errors.phone}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="tax_number">Tax Number</Label>
+                                        <Label htmlFor="tax_number">
+                                            Tax Number
+                                        </Label>
                                         <Input
                                             id="tax_number"
                                             name="tax_number"
                                             value={form.data.tax_number}
-                                            onChange={(e) => form.setData('tax_number', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'tax_number',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="VAT/GST number"
                                         />
-                                        {errors.tax_number && <p className="text-sm text-red-500">{errors.tax_number}</p>}
+                                        {errors.tax_number && (
+                                            <p className="text-sm text-red-500">
+                                                {errors.tax_number}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -94,13 +130,20 @@ export default function SupplierCreatePage() {
                                         id="address"
                                         name="address"
                                         value={form.data.address}
-                                        onChange={(e) => form.setData('address', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'address',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Supplier address"
                                         rows={3}
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.address && (
-                                        <p className="text-sm text-red-500">{errors.address}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.address}
+                                        </p>
                                     )}
                                 </div>
 
@@ -109,9 +152,12 @@ export default function SupplierCreatePage() {
                                         id="is_active"
                                         name="is_active"
                                         checked={form.data.is_active}
-                                        onChange={(e) => form.setData('is_active', e.target.checked)}
+                                        onCheckedChange={(checked) => form.setData('is_active', checked === true)}
                                     />
-                                    <Label htmlFor="is_active" className="text-sm">
+                                    <Label
+                                        htmlFor="is_active"
+                                        className="text-sm"
+                                    >
                                         Active
                                     </Label>
                                 </div>
@@ -121,15 +167,14 @@ export default function SupplierCreatePage() {
                                         Create Supplier
                                     </Button>
                                     <Link
-                                        href={route('suppliers.index')}
+                                        href={index.url()}
                                         className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                                     >
                                         Cancel
                                     </Link>
                                 </div>
-                            </>
-                        )}
-                    </Form>
+                            </>); })()}
+                    </form>
                 </div>
             </div>
         </>

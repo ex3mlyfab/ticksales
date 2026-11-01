@@ -1,7 +1,9 @@
-import { Form, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
-import { Input, Label, Textarea, Select, Checkbox } from '@/components/ui';
+import { Input, Label, Textarea, Checkbox } from '@/components/ui';
+import { update } from '@/routes/product-categories';
+
 
 interface ProductCategory {
     id: string;
@@ -19,7 +21,10 @@ interface Props {
     categories: ProductCategory[];
 }
 
-export default function ProductCategoryEditPage({ category, categories }: Props) {
+export default function ProductCategoryEditPage({
+    category,
+    categories,
+}: Props) {
     const { data, setData, put, processing, errors } = useForm({
         name: category.name,
         slug: category.slug,
@@ -32,7 +37,7 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('product-categories.update', category.id));
+        put(update.url(category.id));
     };
 
     const filteredCategories = categories.filter((c) => c.id !== category.id);
@@ -48,19 +53,23 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                     description="Update the product category details."
                 />
 
-                <Form onSubmit={handleSubmit}>
-                    <div className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
+                <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
+                    <div className="space-y-4 rounded-xl border bg-card p-6 shadow-sm">
                         <div className="space-y-1.5">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
                                 value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('name', e.target.value)
+                                }
                                 placeholder="Enter category name"
                                 className={errors.name ? 'border-red-500' : ''}
                             />
                             {errors.name && (
-                                <p className="text-sm text-red-500">{errors.name}</p>
+                                <p className="text-sm text-red-500">
+                                    {errors.name}
+                                </p>
                             )}
                         </div>
 
@@ -69,28 +78,36 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                             <Input
                                 id="slug"
                                 value={data.slug}
-                                onChange={(e) => setData('slug', e.target.value)}
+                                onChange={(e) =>
+                                    setData('slug', e.target.value)
+                                }
                                 placeholder="Enter slug"
                                 className={errors.slug ? 'border-red-500' : ''}
                             />
                             {errors.slug && (
-                                <p className="text-sm text-red-500">{errors.slug}</p>
+                                <p className="text-sm text-red-500">
+                                    {errors.slug}
+                                </p>
                             )}
                         </div>
 
                         <div className="space-y-1.5">
                             <Label htmlFor="parent_id">Parent Category</Label>
-                            <Select
+                            <select
+                                id="parent_id"
                                 value={data.parent_id}
-                                onValueChange={(value) => setData('parent_id', value)}
-                                options={[
-                                    { value: '', label: 'None (Top-level)' },
-                                    ...filteredCategories.map((c) => ({
-                                        value: c.id,
-                                        label: c.name,
-                                    })),
-                                ]}
-                            />
+                                onChange={(e) =>
+                                    setData('parent_id', e.target.value)
+                                }
+                                className="w-full rounded-md border bg-background px-3 py-2 text-sm"
+                            >
+                                <option value="">None (Top-level)</option>
+                                {filteredCategories.map((c) => (
+                                    <option key={c.id} value={c.id}>
+                                        {c.name}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <div className="space-y-1.5">
@@ -98,7 +115,9 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                             <Textarea
                                 id="description"
                                 value={data.description}
-                                onChange={(e) => setData('description', e.target.value)}
+                                onChange={(e) =>
+                                    setData('description', e.target.value)
+                                }
                                 placeholder="Enter description"
                                 rows={3}
                             />
@@ -109,7 +128,9 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                             <Input
                                 id="image_path"
                                 value={data.image_path}
-                                onChange={(e) => setData('image_path', e.target.value)}
+                                onChange={(e) =>
+                                    setData('image_path', e.target.value)
+                                }
                                 placeholder="/images/category.jpg"
                             />
                         </div>
@@ -120,7 +141,12 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                                 id="sort_order"
                                 type="number"
                                 value={data.sort_order}
-                                onChange={(e) => setData('sort_order', parseInt(e.target.value) || 0)}
+                                onChange={(e) =>
+                                    setData(
+                                        'sort_order',
+                                        parseInt(e.target.value) || 0,
+                                    )
+                                }
                                 min={0}
                             />
                         </div>
@@ -129,7 +155,9 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                             <Checkbox
                                 id="is_active"
                                 checked={data.is_active}
-                                onCheckedChange={(checked) => setData('is_active', checked)}
+                                onCheckedChange={(checked) =>
+                                    setData('is_active', checked === true)
+                                }
                             />
                             <Label htmlFor="is_active">Active</Label>
                         </div>
@@ -151,7 +179,7 @@ export default function ProductCategoryEditPage({ category, categories }: Props)
                             </button>
                         </div>
                     </div>
-                </Form>
+                </form>
             </div>
         </>
     );
@@ -165,7 +193,6 @@ ProductCategoryEditPage.layout = {
         },
         {
             title: 'Edit',
-            href: `/product-categories/${category.id}/edit`,
         },
     ],
 };

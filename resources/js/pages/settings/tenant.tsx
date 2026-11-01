@@ -16,8 +16,8 @@ export default function TenantSettingsPage() {
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <h2 className="text-lg font-semibold">Configuration</h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                        Tax defaults, invoice prefixes, stock alert thresholds, and checkout requirements
-                        can be configured here.
+                        Tax defaults, invoice prefixes, stock alert thresholds,
+                        and checkout requirements can be configured here.
                     </p>
                 </div>
             </div>

@@ -1,8 +1,10 @@
-import { Head, Form, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { Button } from '@/components/ui/button';
 import { Checkbox, Input, Label } from '@/components/ui';
+import { store, index } from '@/routes/customers';
+
 
 interface Group {
     id: string;
@@ -37,45 +39,57 @@ export default function CustomerCreatePage({ groups }: Props) {
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <Form
-                        onSubmit={form.post(route('customers.store'))}
-                        className="space-y-6"
-                    >
-                        {({ processing, errors }) => (
-                            <>
+                    <form onSubmit={(e) => { e.preventDefault(); form.post(store.url()); }} className="space-y-6">
+                        {(() => { const { processing, errors } = form; return (<>
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Name *</Label>
                                     <Input
                                         id="name"
                                         name="name"
                                         value={form.data.name}
-                                        onChange={(e) => form.setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('name', e.target.value)
+                                        }
                                         placeholder="e.g. Jane Doe"
                                         required
                                     />
-                                    {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                                    {errors.name && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="customer_group_id">Customer group</Label>
+                                    <Label htmlFor="customer_group_id">
+                                        Customer group
+                                    </Label>
                                     <select
                                         id="customer_group_id"
                                         name="customer_group_id"
                                         value={form.data.customer_group_id}
                                         onChange={(e) =>
-                                            form.setData('customer_group_id', e.target.value)
+                                            form.setData(
+                                                'customer_group_id',
+                                                e.target.value,
+                                            )
                                         }
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     >
                                         <option value="">No group</option>
                                         {groups.map((group) => (
-                                            <option key={group.id} value={group.id}>
+                                            <option
+                                                key={group.id}
+                                                value={group.id}
+                                            >
                                                 {group.name}
                                             </option>
                                         ))}
                                     </select>
                                     {errors.customer_group_id && (
-                                        <p className="text-sm text-red-500">{errors.customer_group_id}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.customer_group_id}
+                                        </p>
                                     )}
                                 </div>
 
@@ -87,11 +101,18 @@ export default function CustomerCreatePage({ groups }: Props) {
                                             name="email"
                                             type="email"
                                             value={form.data.email}
-                                            onChange={(e) => form.setData('email', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'email',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g. jane@example.com"
                                         />
                                         {errors.email && (
-                                            <p className="text-sm text-red-500">{errors.email}</p>
+                                            <p className="text-sm text-red-500">
+                                                {errors.email}
+                                            </p>
                                         )}
                                     </div>
 
@@ -101,11 +122,18 @@ export default function CustomerCreatePage({ groups }: Props) {
                                             id="phone"
                                             name="phone"
                                             value={form.data.phone}
-                                            onChange={(e) => form.setData('phone', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'phone',
+                                                    e.target.value,
+                                                )
+                                            }
                                             placeholder="e.g. +1 555 000 1234"
                                         />
                                         {errors.phone && (
-                                            <p className="text-sm text-red-500">{errors.phone}</p>
+                                            <p className="text-sm text-red-500">
+                                                {errors.phone}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -116,19 +144,28 @@ export default function CustomerCreatePage({ groups }: Props) {
                                         id="address"
                                         name="address"
                                         value={form.data.address}
-                                        onChange={(e) => form.setData('address', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'address',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Optional billing address"
                                         rows={2}
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.address && (
-                                        <p className="text-sm text-red-500">{errors.address}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.address}
+                                        </p>
                                     )}
                                 </div>
 
                                 <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="credit_limit">Credit limit *</Label>
+                                        <Label htmlFor="credit_limit">
+                                            Credit limit *
+                                        </Label>
                                         <Input
                                             id="credit_limit"
                                             name="credit_limit"
@@ -136,16 +173,25 @@ export default function CustomerCreatePage({ groups }: Props) {
                                             min="0"
                                             step="0.01"
                                             value={form.data.credit_limit}
-                                            onChange={(e) => form.setData('credit_limit', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'credit_limit',
+                                                    e.target.value,
+                                                )
+                                            }
                                             required
                                         />
                                         {errors.credit_limit && (
-                                            <p className="text-sm text-red-500">{errors.credit_limit}</p>
+                                            <p className="text-sm text-red-500">
+                                                {errors.credit_limit}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="loyalty_points">Loyalty points</Label>
+                                        <Label htmlFor="loyalty_points">
+                                            Loyalty points
+                                        </Label>
                                         <Input
                                             id="loyalty_points"
                                             name="loyalty_points"
@@ -153,11 +199,16 @@ export default function CustomerCreatePage({ groups }: Props) {
                                             min="0"
                                             value={form.data.loyalty_points}
                                             onChange={(e) =>
-                                                form.setData('loyalty_points', e.target.value)
+                                                form.setData(
+                                                    'loyalty_points',
+                                                    e.target.value,
+                                                )
                                             }
                                         />
                                         {errors.loyalty_points && (
-                                            <p className="text-sm text-red-500">{errors.loyalty_points}</p>
+                                            <p className="text-sm text-red-500">
+                                                {errors.loyalty_points}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
@@ -168,10 +219,16 @@ export default function CustomerCreatePage({ groups }: Props) {
                                         name="is_active"
                                         checked={form.data.is_active}
                                         onCheckedChange={(checked) =>
-                                            form.setData('is_active', checked === true)
+                                            form.setData(
+                                                'is_active',
+                                                checked === true,
+                                            )
                                         }
                                     />
-                                    <Label htmlFor="is_active" className="text-sm">
+                                    <Label
+                                        htmlFor="is_active"
+                                        className="text-sm"
+                                    >
                                         Active
                                     </Label>
                                 </div>
@@ -181,15 +238,14 @@ export default function CustomerCreatePage({ groups }: Props) {
                                         Create Customer
                                     </Button>
                                     <Link
-                                        href={route('customers.index')}
+                                        href={index.url()}
                                         className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                                     >
                                         Cancel
                                     </Link>
                                 </div>
-                            </>
-                        )}
-                    </Form>
+                            </>); })()}
+                    </form>
                 </div>
             </div>
         </>

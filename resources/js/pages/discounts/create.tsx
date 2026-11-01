@@ -1,10 +1,12 @@
-import { Form, useForm } from '@inertiajs/react';
-import { Checkbox, Input, Label, Select } from '@/components/ui';
+import { useForm } from '@inertiajs/react';
+import { Checkbox, Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 
 import { Button } from '@/components/ui/button';
 import Link from '@/components/link';
+import { store, index } from '@/routes/discounts';
+
 
 export default function DiscountCreatePage() {
     const form = useForm({
@@ -30,37 +32,50 @@ export default function DiscountCreatePage() {
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <Form
-                        onSubmit={form.post(route('discounts.store'))}
-                        className="space-y-6"
-                    >
-                        {({ processing, errors }) => (
-                            <>
+                    <form onSubmit={(e) => { e.preventDefault(); form.post(store.url()); }} className="space-y-6">
+                        {(() => { const { processing, errors } = form; return (<>
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Name</Label>
                                     <Input
                                         id="name"
                                         name="name"
                                         value={form.data.name}
-                                        onChange={(e) => form.setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('name', e.target.value)
+                                        }
                                         placeholder="e.g. 10% off electronics"
                                         required
                                     />
-                                    {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                                    {errors.name && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid gap-2">
                                     <Label htmlFor="type">Type</Label>
-                                    <Select
+                                    <select
                                         id="type"
                                         name="type"
                                         value={form.data.type}
-                                        onChange={(e) => form.setData('type', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('type', e.target.value)
+                                        }
+                                        className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     >
-                                        <option value="percentage">Percentage</option>
-                                        <option value="fixed">Fixed Amount</option>
-                                    </Select>
-                                    {errors.type && <p className="text-sm text-red-500">{errors.type}</p>}
+                                        <option value="percentage">
+                                            Percentage
+                                        </option>
+                                        <option value="fixed">
+                                            Fixed Amount
+                                        </option>
+                                    </select>
+                                    {errors.type && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.type}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid gap-2">
@@ -72,70 +87,127 @@ export default function DiscountCreatePage() {
                                         step="0.01"
                                         min="0"
                                         value={form.data.value}
-                                        onChange={(e) => form.setData('value', e.target.value)}
-                                        placeholder={form.data.type === 'percentage' ? 'e.g. 10.00' : 'e.g. 5.00'}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'value',
+                                                e.target.value,
+                                            )
+                                        }
+                                        placeholder={
+                                            form.data.type === 'percentage'
+                                                ? 'e.g. 10.00'
+                                                : 'e.g. 5.00'
+                                        }
                                         required
                                     />
-                                    {errors.value && <p className="text-sm text-red-500">{errors.value}</p>}
+                                    {errors.value && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.value}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="min_purchase_amount">Min Purchase Amount (optional)</Label>
+                                        <Label htmlFor="min_purchase_amount">
+                                            Min Purchase Amount (optional)
+                                        </Label>
                                         <Input
                                             id="min_purchase_amount"
                                             name="min_purchase_amount"
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            value={form.data.min_purchase_amount}
-                                            onChange={(e) => form.setData('min_purchase_amount', e.target.value)}
+                                            value={
+                                                form.data.min_purchase_amount
+                                            }
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'min_purchase_amount',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
                                         {errors.min_purchase_amount && (
-                                            <p className="text-sm text-red-500">{errors.min_purchase_amount}</p>
+                                            <p className="text-sm text-red-500">
+                                                {errors.min_purchase_amount}
+                                            </p>
                                         )}
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="max_discount_amount">Max Discount Amount (optional)</Label>
+                                        <Label htmlFor="max_discount_amount">
+                                            Max Discount Amount (optional)
+                                        </Label>
                                         <Input
                                             id="max_discount_amount"
                                             name="max_discount_amount"
                                             type="number"
                                             step="0.01"
                                             min="0"
-                                            value={form.data.max_discount_amount}
-                                            onChange={(e) => form.setData('max_discount_amount', e.target.value)}
+                                            value={
+                                                form.data.max_discount_amount
+                                            }
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'max_discount_amount',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
                                         {errors.max_discount_amount && (
-                                            <p className="text-sm text-red-500">{errors.max_discount_amount}</p>
+                                            <p className="text-sm text-red-500">
+                                                {errors.max_discount_amount}
+                                            </p>
                                         )}
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="grid gap-2">
-                                        <Label htmlFor="starts_at">Start Date (optional)</Label>
+                                        <Label htmlFor="starts_at">
+                                            Start Date (optional)
+                                        </Label>
                                         <Input
                                             id="starts_at"
                                             name="starts_at"
                                             type="datetime-local"
                                             value={form.data.starts_at}
-                                            onChange={(e) => form.setData('starts_at', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'starts_at',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
-                                        {errors.starts_at && <p className="text-sm text-red-500">{errors.starts_at}</p>}
+                                        {errors.starts_at && (
+                                            <p className="text-sm text-red-500">
+                                                {errors.starts_at}
+                                            </p>
+                                        )}
                                     </div>
 
                                     <div className="grid gap-2">
-                                        <Label htmlFor="ends_at">End Date (optional)</Label>
+                                        <Label htmlFor="ends_at">
+                                            End Date (optional)
+                                        </Label>
                                         <Input
                                             id="ends_at"
                                             name="ends_at"
                                             type="datetime-local"
                                             value={form.data.ends_at}
-                                            onChange={(e) => form.setData('ends_at', e.target.value)}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'ends_at',
+                                                    e.target.value,
+                                                )
+                                            }
                                         />
-                                        {errors.ends_at && <p className="text-sm text-red-500">{errors.ends_at}</p>}
+                                        {errors.ends_at && (
+                                            <p className="text-sm text-red-500">
+                                                {errors.ends_at}
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
 
@@ -144,9 +216,12 @@ export default function DiscountCreatePage() {
                                         id="is_active"
                                         name="is_active"
                                         checked={form.data.is_active}
-                                        onChange={(e) => form.setData('is_active', e.target.checked)}
+                                        onCheckedChange={(checked) => form.setData('is_active', checked === true)}
                                     />
-                                    <Label htmlFor="is_active" className="text-sm">
+                                    <Label
+                                        htmlFor="is_active"
+                                        className="text-sm"
+                                    >
                                         Active
                                     </Label>
                                 </div>
@@ -156,15 +231,14 @@ export default function DiscountCreatePage() {
                                         Create Discount
                                     </Button>
                                     <Link
-                                        href={route('discounts.index')}
+                                        href={index.url()}
                                         className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                                     >
                                         Cancel
                                     </Link>
                                 </div>
-                            </>
-                        )}
-                    </Form>
+                            </>); })()}
+                    </form>
                 </div>
             </div>
         </>

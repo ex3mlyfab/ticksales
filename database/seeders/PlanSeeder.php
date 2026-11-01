@@ -19,7 +19,7 @@ class PlanSeeder extends Seeder
                 'description' => 'Core POS features for single-location businesses',
                 'price_monthly' => 29.99,
                 'max_branches' => 1,
-                'features' => json_encode(['pos', 'products', 'customers', 'inventory_basic']),
+                'features' => ['pos', 'products', 'customers', 'inventory_basic'],
             ],
             [
                 'name' => 'pro',
@@ -27,7 +27,7 @@ class PlanSeeder extends Seeder
                 'description' => 'Advanced features for growing businesses',
                 'price_monthly' => 79.99,
                 'max_branches' => 10,
-                'features' => json_encode(['pos', 'products', 'customers', 'inventory_advanced', 'reports', 'multi_branch']),
+                'features' => ['pos', 'products', 'customers', 'inventory_advanced', 'reports', 'multi_branch'],
             ],
             [
                 'name' => 'enterprise',
@@ -35,7 +35,7 @@ class PlanSeeder extends Seeder
                 'description' => 'Full-featured platform for multi-location enterprises',
                 'price_monthly' => 199.99,
                 'max_branches' => 9999,
-                'features' => json_encode(['pos', 'products', 'customers', 'inventory_advanced', 'reports', 'multi_branch', 'custom_branding', 'priority_support']),
+                'features' => ['pos', 'products', 'customers', 'inventory_advanced', 'reports', 'multi_branch', 'custom_branding', 'priority_support'],
             ],
         ];
 

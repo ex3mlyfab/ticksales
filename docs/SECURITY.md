@@ -80,7 +80,8 @@ All models have corresponding Policies registered in `AuthServiceProvider`.
 
 All state-changing web routes are protected by Laravel's built-in CSRF middleware. Inertia handles CSRF tokens automatically through the `X-XSRF-TOKEN` header on all XHR requests.
 
-API routes (`/api/v1/`) use Sanctum token authentication and are exempt from CSRF (stateless).
+API routes (`/api/v1/`) authenticate with Sanctum. Bearer-token requests are stateless and exempt
+from CSRF; first-party browser requests are still stateful (session + CSRF) via `statefulApi()`.
 
 ---
 
@@ -88,8 +89,14 @@ API routes (`/api/v1/`) use Sanctum token authentication and are exempt from CSR
 
 - React's JSX automatically escapes all interpolated values
 - No use of `dangerouslySetInnerHTML` unless content is explicitly sanitized
-- Content Security Policy (CSP) headers configured for production
 - Tenant-provided content (branding, business name) displayed through escaped React rendering
+- **Strict Content-Security-Policy** enforced on every web response by the `SecurityHeaders`
+  middleware: `default-src 'self'`, `object-src 'none'`, `frame-ancestors 'self'`,
+  `base-uri 'self'`, `form-action 'self'`. `script-src` and `style-src` allow `'self'` plus a
+  per-request nonce only — **no `'unsafe-inline'`**. The nonce is generated once per request and
+  applied to the app shell's inline dark-mode script/style, the Inertia page-data script, and
+  every Vite-generated `<script>`/`<link>`/`<style>` tag. In development the policy is widened to
+  include the Vite dev server origin and HMR websocket.
 
 ---
 
@@ -115,42 +122,53 @@ class Product extends Model { }
 
 ## 7. API Security (Sanctum)
 
-### Token Scoping
+### Token Issuance
 
-Mobile API tokens are issued with ability scopes tied to the tenant and branch context at time of login:
+API tokens are issued by `POST /api/v1/auth/login` after a successful email/password check:
 
 ```php
-$token = $user->createToken(
-    name: "Mobile:{$device}",
-    abilities: ["tenant:{$tenant->id}", "branch:{$branch->id}"],
-    expiresAt: now()->addDays(30),
-);
+$token = $user->createToken($deviceName ?? 'api');
+// $token->plainTextToken is returned once and never stored in plain text.
 ```
+
+Tokens are personal access tokens; only their SHA-256 hash is persisted. The plaintext token is
+shown to the client exactly once at issuance. The login endpoint is rate-limited to 5 attempts per
+minute per email + IP (the shared `login` limiter).
 
 ### Token Validation Middleware
 
-Every API request validates that the token's tenant/branch ability matches the requested resource.
+API routes use `auth:sanctum`. The Sanctum guard resolves the caller in this order:
+
+1. The `web` session guard (first-party browser requests — `statefulApi()` keeps these stateful
+   with CSRF protection intact).
+2. The `Authorization: Bearer <token>` header (external/mobile clients — stateless, no CSRF,
+   since a bearer token is never auto-attached by the browser).
+
+Tenant isolation is enforced server-side by `SetTenantContext` plus the per-controller
+`abort_unless($model->tenant_id === $tenant?->id, 403)` check — never by trusting a client-supplied
+tenant identifier.
 
 ### Token Revocation
 
 Tokens can be revoked:
-- By the user (logout from device)
-- By tenant admin (revoke user access)
-- By platform admin (emergency)
-- Automatically on password change
+
+- By the user (`POST /api/v1/auth/logout` deletes the token used for the request)
+- By tenant admin (revoke user access) — planned
+- By platform admin (emergency) — planned
+- Automatically on password change — planned
 
 ---
 
 ## 8. Rate Limiting
 
-| Endpoint | Limit |
-|----------|-------|
-| Login | 5 / minute / IP + email |
-| Two-factor | 5 / minute / session |
-| Passkeys | 10 / minute |
-| Password reset | 5 / minute |
-| API (general) | 60 / minute / token |
-| API (auth) | 10 / minute / IP |
+| Endpoint       | Limit                   |
+| -------------- | ----------------------- |
+| Login          | 5 / minute / IP + email |
+| Two-factor     | 5 / minute / session    |
+| Passkeys       | 10 / minute             |
+| Password reset | 5 / minute              |
+| API (general)  | 60 / minute / token     |
+| API (auth)     | 10 / minute / IP        |
 
 ---
 
@@ -170,6 +188,7 @@ Tokens can be revoked:
 ## 10. Password Security
 
 In production, passwords must:
+
 - Be at least 12 characters
 - Contain mixed case, letters, numbers, and symbols
 - Not be in the HaveIBeenPwned database (Fortify uncompromised() check)
@@ -190,11 +209,13 @@ In production, passwords must:
 ## 12. Offline Transaction Security
 
 Offline sales created in the PWA carry:
+
 - A client-generated UUID (idempotency key)
 - A signed timestamp
 - Tenant/branch context from the cached session
 
 On sync:
+
 - Server validates the idempotency key has not been used
 - Server validates the user had a valid active register session at the time
 - Server rejects sync attempts more than 24 hours old
@@ -230,6 +251,7 @@ api_token.revoked
 ```
 
 Audit logs include:
+
 - Actor user ID
 - Tenant ID
 - Branch ID (if applicable)
@@ -243,6 +265,7 @@ Audit logs include:
 ## 14. IDOR Prevention
 
 All resource access validates ownership through:
+
 1. Policy authorization (`$this->authorize(...)`)
 2. Tenant-scoped query (ensures the record belongs to the tenant)
 3. Route model binding only resolves within the tenant scope

@@ -38,7 +38,8 @@ export default function ProductCategoryIndexPage({ categories }: Props) {
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <h2 className="text-lg font-semibold">Categories</h2>
                     <p className="mt-2 text-sm text-muted-foreground">
-                        Browse and manage all product categories for your tenant.
+                        Browse and manage all product categories for your
+                        tenant.
                     </p>
 
                     <div className="mt-4 divide-y">
@@ -53,7 +54,9 @@ export default function ProductCategoryIndexPage({ categories }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{category.name}</p>
+                                        <p className="font-medium">
+                                            {category.name}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
                                             {category.slug}
                                         </p>
@@ -65,7 +68,9 @@ export default function ProductCategoryIndexPage({ categories }: Props) {
                                                 : 'bg-gray-100 text-gray-800'
                                         }`}
                                     >
-                                        {category.is_active ? 'Active' : 'Inactive'}
+                                        {category.is_active
+                                            ? 'Active'
+                                            : 'Inactive'}
                                     </span>
                                 </div>
                             ))

@@ -55,10 +55,10 @@ Additional semantic tokens for POS status indicators:
 
 ```css
 /* Status colors — defined in addition to shadcn tokens */
---color-success:    oklch(0.6 0.17 145);   /* Green — completed, in stock */
---color-warning:    oklch(0.75 0.16 60);   /* Amber — low stock, pending */
---color-info:       oklch(0.6 0.18 240);   /* Blue — informational */
---color-offline:    oklch(0.55 0 0);       /* Gray — offline indicator */
+--color-success: oklch(0.6 0.17 145); /* Green — completed, in stock */
+--color-warning: oklch(0.75 0.16 60); /* Amber — low stock, pending */
+--color-info: oklch(0.6 0.18 240); /* Blue — informational */
+--color-offline: oklch(0.55 0 0); /* Gray — offline indicator */
 ```
 
 ---
@@ -67,16 +67,16 @@ Additional semantic tokens for POS status indicators:
 
 Each theme replaces the CSS custom property values. No Tailwind recompile needed.
 
-| Theme | Primary | Character |
-|-------|---------|-----------|
-| `neutral` | Neutral gray-black | Default / clean |
-| `indigo` | Indigo 500 | Professional / corporate |
-| `violet` | Violet 500 | Creative / modern |
-| `emerald` | Emerald 500 | Natural / growth |
-| `ocean` | Sky 600 | Fresh / tech |
-| `amber` | Amber 500 | Warm / retail |
-| `rose` | Rose 500 | Vibrant / food |
-| `slate` | Slate 600 | Minimal / understated |
+| Theme     | Primary            | Character                |
+| --------- | ------------------ | ------------------------ |
+| `neutral` | Neutral gray-black | Default / clean          |
+| `indigo`  | Indigo 500         | Professional / corporate |
+| `violet`  | Violet 500         | Creative / modern        |
+| `emerald` | Emerald 500        | Natural / growth         |
+| `ocean`   | Sky 600            | Fresh / tech             |
+| `amber`   | Amber 500          | Warm / retail            |
+| `rose`    | Rose 500           | Vibrant / food           |
+| `slate`   | Slate 600          | Minimal / understated    |
 
 Theme switching is applied via a `data-theme` attribute on `<html>` and CSS `:root[data-theme="indigo"]` overrides.
 
@@ -89,9 +89,9 @@ Tenant admins can customize:
 ```css
 /* Injected per-tenant via <style> tag in app.blade.php */
 :root {
-    --primary:           oklch(/* tenant primary */);
+    --primary: oklch(/* tenant primary */);
     --primary-foreground: oklch(/* computed for contrast */);
-    --sidebar-primary:   oklch(/* tenant primary */);
+    --sidebar-primary: oklch(/* tenant primary */);
     /* ... */
 }
 ```
@@ -104,12 +104,12 @@ The branding is stored in `tenant_branding` and injected by the Inertia middlewa
 
 ## Typography
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--font-sans` | Instrument Sans → system-ui → sans-serif | Body text, UI |
-| Font sizes | Tailwind default scale | `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl` |
-| Font weights | 400, 500, 600 | Regular, Medium, Semibold |
-| Line height | Tailwind default | `leading-tight`, `leading-normal` |
+| Token         | Value                                    | Usage                                                                |
+| ------------- | ---------------------------------------- | -------------------------------------------------------------------- |
+| `--font-sans` | Instrument Sans → system-ui → sans-serif | Body text, UI                                                        |
+| Font sizes    | Tailwind default scale                   | `text-sm`, `text-base`, `text-lg`, `text-xl`, `text-2xl`, `text-3xl` |
+| Font weights  | 400, 500, 600                            | Regular, Medium, Semibold                                            |
+| Line height   | Tailwind default                         | `leading-tight`, `leading-normal`                                    |
 
 ---
 
@@ -117,38 +117,38 @@ The branding is stored in `tenant_branding` and injected by the Inertia middlewa
 
 Standard Tailwind spacing (base-4 system). Key values:
 
-| Token | px | Usage |
-|-------|----|-------|
-| `p-2` | 8px | Compact padding (badges, table cells) |
-| `p-3` | 12px | Button padding (sm) |
-| `p-4` | 16px | Standard padding |
-| `p-6` | 24px | Card padding |
-| `p-8` | 32px | Section padding |
-| `gap-4` | 16px | Standard grid/flex gap |
-| `gap-6` | 24px | Between cards |
+| Token   | px   | Usage                                 |
+| ------- | ---- | ------------------------------------- |
+| `p-2`   | 8px  | Compact padding (badges, table cells) |
+| `p-3`   | 12px | Button padding (sm)                   |
+| `p-4`   | 16px | Standard padding                      |
+| `p-6`   | 24px | Card padding                          |
+| `p-8`   | 32px | Section padding                       |
+| `gap-4` | 16px | Standard grid/flex gap                |
+| `gap-6` | 24px | Between cards                         |
 
 ---
 
 ## Border Radius
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `--radius` | 0.625rem (10px) | Base radius (cards, modals) |
-| `rounded-sm` | calc(radius - 4px) | Badges, small tags |
-| `rounded-md` | calc(radius - 2px) | Inputs, buttons |
-| `rounded-lg` | radius | Cards, dropdowns |
-| `rounded-xl` | radius + 4px | Dashboard widgets |
-| `rounded-full` | 9999px | Avatars, pill badges |
+| Token          | Value              | Usage                       |
+| -------------- | ------------------ | --------------------------- |
+| `--radius`     | 0.625rem (10px)    | Base radius (cards, modals) |
+| `rounded-sm`   | calc(radius - 4px) | Badges, small tags          |
+| `rounded-md`   | calc(radius - 2px) | Inputs, buttons             |
+| `rounded-lg`   | radius             | Cards, dropdowns            |
+| `rounded-xl`   | radius + 4px       | Dashboard widgets           |
+| `rounded-full` | 9999px             | Avatars, pill badges        |
 
 ---
 
 ## Shadow Scale
 
-| Class | Usage |
-|-------|-------|
+| Class       | Usage                          |
+| ----------- | ------------------------------ |
 | `shadow-sm` | Cards, dropdowns (subtle lift) |
-| `shadow-md` | Modals, popovers |
-| `shadow-lg` | Floating panels |
+| `shadow-md` | Modals, popovers               |
+| `shadow-lg` | Floating panels                |
 
 Avoid heavy shadows. Prefer border + subtle shadow for depth.
 
@@ -157,6 +157,7 @@ Avoid heavy shadows. Prefer border + subtle shadow for depth.
 ## Component Inventory
 
 ### Already Available (shadcn/ui)
+
 - `Avatar` — User avatar with initials fallback
 - `Badge` — Status / label chips
 - `Button` — Primary, secondary, outline, ghost, destructive, link variants
@@ -179,6 +180,7 @@ Avoid heavy shadows. Prefer border + subtle shadow for depth.
 - `Placeholder Pattern` — Empty state background
 
 ### To Be Added (as needed)
+
 - `Table` — Data table with sorting/pagination
 - `DataTable` — Advanced table with filters
 - `DatePicker` — Calendar date selection
@@ -205,6 +207,7 @@ Avoid heavy shadows. Prefer border + subtle shadow for depth.
 ## Page Layout Patterns
 
 ### App Shell (existing)
+
 ```
 ┌─────────────────────────────────────────┐
 │ Sidebar (collapsible, icon mode)        │
@@ -219,6 +222,7 @@ Avoid heavy shadows. Prefer border + subtle shadow for depth.
 ```
 
 ### Index Page Pattern
+
 ```
 PageHeader (title + Create button)
 Filters row (search, selects)
@@ -226,6 +230,7 @@ DataTable (with pagination)
 ```
 
 ### Form Page Pattern
+
 ```
 PageHeader (title + Back button)
 Card
@@ -234,6 +239,7 @@ Card
 ```
 
 ### POS Sale Screen Pattern
+
 ```
 ┌──────────────────┬──────────────────────┐
 │ Product Grid     │ Sale Summary         │
@@ -248,15 +254,15 @@ Card
 
 ## UI States — Every Major Page Must Handle
 
-| State | Implementation |
-|-------|---------------|
-| Loading | Skeleton components (Inertia deferred props) |
-| Empty | `EmptyState` component (icon + message + CTA) |
-| Error | Error boundary + `Alert` (destructive) |
-| Unauthorized | 403 page |
-| Offline | `OfflineIndicator` banner |
-| Syncing | `SyncStatus` indicator |
-| Success | `Sonner` toast + route navigation |
+| State        | Implementation                                |
+| ------------ | --------------------------------------------- |
+| Loading      | Skeleton components (Inertia deferred props)  |
+| Empty        | `EmptyState` component (icon + message + CTA) |
+| Error        | Error boundary + `Alert` (destructive)        |
+| Unauthorized | 403 page                                      |
+| Offline      | `OfflineIndicator` banner                     |
+| Syncing      | `SyncStatus` indicator                        |
+| Success      | `Sonner` toast + route navigation             |
 
 ---
 
@@ -274,16 +280,17 @@ Card
 
 Standard Tailwind breakpoints:
 
-| Breakpoint | Width | Usage |
-|-----------|-------|-------|
-| (default) | 0px+ | Mobile portrait |
-| `sm` | 640px | Mobile landscape |
-| `md` | 768px | Tablet portrait |
-| `lg` | 1024px | Tablet landscape / small laptop |
-| `xl` | 1280px | Desktop |
-| `2xl` | 1536px | Large desktop |
+| Breakpoint | Width  | Usage                           |
+| ---------- | ------ | ------------------------------- |
+| (default)  | 0px+   | Mobile portrait                 |
+| `sm`       | 640px  | Mobile landscape                |
+| `md`       | 768px  | Tablet portrait                 |
+| `lg`       | 1024px | Tablet landscape / small laptop |
+| `xl`       | 1280px | Desktop                         |
+| `2xl`      | 1536px | Large desktop                   |
 
 ### Mobile-First POS Rules
+
 - Sidebar: auto-closes to icon mode on `md` and below
 - POS sale screen: stacked layout on `md`, side-by-side on `lg`+
 - Button minimum touch target: 44x44px

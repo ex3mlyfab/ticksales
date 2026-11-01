@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, edit, destroy } from '@/routes/products';
+
 
 interface Product {
     id: string;
@@ -43,7 +45,7 @@ export default function ProductIndexPage({ products }: Props) {
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Products</h2>
                         <Link
-                            href={route('products.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             Create Product
@@ -65,7 +67,9 @@ export default function ProductIndexPage({ products }: Props) {
                                     className="flex items-center justify-between py-3"
                                 >
                                     <div>
-                                        <p className="font-medium">{product.name}</p>
+                                        <p className="font-medium">
+                                            {product.name}
+                                        </p>
                                         {product.sku && (
                                             <p className="text-sm text-muted-foreground">
                                                 SKU: {product.sku}
@@ -85,10 +89,12 @@ export default function ProductIndexPage({ products }: Props) {
                                                     : 'bg-gray-100 text-gray-800'
                                             }`}
                                         >
-                                            {product.is_active ? 'Active' : 'Inactive'}
+                                            {product.is_active
+                                                ? 'Active'
+                                                : 'Inactive'}
                                         </span>
                                         <Link
-                                            href={route('products.edit', product.id)}
+                                            href={edit.url(product.id)}
                                             className="text-sm text-muted-foreground hover:text-foreground"
                                         >
                                             Edit
@@ -98,17 +104,21 @@ export default function ProductIndexPage({ products }: Props) {
                                                 e.preventDefault();
                                                 e.currentTarget.submit();
                                             }}
-                                            action={route('products.destroy', product.id)}
+                                            action={destroy.url(product.id)}
                                             method="POST"
                                         >
                                             <button
                                                 type="submit"
                                                 className="text-sm text-red-500 hover:text-red-700"
-                                                onClick="return confirm('Are you sure you want to delete this product?')"
+                                                onClick={(e) => { if (!confirm('Are you sure you want to delete this product?')) e.preventDefault(); }}
                                             >
                                                 Delete
                                             </button>
-                                            <input type="hidden" name="_method" value="DELETE" />
+                                            <input
+                                                type="hidden"
+                                                name="_method"
+                                                value="DELETE"
+                                            />
                                         </form>
                                     </div>
                                 </div>

@@ -5,7 +5,8 @@ export function PwaStatus() {
         typeof navigator === 'undefined' ? true : navigator.onLine,
     );
     const [canInstall, setCanInstall] = useState(false);
-    const [promptEvent, setPromptEvent] = useState<BeforeInstallPromptEvent | null>(null);
+    const [promptEvent, setPromptEvent] =
+        useState<BeforeInstallPromptEvent | null>(null);
 
     useEffect(() => {
         const handleOnline = () => setIsOnline(true);
@@ -20,12 +21,18 @@ export function PwaStatus() {
             setCanInstall(true);
         };
 
-        window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+        window.addEventListener(
+            'beforeinstallprompt',
+            handleBeforeInstallPrompt,
+        );
 
         return () => {
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
-            window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+            window.removeEventListener(
+                'beforeinstallprompt',
+                handleBeforeInstallPrompt,
+            );
         };
     }, []);
 
@@ -44,7 +51,8 @@ export function PwaStatus() {
         <div className="space-y-3">
             {!isOnline && (
                 <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-500/50 dark:bg-amber-950/40 dark:text-amber-100">
-                    You are offline. Sales and data entry continue locally and sync once connectivity returns.
+                    You are offline. Sales and data entry continue locally and
+                    sync once connectivity returns.
                 </div>
             )}
 
@@ -66,5 +74,8 @@ export function PwaStatus() {
 
 type BeforeInstallPromptEvent = Event & {
     prompt: () => Promise<void>;
-    userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>;
+    userChoice: Promise<{
+        outcome: 'accepted' | 'dismissed';
+        platform: string;
+    }>;
 };

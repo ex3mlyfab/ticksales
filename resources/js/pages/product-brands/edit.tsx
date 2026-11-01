@@ -1,16 +1,22 @@
-import { Form, useForm } from '@inertiajs/react';
+import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Input, Label } from '@/components/ui';
+import { update } from '@/routes/product-brands';
 
-export default function ProductBrandEditPage({ brand }: { brand: { id: string; name: string } }) {
+
+export default function ProductBrandEditPage({
+    brand,
+}: {
+    brand: { id: string; name: string };
+}) {
     const { data, setData, put, processing, errors } = useForm({
         name: brand.name,
     });
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        put(route('product-brands.update', brand.id));
+        put(update.url(brand.id));
     };
 
     return (
@@ -24,19 +30,23 @@ export default function ProductBrandEditPage({ brand }: { brand: { id: string; n
                     description="Update the product brand details."
                 />
 
-                <Form onSubmit={handleSubmit}>
-                    <div className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
+                <form onSubmit={(e) => { e.preventDefault(); handleSubmit(e); }}>
+                    <div className="space-y-4 rounded-xl border bg-card p-6 shadow-sm">
                         <div className="space-y-1.5">
                             <Label htmlFor="name">Name</Label>
                             <Input
                                 id="name"
                                 value={data.name}
-                                onChange={(e) => setData('name', e.target.value)}
+                                onChange={(e) =>
+                                    setData('name', e.target.value)
+                                }
                                 placeholder="Enter brand name"
                                 className={errors.name ? 'border-red-500' : ''}
                             />
                             {errors.name && (
-                                <p className="text-sm text-red-500">{errors.name}</p>
+                                <p className="text-sm text-red-500">
+                                    {errors.name}
+                                </p>
                             )}
                         </div>
 
@@ -57,7 +67,7 @@ export default function ProductBrandEditPage({ brand }: { brand: { id: string; n
                             </button>
                         </div>
                     </div>
-                </Form>
+                </form>
             </div>
         </>
     );
@@ -71,7 +81,6 @@ ProductBrandEditPage.layout = {
         },
         {
             title: 'Edit',
-            href: `/product-brands/${brand.id}/edit`,
         },
     ],
 };

@@ -19,7 +19,9 @@ class ReportController extends Controller
     public function salesSummary(Request $request)
     {
         $tenant = $request->attributes->get('tenant');
-        $branchId = $request->query('branch_id', $request->session()->get('active_branch_id'));
+        $branchId = $request->query('branch_id')
+            ?? $request->header('X-Branch-ID')
+            ?? ($request->hasSession() ? $request->session()->get('active_branch_id') : null);
 
         $from = Carbon::parse($request->query('from', today()->toDateString()))->startOfDay();
         $to = Carbon::parse($request->query('to', today()->toDateString()))->endOfDay();

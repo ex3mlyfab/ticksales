@@ -14,9 +14,9 @@ use App\Http\Controllers\Api\SaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
-    Route::middleware('web')->post('/auth/login', [AuthController::class, 'login']);
+    Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:login');
 
-    Route::middleware(['web', 'auth', 'tenant'])->group(function () {
+    Route::middleware(['auth:sanctum', 'tenant'])->group(function () {
         Route::get('/me', [AuthController::class, 'me']);
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/dashboard', [DashboardController::class, 'index']);

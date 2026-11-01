@@ -1,8 +1,10 @@
-import { Head, Form, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { Button } from '@/components/ui/button';
 import { Checkbox, Input, Label } from '@/components/ui';
+import { update, index } from '@/routes/customer-groups';
+
 
 interface CustomerGroup {
     id: string;
@@ -36,43 +38,56 @@ export default function CustomerGroupEditPage({ group }: Props) {
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
-                    <Form
-                        onSubmit={form.put(route('customer-groups.update', group.id))}
-                        className="space-y-6"
-                    >
-                        {({ processing, errors }) => (
-                            <>
+                    <form onSubmit={(e) => { e.preventDefault(); form.put(update.url(group.id)); }} className="space-y-6">
+                        {(() => { const { processing, errors } = form; return (<>
                                 <div className="grid gap-2">
                                     <Label htmlFor="name">Group Name *</Label>
                                     <Input
                                         id="name"
                                         name="name"
                                         value={form.data.name}
-                                        onChange={(e) => form.setData('name', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData('name', e.target.value)
+                                        }
                                         placeholder="e.g. VIP Customers"
                                         required
                                     />
-                                    {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
+                                    {errors.name && (
+                                        <p className="text-sm text-red-500">
+                                            {errors.name}
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="description">Description</Label>
+                                    <Label htmlFor="description">
+                                        Description
+                                    </Label>
                                     <textarea
                                         id="description"
                                         name="description"
                                         value={form.data.description}
-                                        onChange={(e) => form.setData('description', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'description',
+                                                e.target.value,
+                                            )
+                                        }
                                         placeholder="Optional description of the group"
                                         rows={3}
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.description && (
-                                        <p className="text-sm text-red-500">{errors.description}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.description}
+                                        </p>
                                     )}
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="discount_rate">Discount Rate (%) *</Label>
+                                    <Label htmlFor="discount_rate">
+                                        Discount Rate (%) *
+                                    </Label>
                                     <Input
                                         id="discount_rate"
                                         name="discount_rate"
@@ -81,11 +96,18 @@ export default function CustomerGroupEditPage({ group }: Props) {
                                         min="0"
                                         max="100"
                                         value={form.data.discount_rate}
-                                        onChange={(e) => form.setData('discount_rate', e.target.value)}
+                                        onChange={(e) =>
+                                            form.setData(
+                                                'discount_rate',
+                                                e.target.value,
+                                            )
+                                        }
                                         required
                                     />
                                     {errors.discount_rate && (
-                                        <p className="text-sm text-red-500">{errors.discount_rate}</p>
+                                        <p className="text-sm text-red-500">
+                                            {errors.discount_rate}
+                                        </p>
                                     )}
                                 </div>
 
@@ -95,10 +117,16 @@ export default function CustomerGroupEditPage({ group }: Props) {
                                         name="is_active"
                                         checked={form.data.is_active}
                                         onCheckedChange={(checked) =>
-                                            form.setData('is_active', checked === true)
+                                            form.setData(
+                                                'is_active',
+                                                checked === true,
+                                            )
                                         }
                                     />
-                                    <Label htmlFor="is_active" className="text-sm">
+                                    <Label
+                                        htmlFor="is_active"
+                                        className="text-sm"
+                                    >
                                         Active
                                     </Label>
                                 </div>
@@ -108,15 +136,14 @@ export default function CustomerGroupEditPage({ group }: Props) {
                                         Update Group
                                     </Button>
                                     <Link
-                                        href={route('customer-groups.index')}
+                                        href={index.url()}
                                         className="rounded-md border px-4 py-2 text-sm font-medium hover:bg-muted"
                                     >
                                         Cancel
                                     </Link>
                                 </div>
-                            </>
-                        )}
-                    </Form>
+                            </>); })()}
+                    </form>
                 </div>
             </div>
         </>

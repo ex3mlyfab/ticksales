@@ -6,6 +6,7 @@
         "build": "vp build",
         "build:ssr": "vp build && vp build --ssr",
         "dev": "vp dev",
+        "test": "vp test run",
         "check": "vp check",
         "check:fix": "vp check --fix",
         "types:check": "tsc --noEmit"
@@ -51,6 +52,8 @@
         "@rolldown/plugin-babel": "^0.2.3",
         "@types/node": "^22.13.5",
         "babel-plugin-react-compiler": "^1.0.0",
+        "fake-indexeddb": "^6.2.7",
+        "happy-dom": "^21.0.4",
         "vite-plugin-pwa": "^2.0.0",
         "vite-plus": "0.3.0"
     },

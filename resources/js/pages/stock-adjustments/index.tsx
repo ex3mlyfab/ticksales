@@ -1,6 +1,8 @@
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
+import { create, post, destroy } from '@/routes/stock-adjustments';
+
 
 interface AdjustmentItem {
     id: string;
@@ -45,7 +47,7 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Adjustments</h2>
                         <Link
-                            href={route('stock-adjustments.create')}
+                            href={create.url()}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
                         >
                             New Adjustment
@@ -59,11 +61,17 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                             </div>
                         ) : (
                             adjustments.data.map((adj) => (
-                                <div key={adj.id} className="flex items-center justify-between py-3">
+                                <div
+                                    key={adj.id}
+                                    className="flex items-center justify-between py-3"
+                                >
                                     <div>
-                                        <p className="font-medium">{adj.reference_no}</p>
+                                        <p className="font-medium">
+                                            {adj.reference_no}
+                                        </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {adj.branch_name} • {adj.items.length} item(s)
+                                            {adj.branch_name} •{' '}
+                                            {adj.items.length} item(s)
                                         </p>
                                     </div>
                                     <div className="flex items-center space-x-3">
@@ -78,7 +86,7 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                                         </span>
                                         {adj.status === 'draft' && (
                                             <form
-                                                action={route('stock-adjustments.post', adj.id)}
+                                                action={post.url(adj.id)}
                                                 method="POST"
                                             >
                                                 <button
@@ -94,17 +102,21 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                                                 e.preventDefault();
                                                 e.currentTarget.submit();
                                             }}
-                                            action={route('stock-adjustments.destroy', adj.id)}
+                                            action={destroy.url(adj.id)}
                                             method="POST"
                                         >
                                             <button
                                                 type="submit"
                                                 className="text-sm text-red-500 hover:text-red-700"
-                                                onClick="return confirm('Are you sure you want to delete this adjustment?')"
+                                                onClick={(e) => { if (!confirm('Are you sure you want to delete this adjustment?')) e.preventDefault(); }}
                                             >
                                                 Delete
                                             </button>
-                                            <input type="hidden" name="_method" value="DELETE" />
+                                            <input
+                                                type="hidden"
+                                                name="_method"
+                                                value="DELETE"
+                                            />
                                         </form>
                                     </div>
                                 </div>

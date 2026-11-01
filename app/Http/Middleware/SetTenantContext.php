@@ -20,7 +20,9 @@ class SetTenantContext
         app(TenantContext::class)->setTenant($tenant);
         $request->attributes->set('tenant', $tenant);
 
-        if ($tenant !== null) {
+        // Stateless (bearer token) API requests have no session; only persist
+        // the active tenant for stateful requests that carry one.
+        if ($tenant !== null && $request->hasSession()) {
             $request->session()->put('active_tenant_id', $tenant->id);
         }
 
@@ -39,7 +41,7 @@ class SetTenantContext
             return null;
         }
 
-        $tenantId = $request->session()->get('active_tenant_id')
+        $tenantId = ($request->hasSession() ? $request->session()->get('active_tenant_id') : null)
             ?? $request->input('tenant_id')
             ?? $request->header('X-Tenant-ID');
 
