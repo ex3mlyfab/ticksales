@@ -244,9 +244,9 @@ export default function PurchaseReturnCreatePage({
                                     {form.data.items.map((item, index) => (
                                         <div
                                             key={index}
-                                            className="grid grid-cols-6 gap-2 rounded border p-3"
+                                            className="grid grid-cols-1 gap-2 rounded border p-3 sm:grid-cols-2 2xl:grid-cols-6"
                                         >
-                                            <div className="col-span-2 grid gap-1">
+                                            <div className="grid gap-1 sm:col-span-2 2xl:col-span-2">
                                                 <Label
                                                     htmlFor={`pr_product_${index}`}
                                                 >

@@ -65,7 +65,7 @@ export default function StockTransferCreatePage({ branches, products }: Props) {
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <form onSubmit={(e) => { e.preventDefault(); form.post(store.url()); }} className="space-y-6">
                         {(() => { const { processing, errors } = form; return (<>
-                                <div className="grid grid-cols-3 gap-4">
+                                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                     <div className="grid gap-2">
                                         <Label htmlFor="from_branch_id">
                                             From Branch *
@@ -168,7 +168,7 @@ export default function StockTransferCreatePage({ branches, products }: Props) {
                                     {form.data.items.map((item, index) => (
                                         <div
                                             key={index}
-                                            className="grid grid-cols-4 gap-3 rounded border p-3"
+                                            className="grid grid-cols-1 gap-3 rounded border p-3 sm:grid-cols-2 xl:grid-cols-4"
                                         >
                                             <div className="grid gap-1">
                                                 <Label>Product *</Label>

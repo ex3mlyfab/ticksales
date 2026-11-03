@@ -25,7 +25,7 @@ class ProductCategoryController extends Controller
             ->where('tenant_id', $tenant?->id)
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->get();
+            ->paginate(20);
 
         return Inertia::render('product-categories/index', [
             'categories' => $categories,

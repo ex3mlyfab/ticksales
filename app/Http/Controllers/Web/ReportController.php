@@ -10,6 +10,8 @@ use App\Models\RegisterSession;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\SalePayment;
+use App\Support\Financials\BranchBalanceSheet;
+use App\Support\Financials\BranchProfitAndLoss;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -251,6 +253,62 @@ class ReportController extends Controller
             'filters' => [
                 'from' => $from->toDateString(),
                 'to' => $to->toDateString(),
+                'branch_id' => $branchId,
+            ],
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
+     * Profit and loss per tenant store (or consolidated) over a date range.
+     */
+    public function profitLoss(Request $request): Response
+    {
+        $tenant = $request->attributes->get('tenant');
+
+        $from = Carbon::parse($request->query('from', today()->startOfMonth()->toDateString()))->startOfDay();
+        $to = Carbon::parse($request->query('to', today()->toDateString()))->endOfDay();
+        $branchId = $request->query('branch_id');
+
+        $pnl = BranchProfitAndLoss::forPeriod($tenant, $branchId, $from, $to);
+
+        $branches = Branch::query()
+            ->where('tenant_id', $tenant?->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return Inertia::render('reports/profit-loss', [
+            'summary' => $pnl,
+            'filters' => [
+                'from' => $from->toDateString(),
+                'to' => $to->toDateString(),
+                'branch_id' => $branchId,
+            ],
+            'branches' => $branches,
+        ]);
+    }
+
+    /**
+     * Simplified balance sheet per tenant store (or consolidated) as of a date.
+     */
+    public function balanceSheet(Request $request): Response
+    {
+        $tenant = $request->attributes->get('tenant');
+
+        $asOf = Carbon::parse($request->query('as_of', today()->toDateString()))->endOfDay();
+        $branchId = $request->query('branch_id');
+
+        $snapshot = BranchBalanceSheet::asOf($tenant, $branchId, $asOf);
+
+        $branches = Branch::query()
+            ->where('tenant_id', $tenant?->id)
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        return Inertia::render('reports/balance-sheet', [
+            'summary' => $snapshot,
+            'filters' => [
+                'as_of' => $asOf->toDateString(),
                 'branch_id' => $branchId,
             ],
             'branches' => $branches,

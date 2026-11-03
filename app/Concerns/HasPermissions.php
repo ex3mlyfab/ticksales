@@ -58,9 +58,9 @@ trait HasPermissions
             return $this->permissionCache[$cacheKey];
         }
 
-        // Tenant owners hold every permission for their tenant regardless of
-        // the roles assigned to the membership.
-        if ($this->isOwnerInActiveTenant($tenant)) {
+        // Platform administrators and tenant owners hold every permission,
+        // even when they have no role-based permissions in the active tenant.
+        if (($this->is_platform_admin ?? false) || $this->isOwnerInActiveTenant($tenant)) {
             return $this->permissionCache[$cacheKey] = Permission::query()->get();
         }
 

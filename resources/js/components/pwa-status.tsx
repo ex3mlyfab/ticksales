@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
 
 export function PwaStatus() {
-    const [isOnline, setIsOnline] = useState<boolean>(
-        typeof navigator === 'undefined' ? true : navigator.onLine,
-    );
+    // Start "online" so the SSR HTML and the first client render agree;
+    // navigator.onLine is browser-only and would otherwise hydrate
+    // differently from the server (React hydration mismatch).
+    const [isOnline, setIsOnline] = useState<boolean>(true);
     const [canInstall, setCanInstall] = useState(false);
     const [promptEvent, setPromptEvent] =
         useState<BeforeInstallPromptEvent | null>(null);
 
     useEffect(() => {
+        setIsOnline(navigator.onLine);
+
         const handleOnline = () => setIsOnline(true);
         const handleOffline = () => setIsOnline(false);
 

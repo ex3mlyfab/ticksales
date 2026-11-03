@@ -133,7 +133,7 @@ export default function StockAdjustmentCreatePage({
                                     {form.data.items.map((item, index) => (
                                         <div
                                             key={index}
-                                            className="grid grid-cols-4 gap-3 rounded border p-3"
+                                            className="grid grid-cols-1 gap-3 rounded border p-3 sm:grid-cols-2 xl:grid-cols-4"
                                         >
                                             <div className="grid gap-1">
                                                 <Label

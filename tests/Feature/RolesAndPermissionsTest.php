@@ -41,3 +41,18 @@ test('a user without the permission cannot access it', function () {
     expect($user->can('products.create'))->toBeFalse()
         ->and($user->hasPermissionTo('products.create'))->toBeFalse();
 });
+
+test('a platform administrator receives all permissions without a tenant membership', function () {
+    $productsPermission = Permission::query()->create([
+        'name' => 'products.view',
+        'description' => 'View products',
+    ]);
+    $reportsPermission = Permission::query()->create([
+        'name' => 'reports.view',
+        'description' => 'View reports',
+    ]);
+    $user = User::factory()->create(['is_platform_admin' => true]);
+
+    expect($user->permissions()->modelKeys())
+        ->toEqual([$productsPermission->id, $reportsPermission->id]);
+});

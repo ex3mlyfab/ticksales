@@ -24,7 +24,7 @@ class ProductUnitController extends Controller
         $units = ProductUnit::query()
             ->where('tenant_id', $tenant?->id)
             ->orderBy('name')
-            ->get();
+            ->paginate(20);
 
         return Inertia::render('product-units/index', [
             'units' => $units,

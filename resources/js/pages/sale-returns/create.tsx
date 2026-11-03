@@ -234,7 +234,7 @@ export default function SaleReturnCreatePage({ sales, paymentMethods }: Props) {
                                                 return (
                                                     <div
                                                         key={line.id}
-                                                        className="grid grid-cols-4 items-center gap-3 p-3"
+                                                        className="grid grid-cols-1 items-center gap-3 p-3 sm:grid-cols-2 xl:grid-cols-4"
                                                     >
                                                         <div>
                                                             <p className="text-sm font-medium">
