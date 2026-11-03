@@ -29,6 +29,7 @@ use Illuminate\Support\Carbon;
  * @property int $alert_quantity
  * @property string|null $image_path
  * @property bool $is_active
+ * @property bool $is_storefront_published
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -60,6 +61,7 @@ class Product extends Model
         'alert_quantity',
         'image_path',
         'is_active',
+        'is_storefront_published',
     ];
 
     /**
@@ -76,6 +78,7 @@ class Product extends Model
             'track_inventory' => 'boolean',
             'alert_quantity' => 'integer',
             'is_active' => 'boolean',
+            'is_storefront_published' => 'boolean',
         ];
     }
 

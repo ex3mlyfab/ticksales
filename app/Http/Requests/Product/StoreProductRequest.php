@@ -46,6 +46,7 @@ class StoreProductRequest extends FormRequest
             'alert_quantity' => ['required', 'integer', 'min:0'],
             'image_path' => ['nullable', 'string', 'max:255'],
             'is_active' => ['required', 'boolean'],
+            'is_storefront_published' => ['sometimes', 'boolean'],
         ];
     }
 }

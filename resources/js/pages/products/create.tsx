@@ -37,6 +37,7 @@ export default function ProductCreatePage({
         alert_quantity: 0,
         image_path: '',
         is_active: true,
+        is_storefront_published: false,
     });
 
     return (
@@ -358,7 +359,7 @@ export default function ProductCreatePage({
                                     </div>
                                 </div>
 
-                                <div className="flex space-x-4">
+                                <div className="flex flex-wrap gap-x-6 gap-y-3">
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             id="has_variants"
@@ -401,6 +402,20 @@ export default function ProductCreatePage({
                                             className="text-sm"
                                         >
                                             Active
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="is_storefront_published"
+                                            name="is_storefront_published"
+                                            checked={form.data.is_storefront_published}
+                                            onCheckedChange={(checked) => form.setData('is_storefront_published', checked === true)}
+                                        />
+                                        <Label
+                                            htmlFor="is_storefront_published"
+                                            className="text-sm"
+                                        >
+                                            Publish in online store
                                         </Label>
                                     </div>
                                 </div>

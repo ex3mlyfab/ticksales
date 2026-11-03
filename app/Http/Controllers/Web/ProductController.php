@@ -100,6 +100,7 @@ class ProductController extends Controller
             'alert_quantity' => $validated['alert_quantity'],
             'image_path' => $validated['image_path'] ?? null,
             'is_active' => $validated['is_active'],
+            'is_storefront_published' => $validated['is_storefront_published'] ?? false,
         ]);
 
         $auditService->created($product, ['event' => 'product.created']);
@@ -162,7 +163,7 @@ class ProductController extends Controller
 
         $validated = $request->validated();
 
-        $product->update([
+        $productData = [
             'category_id' => $validated['category_id'] ?? null,
             'brand_id' => $validated['brand_id'] ?? null,
             'unit_id' => $validated['unit_id'] ?? null,
@@ -178,7 +179,13 @@ class ProductController extends Controller
             'alert_quantity' => $validated['alert_quantity'],
             'image_path' => $validated['image_path'] ?? null,
             'is_active' => $validated['is_active'],
-        ]);
+        ];
+
+        if (array_key_exists('is_storefront_published', $validated)) {
+            $productData['is_storefront_published'] = $validated['is_storefront_published'];
+        }
+
+        $product->update($productData);
 
         $auditService->updated($product, $validated);
 

@@ -2,9 +2,14 @@
 
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\LandingController;
+use App\Http\Controllers\Web\StorefrontController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('home');
+Route::get('/shop/{tenant:slug}', [StorefrontController::class, 'show'])->name('storefront.show');
+Route::get('/shop/{tenant:slug}/products/{product}', [StorefrontController::class, 'product'])
+    ->scopeBindings()
+    ->name('storefront.products.show');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');

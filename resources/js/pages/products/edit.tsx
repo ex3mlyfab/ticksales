@@ -21,6 +21,7 @@ interface Product {
     alert_quantity: number;
     image_path: string | null;
     is_active: boolean;
+    is_storefront_published: boolean;
     category_id: string | null;
     brand_id: string | null;
     unit_id: string | null;
@@ -62,6 +63,7 @@ export default function ProductEditPage({
         alert_quantity: product.alert_quantity,
         image_path: product.image_path ?? '',
         is_active: product.is_active,
+        is_storefront_published: product.is_storefront_published,
     });
 
     return (
@@ -378,7 +380,7 @@ export default function ProductEditPage({
                                     </div>
                                 </div>
 
-                                <div className="flex space-x-4">
+                                <div className="flex flex-wrap gap-x-6 gap-y-3">
                                     <div className="flex items-center space-x-2">
                                         <Checkbox
                                             id="has_variants"
@@ -421,6 +423,20 @@ export default function ProductEditPage({
                                             className="text-sm"
                                         >
                                             Active
+                                        </Label>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id="is_storefront_published"
+                                            name="is_storefront_published"
+                                            checked={form.data.is_storefront_published}
+                                            onCheckedChange={(checked) => form.setData('is_storefront_published', checked === true)}
+                                        />
+                                        <Label
+                                            htmlFor="is_storefront_published"
+                                            className="text-sm"
+                                        >
+                                            Publish in online store
                                         </Label>
                                     </div>
                                 </div>

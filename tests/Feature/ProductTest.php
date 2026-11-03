@@ -54,6 +54,7 @@ test('authenticated users can create a product', function () {
             'track_inventory' => true,
             'alert_quantity' => 5,
             'is_active' => true,
+            'is_storefront_published' => true,
         ]);
 
     $response->assertRedirect(route('products.index'));
@@ -71,6 +72,7 @@ test('authenticated users can create a product', function () {
     expect($product->track_inventory)->toBeTrue();
     expect($product->alert_quantity)->toBe(5);
     expect($product->is_active)->toBeTrue();
+    expect($product->is_storefront_published)->toBeTrue();
 });
 
 test('authenticated users can update a product', function () {
@@ -101,6 +103,7 @@ test('authenticated users can update a product', function () {
             'track_inventory' => true,
             'alert_quantity' => 3,
             'is_active' => true,
+            'is_storefront_published' => true,
         ])
         ->assertRedirect(route('products.index'));
 
@@ -111,6 +114,35 @@ test('authenticated users can update a product', function () {
     expect($product->category_id)->toBe($category->id);
     expect($product->selling_price)->toBe('24.0000');
     expect($product->alert_quantity)->toBe(3);
+    expect($product->is_storefront_published)->toBeTrue();
+});
+
+test('updating a product without the storefront field preserves its publication state', function () {
+    $tenant = Tenant::factory()->create();
+    $user = User::factory()->create();
+    $product = Product::factory()->create([
+        'tenant_id' => $tenant->id,
+        'is_storefront_published' => true,
+    ]);
+
+    attachUserToTenant($user, $tenant);
+
+    actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->put('/products/'.$product->id, [
+            'tenant_id' => $tenant->id,
+            'name' => $product->name,
+            'sku' => $product->sku,
+            'cost_price' => $product->cost_price,
+            'selling_price' => $product->selling_price,
+            'has_variants' => false,
+            'track_inventory' => true,
+            'alert_quantity' => 3,
+            'is_active' => true,
+        ])
+        ->assertRedirect(route('products.index'));
+
+    expect($product->refresh()->is_storefront_published)->toBeTrue();
 });
 
 test('authenticated users can delete a product', function () {

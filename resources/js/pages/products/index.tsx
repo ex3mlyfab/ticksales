@@ -3,7 +3,6 @@ import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, edit, destroy } from '@/routes/products';
 
-
 interface Product {
     id: string;
     name: string;
@@ -12,6 +11,7 @@ interface Product {
     cost_price: number;
     selling_price: number;
     is_active: boolean;
+    is_storefront_published: boolean;
     category_name: string | null;
     brand_name: string | null;
     unit_abbreviation: string | null;
@@ -93,6 +93,17 @@ export default function ProductIndexPage({ products }: Props) {
                                                 ? 'Active'
                                                 : 'Inactive'}
                                         </span>
+                                        <span
+                                            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                                                product.is_storefront_published
+                                                    ? 'bg-primary/10 text-primary'
+                                                    : 'bg-muted text-muted-foreground'
+                                            }`}
+                                        >
+                                            {product.is_storefront_published
+                                                ? 'Online'
+                                                : 'Not online'}
+                                        </span>
                                         <Link
                                             href={edit.url(product.id)}
                                             className="text-sm text-muted-foreground hover:text-foreground"
@@ -110,7 +121,14 @@ export default function ProductIndexPage({ products }: Props) {
                                             <button
                                                 type="submit"
                                                 className="text-sm text-red-500 hover:text-red-700"
-                                                onClick={(e) => { if (!confirm('Are you sure you want to delete this product?')) e.preventDefault(); }}
+                                                onClick={(e) => {
+                                                    if (
+                                                        !confirm(
+                                                            'Are you sure you want to delete this product?',
+                                                        )
+                                                    )
+                                                        e.preventDefault();
+                                                }}
                                             >
                                                 Delete
                                             </button>
