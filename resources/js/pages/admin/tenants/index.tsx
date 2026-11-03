@@ -1,45 +1,63 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
+import SubscriptionNavigation from '@/components/admin/subscription-navigation';
+import { create, show } from '@/routes/admin/tenants';
 
-export default function Index({
-    tenants = [],
-}: {
-    tenants: Array<Record<string, unknown>>;
-}) {
+interface Tenant {
+    id: string;
+    name: string;
+    slug: string;
+    email: string;
+    plan_name: string | null;
+    subscription_status: string;
+    created_at: string | null;
+}
+
+export default function Index({ tenants }: { tenants: Tenant[] }) {
     return (
         <>
             <Head title="Tenant Administration" />
-            <div className="space-y-4 p-6">
+            <div className="space-y-6 p-6">
+                <SubscriptionNavigation />
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-semibold">Tenants</h1>
-                    <a
-                        href="/admin/tenants/create"
+                    <Link
+                        href={create.url()}
                         className="rounded bg-slate-900 px-3 py-2 text-sm text-white"
                     >
                         New tenant
-                    </a>
+                    </Link>
                 </div>
 
                 <div className="rounded border bg-white p-4 shadow-sm">
-                    <ul className="space-y-3">
+                    <ul className="divide-y">
+                        {tenants.length === 0 && (
+                            <li className="py-6 text-sm text-slate-500">
+                                No tenants have been created.
+                            </li>
+                        )}
                         {tenants.map((tenant) => (
                             <li
-                                key={String(tenant.id)}
-                                className="flex items-center justify-between rounded border p-3"
+                                key={tenant.id}
+                                className="flex flex-wrap items-center justify-between gap-4 py-4"
                             >
                                 <div>
                                     <div className="font-medium">
-                                        {String(tenant.name)}
+                                        {tenant.name}
                                     </div>
                                     <div className="text-sm text-slate-500">
-                                        {String(tenant.slug)}
+                                        {tenant.email} · {tenant.slug}
+                                    </div>
+                                    <div className="mt-1 text-sm text-slate-600">
+                                        {tenant.plan_name ?? 'No plan'} ·{' '}
+                                        {tenant.subscription_status}
                                     </div>
                                 </div>
-                                <a
-                                    href={`/admin/tenants/${tenant.id}`}
+                                <Link
+                                    href={show.url(tenant.id)}
                                     className="text-sm font-medium text-slate-700"
                                 >
-                                    View
-                                </a>
+                                    Manage subscription
+                                </Link>
                             </li>
                         ))}
                     </ul>

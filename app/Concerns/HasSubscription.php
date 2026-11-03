@@ -2,6 +2,7 @@
 
 namespace App\Concerns;
 
+use App\Models\SubscriptionPlan;
 use Illuminate\Support\Carbon;
 
 /**
@@ -9,6 +10,7 @@ use Illuminate\Support\Carbon;
  *
  * @property string|null $plan
  * @property Carbon|null $trial_ends_at
+ * @property Carbon|null $subscription_ends_at
  * @property string|null $status
  */
 trait HasSubscription
@@ -24,6 +26,10 @@ trait HasSubscription
 
         if ($this->trial_ends_at && $this->trial_ends_at->isFuture()) {
             return 'trialing';
+        }
+
+        if ($this->subscription_ends_at && $this->subscription_ends_at->isPast()) {
+            return 'expired';
         }
 
         return 'active';
@@ -42,7 +48,7 @@ trait HasSubscription
      */
     public function isActive(): bool
     {
-        return (bool) $this->plan && ! $this->isTrialing();
+        return (bool) $this->plan && ! $this->isTrialing() && $this->status !== 'expired';
     }
 
     /**
@@ -50,6 +56,12 @@ trait HasSubscription
      */
     public function can(string $feature): bool
     {
+        $plan = SubscriptionPlan::query()->where('name', $this->plan)->first();
+
+        if ($plan !== null) {
+            return in_array($feature, $plan->features ?? [], true);
+        }
+
         $planFeatures = [
             'basic' => ['pos', 'products', 'customers', 'inventory_basic'],
             'pro' => ['pos', 'products', 'customers', 'inventory_advanced', 'reports', 'multi_branch'],
@@ -66,6 +78,12 @@ trait HasSubscription
      */
     public function maxBranches(): int
     {
+        $plan = SubscriptionPlan::query()->where('name', $this->plan)->value('max_branches');
+
+        if ($plan !== null) {
+            return (int) $plan;
+        }
+
         return match ($this->plan) {
             'basic' => 1,
             'pro' => 10,

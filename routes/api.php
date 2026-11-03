@@ -11,7 +11,10 @@ use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\SaleController;
+use App\Http\Controllers\Web\Admin\PaystackPaymentController;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/paystack/webhook', [PaystackPaymentController::class, 'webhook'])->name('paystack.webhook');
 
 Route::prefix('v1')->group(function () {
     Route::post('/auth/login', [AuthController::class, 'login'])->middleware('throttle:login');

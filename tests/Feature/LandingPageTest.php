@@ -70,3 +70,22 @@ test('the home page falls back to default plans when none are seeded', function 
         ->where('plans.2.name', 'enterprise')
     );
 });
+
+test('the home page does not show plans that an admin deactivated', function () {
+    SubscriptionPlan::query()->create([
+        'name' => 'hidden',
+        'display_name' => 'Hidden',
+        'price_monthly' => 10,
+        'max_branches' => 1,
+        'features' => ['pos'],
+        'is_active' => false,
+    ]);
+
+    $response = $this->get(route('home'));
+
+    $response->assertOk();
+    $response->assertInertia(fn (Assert $page) => $page
+        ->component('welcome')
+        ->has('plans', 0)
+    );
+});

@@ -15,6 +15,7 @@ class LandingController extends Controller
     public function __invoke(): Response
     {
         $plans = SubscriptionPlan::query()
+            ->where('is_active', true)
             ->orderBy('price_monthly')
             ->get()
             ->map(fn (SubscriptionPlan $plan) => [
@@ -27,7 +28,7 @@ class LandingController extends Controller
             ])
             ->all();
 
-        if ($plans === []) {
+        if ($plans === [] && ! SubscriptionPlan::query()->exists()) {
             $plans = $this->defaultPlans();
         }
 

@@ -7,7 +7,9 @@ use Database\Factories\TenantFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -24,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property string $locale
  * @property bool $is_active
  * @property Carbon|null $trial_ends_at
+ * @property Carbon|null $subscription_ends_at
  * @property string|null $plan
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -64,7 +67,32 @@ class Tenant extends Model
         return [
             'is_active' => 'boolean',
             'trial_ends_at' => 'datetime',
+            'subscription_ends_at' => 'datetime',
         ];
+    }
+
+    /**
+     * @return BelongsTo<SubscriptionPlan, $this>
+     */
+    public function subscriptionPlan(): BelongsTo
+    {
+        return $this->belongsTo(SubscriptionPlan::class, 'plan', 'name');
+    }
+
+    /**
+     * @return HasMany<SubscriptionPayment, $this>
+     */
+    public function subscriptionPayments(): HasMany
+    {
+        return $this->hasMany(SubscriptionPayment::class);
+    }
+
+    /**
+     * @return HasMany<SubscriptionCheckout, $this>
+     */
+    public function subscriptionCheckouts(): HasMany
+    {
+        return $this->hasMany(SubscriptionCheckout::class);
     }
 
     /**

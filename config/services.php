@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'paystack' => [
+        'enabled' => (bool) env('PAYSTACK_ENABLED', false),
+        'secret' => env('PAYSTACK_SECRET_KEY'),
+    ],
+
 ];
