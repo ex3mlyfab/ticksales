@@ -1,4 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
+import { show as showCart } from '@/actions/App/Http/Controllers/Web/StorefrontCartController';
 import { show as productShow } from '@/routes/storefront/products';
 
 interface Store {
@@ -6,6 +7,12 @@ interface Store {
     slug: string;
     currency: string;
     logo_url: string | null;
+    description: string | null;
+    email: string | null;
+    phone: string | null;
+    policy: string | null;
+    pickup_enabled: boolean;
+    delivery_enabled: boolean;
 }
 
 interface Product {
@@ -66,6 +73,12 @@ export default function StorefrontPage({ store, products }: Props) {
                             </p>
                             <p className="font-semibold">{store.name}</p>
                         </div>
+                        <Link
+                            href={showCart.url({ tenant: store.slug })}
+                            className="ml-auto inline-flex min-h-11 items-center rounded-md px-4 text-sm font-medium hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        >
+                            Cart
+                        </Link>
                     </div>
                 </header>
 
@@ -84,6 +97,40 @@ export default function StorefrontPage({ store, products }: Props) {
                             {products.total === 1 ? 'product' : 'products'}
                         </p>
                     </section>
+
+                    {(store.description || store.email || store.phone || store.policy || store.pickup_enabled || store.delivery_enabled) && (
+                        <section className="mb-10 grid gap-5 rounded-2xl border border-border/70 bg-card p-6 sm:grid-cols-2">
+                            {store.description && (
+                                <div className="sm:col-span-2">
+                                    <h2 className="font-semibold">About {store.name}</h2>
+                                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{store.description}</p>
+                                </div>
+                            )}
+                            {(store.email || store.phone) && (
+                                <div>
+                                    <h2 className="font-semibold">Contact</h2>
+                                    <div className="mt-2 space-y-1 text-sm text-muted-foreground">
+                                        {store.email && <p>{store.email}</p>}
+                                        {store.phone && <p>{store.phone}</p>}
+                                    </div>
+                                </div>
+                            )}
+                            {(store.pickup_enabled || store.delivery_enabled) && (
+                                <div>
+                                    <h2 className="font-semibold">Fulfillment</h2>
+                                    <p className="mt-2 text-sm text-muted-foreground">
+                                        {[store.pickup_enabled ? 'Pickup' : null, store.delivery_enabled ? 'Local delivery' : null].filter(Boolean).join(' · ')}
+                                    </p>
+                                </div>
+                            )}
+                            {store.policy && (
+                                <div className="sm:col-span-2">
+                                    <h2 className="font-semibold">Store policy</h2>
+                                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{store.policy}</p>
+                                </div>
+                            )}
+                        </section>
+                    )}
 
                     {products.data.length === 0 ? (
                         <section className="rounded-2xl border border-border/70 bg-card px-6 py-16 text-center">

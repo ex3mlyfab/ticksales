@@ -1,4 +1,6 @@
-import { Head, Link } from '@inertiajs/react';
+import { Form, Head, Link } from '@inertiajs/react';
+import { Button } from '@/components/ui/button';
+import { add as addCartItem, show as showCart } from '@/actions/App/Http/Controllers/Web/StorefrontCartController';
 import { show as storefrontShow } from '@/routes/storefront';
 
 interface Store {
@@ -21,6 +23,7 @@ interface Product {
     description: string | null;
     selling_price: string;
     image_url: string | null;
+    has_variants: boolean;
     variants: ProductVariant[];
 }
 
@@ -64,6 +67,12 @@ export default function StorefrontProductPage({ store, product }: Props) {
                             </p>
                             <p className="font-semibold">{store.name}</p>
                         </div>
+                        <Link
+                            href={showCart.url({ tenant: store.slug })}
+                            className="ml-auto inline-flex min-h-11 items-center rounded-md px-4 text-sm font-medium hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                        >
+                            Cart
+                        </Link>
                     </div>
                 </header>
 
@@ -113,7 +122,7 @@ export default function StorefrontProductPage({ store, product }: Props) {
                                 </p>
                             )}
 
-                            {product.variants.length > 0 && (
+                            {product.has_variants && product.variants.length > 0 && (
                                 <section
                                     aria-labelledby="variant-heading"
                                     className="mt-8 w-full border-t border-border/70 pt-6"
@@ -143,9 +152,81 @@ export default function StorefrontProductPage({ store, product }: Props) {
                                 </section>
                             )}
 
-                            <p className="mt-8 rounded-lg bg-muted/60 px-4 py-3 text-sm leading-6 text-muted-foreground">
-                                Online ordering is not enabled yet.
-                            </p>
+                            {product.has_variants && product.variants.length === 0 ? (
+                                <p className="mt-8 rounded-lg bg-muted/60 px-4 py-3 text-sm leading-6 text-muted-foreground">
+                                    No options are currently available for this product.
+                                </p>
+                            ) : (
+                                <Form
+                                    {...addCartItem.form({ tenant: store.slug })}
+                                    className="mt-8 w-full border-t border-border/70 pt-6"
+                                >
+                                    {({ errors, processing }) => (
+                                        <>
+                                            <input
+                                                type="hidden"
+                                                name="product_id"
+                                                value={product.id}
+                                            />
+                                            {product.has_variants && (
+                                                <label className="block space-y-2 text-sm font-medium">
+                                                    Product option
+                                                    <select
+                                                        name="variant_id"
+                                                        required
+                                                        defaultValue=""
+                                                        className="h-11 w-full rounded-md border border-input bg-background px-3 font-normal focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                    >
+                                                        <option value="" disabled>
+                                                            Choose an option
+                                                        </option>
+                                                        {product.variants.map((variant) => (
+                                                            <option key={variant.id} value={variant.id}>
+                                                                {variant.name} — {formatPrice(variant.selling_price, store.currency)}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    {errors.variant_id && (
+                                                        <span className="block font-normal text-destructive">
+                                                            {errors.variant_id}
+                                                        </span>
+                                                    )}
+                                                </label>
+                                            )}
+                                            <label className="mt-4 block space-y-2 text-sm font-medium">
+                                                Quantity
+                                                <input
+                                                    type="number"
+                                                    name="quantity"
+                                                    min="0.0001"
+                                                    max="9999"
+                                                    step="0.0001"
+                                                    defaultValue="1"
+                                                    required
+                                                    className="h-11 w-32 rounded-md border border-input bg-background px-3 font-normal tabular-nums focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+                                                />
+                                                {errors.quantity && (
+                                                    <span className="block font-normal text-destructive">
+                                                        {errors.quantity}
+                                                    </span>
+                                                )}
+                                            </label>
+                                            {errors.product_id && (
+                                                <p role="alert" className="mt-3 text-sm text-destructive">
+                                                    {errors.product_id}
+                                                </p>
+                                            )}
+                                            <Button
+                                                type="submit"
+                                                disabled={processing}
+                                                className="mt-5 min-h-11 w-full sm:w-auto"
+                                            >
+                                                {processing ? 'Adding…' : 'Add to cart'}
+                                            </Button>
+                                        </>
+                                    )}
+                                </Form>
+                            )}
                         </div>
                     </article>
                 </main>

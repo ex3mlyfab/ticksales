@@ -15,7 +15,8 @@ import {
 import { dashboard } from '@/routes';
 
 export function AppSidebar() {
-    const navigation = getAppNavigation(usePage().props.permissions ?? []);
+    const { permissions = [], tenant } = usePage().props;
+    const navigation = getAppNavigation(permissions, tenant?.id ?? null);
 
     return (
         <Sidebar collapsible="icon" variant="inset">

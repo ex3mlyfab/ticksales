@@ -21,6 +21,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $email
  * @property bool $is_main
  * @property bool $is_active
+ * @property string $local_delivery_fee
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
@@ -44,6 +45,7 @@ class Branch extends Model
         'email',
         'is_main',
         'is_active',
+        'local_delivery_fee',
     ];
 
     /**
@@ -56,6 +58,7 @@ class Branch extends Model
         return [
             'is_main' => 'boolean',
             'is_active' => 'boolean',
+            'local_delivery_fee' => 'decimal:4',
         ];
     }
 

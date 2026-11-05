@@ -123,6 +123,14 @@ class Tenant extends Model
     }
 
     /**
+     * Get the storefront orders placed with this tenant.
+     */
+    public function storefrontOrders(): HasMany
+    {
+        return $this->hasMany(StorefrontOrder::class);
+    }
+
+    /**
      * Get the inventory snapshots for the tenant.
      */
     public function inventories()

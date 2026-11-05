@@ -48,6 +48,7 @@ test('authenticated users can create a product', function () {
             'name' => 'Blue Widget',
             'sku' => 'BW-001',
             'barcode' => '1234567890123',
+            'description' => 'A public blue widget',
             'cost_price' => 10.5,
             'selling_price' => 19.99,
             'has_variants' => false,
@@ -75,6 +76,50 @@ test('authenticated users can create a product', function () {
     expect($product->is_storefront_published)->toBeTrue();
 });
 
+test('published products cannot be created without valid storefront content or pricing', function () {
+    $tenant = Tenant::factory()->create();
+    $user = User::factory()->create();
+    attachUserToTenant($user, $tenant);
+
+    actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->post('/products', [
+            'tenant_id' => $tenant->id,
+            'name' => 'Invalid product',
+            'description' => '',
+            'cost_price' => 10,
+            'selling_price' => 0,
+            'has_variants' => false,
+            'track_inventory' => false,
+            'alert_quantity' => 0,
+            'is_active' => true,
+            'is_storefront_published' => true,
+        ])
+        ->assertSessionHasErrors(['description', 'selling_price']);
+});
+
+test('published variant products cannot be created without variants', function () {
+    $tenant = Tenant::factory()->create();
+    $user = User::factory()->create();
+    attachUserToTenant($user, $tenant);
+
+    actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->post('/products', [
+            'tenant_id' => $tenant->id,
+            'name' => 'Variant product',
+            'description' => 'A public variant product',
+            'cost_price' => 10,
+            'selling_price' => 0,
+            'has_variants' => true,
+            'track_inventory' => false,
+            'alert_quantity' => 0,
+            'is_active' => true,
+            'is_storefront_published' => true,
+        ])
+        ->assertSessionHasErrors(['is_storefront_published']);
+});
+
 test('authenticated users can update a product', function () {
     $tenant = Tenant::factory()->create();
     $user = User::factory()->create();
@@ -97,6 +142,7 @@ test('authenticated users can update a product', function () {
             'category_id' => $category->id,
             'name' => 'New Product',
             'sku' => 'NEW-001',
+            'description' => 'A public product description',
             'cost_price' => 12,
             'selling_price' => 24,
             'has_variants' => false,

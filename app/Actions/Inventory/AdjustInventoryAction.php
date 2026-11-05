@@ -6,7 +6,9 @@ use App\Models\Inventory;
 use App\Models\InventoryTransaction;
 use App\Models\StockAdjustment;
 use App\Models\StockAdjustmentItem;
+use App\Models\StorefrontStockReservation;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class AdjustInventoryAction
 {
@@ -27,8 +29,9 @@ class AdjustInventoryAction
         string|float|int|null $unitCost = null,
         ?int $createdBy = null,
         bool $requireSufficientStock = false,
+        ?string $reservationIdToConsume = null,
     ): void {
-        DB::transaction(function () use ($tenantId, $branchId, $productId, $variantId, $quantityChanged, $referenceType, $referenceId, $type, $note, $unitCost, $createdBy, $requireSufficientStock) {
+        DB::transaction(function () use ($tenantId, $branchId, $productId, $variantId, $quantityChanged, $referenceType, $referenceId, $type, $note, $unitCost, $createdBy, $requireSufficientStock, $reservationIdToConsume) {
             $inventory = Inventory::query()
                 ->where('tenant_id', $tenantId)
                 ->where('branch_id', $branchId)
@@ -49,14 +52,37 @@ class AdjustInventoryAction
 
             $change = (float) $quantityChanged;
 
-            if ($requireSufficientStock && $change < 0 && ((float) $inventory->quantity + $change) < 0) {
-                throw new \RuntimeException(sprintf(
-                    'Insufficient stock for %s (%s): %s available, %s requested.',
-                    $productId,
-                    $variantId ?? 'default variant',
-                    $inventory->quantity,
-                    abs($change),
-                ));
+            if ($change < 0) {
+                $reservedQuantityQuery = StorefrontStockReservation::active()
+                    ->where('inventory_id', $inventory->id)
+                    ->lockForUpdate();
+
+                if ($reservationIdToConsume !== null) {
+                    $reservedQuantityQuery->where('id', '!=', $reservationIdToConsume);
+                }
+
+                $reservedQuantity = (float) $reservedQuantityQuery->get()->sum('quantity');
+                $quantityAfterChange = (float) $inventory->quantity + $change;
+
+                if ($reservedQuantity > 0 && $quantityAfterChange < $reservedQuantity) {
+                    throw ValidationException::withMessages([
+                        'quantity' => sprintf(
+                            'Only %s units are available after online order reservations; %s requested.',
+                            max(0, (float) $inventory->quantity - $reservedQuantity),
+                            abs($change),
+                        ),
+                    ]);
+                }
+
+                if ($requireSufficientStock && $quantityAfterChange < 0) {
+                    throw new \RuntimeException(sprintf(
+                        'Insufficient stock for %s (%s): %s available, %s requested.',
+                        $productId,
+                        $variantId ?? 'default variant',
+                        $inventory->quantity,
+                        abs($change),
+                    ));
+                }
             }
 
             $inventory->increment('quantity', $quantityChanged);
@@ -103,8 +129,30 @@ class AdjustInventoryAction
                 'quantity' => 0,
             ]);
 
+            $inventory = Inventory::query()
+                ->whereKey($inventory->id)
+                ->lockForUpdate()
+                ->firstOrFail();
             $quantityBefore = (float) $inventory->quantity;
             $quantityAfter = $quantityBefore + $quantityDelta;
+
+            if ($quantityDelta < 0) {
+                $reservedQuantity = (float) StorefrontStockReservation::active()
+                    ->where('inventory_id', $inventory->id)
+                    ->lockForUpdate()
+                    ->get()
+                    ->sum('quantity');
+
+                if ($reservedQuantity > 0 && $quantityAfter < $reservedQuantity) {
+                    throw ValidationException::withMessages([
+                        'quantity_delta' => sprintf(
+                            'Only %s units are available after online order reservations; %s requested.',
+                            max(0, $quantityBefore - $reservedQuantity),
+                            abs($quantityDelta),
+                        ),
+                    ]);
+                }
+            }
 
             $adjustment = StockAdjustment::query()->create([
                 'tenant_id' => $tenantId,

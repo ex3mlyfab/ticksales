@@ -32,6 +32,14 @@ class TenantSettingFactory extends Factory
             'allow_negative_stock' => false,
             'require_customer_on_sale' => false,
             'loyalty_enabled' => false,
+            'is_storefront_enabled' => true,
+            'bank_transfer_instructions' => null,
+            'storefront_description' => null,
+            'storefront_email' => null,
+            'storefront_phone' => null,
+            'storefront_policy' => null,
+            'storefront_pickup_enabled' => true,
+            'storefront_delivery_enabled' => true,
         ];
     }
 }

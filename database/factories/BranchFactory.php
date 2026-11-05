@@ -31,6 +31,7 @@ class BranchFactory extends Factory
             'email' => fake()->safeEmail(),
             'is_main' => false,
             'is_active' => true,
+            'local_delivery_fee' => 0,
         ];
     }
 }

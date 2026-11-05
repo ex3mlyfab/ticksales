@@ -3,6 +3,7 @@
 use App\Http\Controllers\Settings\ProfileController;
 use App\Http\Controllers\Settings\SecurityController;
 use App\Http\Controllers\Settings\TenantBrandingSettingsController;
+use App\Http\Controllers\Settings\TenantStorefrontSettingsController;
 use Illuminate\Auth\Middleware\RequirePassword;
 use Illuminate\Support\Facades\Route;
 
@@ -25,9 +26,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('user-password.update');
 
     Route::inertia('settings/appearance', 'settings/appearance')->name('appearance.edit');
-    Route::inertia('settings/tenant', 'settings/tenant')->name('tenant.settings')->middleware('permission:settings.view');
+    Route::get('settings/tenant', [TenantStorefrontSettingsController::class, 'edit'])
+        ->name('tenant.settings')
+        ->middleware('permission:settings.view');
     Route::inertia('settings/branding', 'settings/branding')->name('tenant.branding')->middleware('permission:settings.view');
 
+    Route::put('settings/tenant', [TenantStorefrontSettingsController::class, 'update'])
+        ->name('tenant.settings.update')
+        ->middleware('permission:settings.update');
+    Route::put('settings/tenant/branches/{branch}/delivery-fee', [TenantStorefrontSettingsController::class, 'updateDeliveryFee'])
+        ->name('tenant.settings.branches.delivery-fee.update')
+        ->middleware('permission:settings.update');
     Route::post('settings/branding', [TenantBrandingSettingsController::class, 'update'])->name('tenant.branding.update')->middleware('permission:settings.update');
     Route::delete('settings/branding', [TenantBrandingSettingsController::class, 'destroy'])->name('tenant.branding.destroy')->middleware('permission:settings.update');
 });

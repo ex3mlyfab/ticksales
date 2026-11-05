@@ -548,7 +548,7 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 
 ---
 
-## Phase 16 — Tenant Online Storefront (Planned)
+## Phase 16 — Tenant Online Storefront (In Progress)
 
 **Objective:** Let each tenant publish a branded public catalog and accept online orders without weakening tenant isolation or coupling public checkout to staff POS workflows.
 
@@ -556,28 +556,31 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 
 **Planning estimate:** Approximately **4–6 weeks for one engineer** for a focused v1, assuming a single merchant-payment approach, one fulfillment policy, no custom domains, no carrier integration, and reuse of the current UI stack. Payment-provider onboarding, legal/privacy review, and merchant settlement agreements are outside this estimate and can extend the schedule. Re-estimate after Phase 16.1 decisions.
 
-**Implementation status:** The first browsing-only slice is implemented: products can be explicitly published, and active tenants with published products can serve public catalog and product-detail pages. A store-wide enable switch, cart, order tracking, analytics, payment, and fulfillment remain unimplemented; paid checkout stays blocked on the decisions below.
+**Implementation status:** Product publication controls, tenant-scoped public catalogs/product details, a per-tenant storefront enable switch, tenant bank-transfer instructions, and per-branch local-delivery fees are implemented. Checkout, order tracking, analytics, staff order management, inventory reservation, and payment confirmation remain unimplemented. Offline order placement is the selected v1 payment model; no payment-provider integration is enabled.
 
 ### 16.1 — Decide storefront, payment, and fulfillment rules
 
-- [ ] Confirm payment settlement model: platform collection, provider-connected merchant accounts, or initially manual/offline payment. Do not assume the subscription Paystack secret can accept or route tenant sales.
-- [ ] Choose v1 fulfillment: pickup, local delivery, shipping, or a clearly bounded combination; define the branch that owns fulfillment and available stock.
-- [ ] Decide guest checkout fields, customer account requirements, cancellation/refund policy, taxes, shipping fees, and whether unpaid orders reserve stock.
-- [ ] Start with `/{tenant slug}` or `/shop/{tenant slug}` and explicitly defer custom domains until domain verification and tenant-routing operations are designed.
-- [ ] Define storefront publication and availability rules separately from internal product activity and POS availability.
+- [x] Use manual/offline payment in v1: cash on pickup/delivery or bank transfer, with staff confirming receipt. Do not assume the subscription Paystack secret can accept tenant sales.
+- [x] Support pickup and local delivery. Start reservations at the tenant's main branch; staff may reassign only when the destination branch has enough stock.
+- [x] Allow guest checkout with optional accounts; require name and phone, allow email, and require a delivery address for local delivery.
+- [x] Define customer cancellation and manual refund handling for orders whose offline payment has already been confirmed.
+- [x] Reuse existing product tax rates and tenant tax-inclusive settings; configure local delivery fees per branch.
+- [x] Use `/shop/{tenant slug}` and defer custom domains until domain verification and tenant-routing operations are designed.
+- [x] Define storefront publication and availability separately from internal product activity and POS availability.
 
-**Gate:** Do not start paid checkout until merchant-of-record, settlement, refund ownership, and webhook ownership are agreed.
+**Gate:** Do not add automated online payment until merchant-of-record, settlement, refund ownership, and webhook ownership are agreed. Customer orders may use the selected manual/offline methods.
 
 ### 16.2 — Store configuration and product publication
 
-- [ ] Add tenant-owned storefront settings (enabled state, public description/contact details, fulfillment settings, and any store-specific policy text); reuse tenant branding where it fits.
+- [x] Add tenant-owned storefront enabled state, bank-transfer instructions, and per-branch local-delivery fee controls; reuse tenant branding for store identity.
+- [x] Add public description/contact details, fulfillment settings, and any store-specific policy text.
 - [x] Add an explicit product publication control and keep existing `is_active` semantics intact for POS and inventory. Variant publication remains a follow-up.
-- [ ] Add tenant-owner settings UI and authorization. Derive tenant context from the resolved store, never from a guest-supplied tenant ID.
-- [ ] Validate published products have a usable price, public content, and valid active variants before they can be listed.
+- [x] Add tenant settings UI gated by the existing `settings.view` and `settings.update` permissions; derive the tenant from authenticated context, not a submitted tenant ID.
+- [x] Validate published products have a usable price, public content, and valid active variants before they can be listed.
 
 ### 16.3 — Public store resolution and catalog
 
-- [x] Resolve a tenant from its unique slug and require the tenant to be active.
+- [x] Resolve a tenant from its unique slug and require the tenant to be active with its storefront enabled.
 - [x] Keep guest storefront routes separate from authenticated staff routes and POS routes.
 - [x] Build public catalog and product-detail pages with product images, active variants, and tenant currency display. Category filtering, search, and stock messaging remain follow-ups.
 - [x] Query only the resolved tenant's active, published products and explicitly serialize public fields; never expose costs, internal notes, tenant contact/billing details, or other tenants' records.
@@ -585,29 +588,29 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 
 ### 16.4 — Cart and online order lifecycle
 
-- [ ] Implement a tenant-bound guest cart with server-side product/variant validation and server-calculated prices, discounts, tax, shipping, and totals.
-- [ ] Add a dedicated online order aggregate and immutable order-line snapshots (product name/SKU/variant, unit price, quantity, tax, discount, currency); preserve existing POS sales behavior.
-- [ ] Define explicit order and payment states, such as pending payment, paid, processing, ready/shipped, completed, cancelled, and refunded; document allowed transitions.
-- [ ] Use unique idempotency keys for checkout and webhook processing. Repeated submits/events must not create duplicate orders, charges, inventory movements, or notifications.
-- [ ] Persist only necessary customer data, protect it with tenant scoping/authorization, and define retention/deletion rules.
+- [x] Implement a tenant-bound guest cart with server-side product/variant validation and server-calculated prices and tax. Discounts and shipping remain out of scope until defined.
+- [x] Add a dedicated online order aggregate and order-line snapshots (product name/SKU/variant, unit price, quantity, tax); preserve existing POS sales behavior.
+- [x] Define explicit order and payment states, including pending, accepted, ready, completed, cancelled, unpaid, paid, and refunded, with guarded transitions.
+- [x] Use unique idempotency keys for checkout. Repeated submits must not create duplicate orders or inventory reservations. Webhook processing is not in this offline-payment release.
+- [x] Persist only necessary customer data, protect it with tenant scoping/authorization, and define retention/deletion rules.
 
 ### 16.5 — Inventory, payment, and fulfillment
 
-- [ ] Choose the fulfillment branch deterministically and ensure it belongs to the order's tenant.
-- [ ] Reserve or decrement inventory within a database transaction with row locking and sufficient-stock checks. Define release/expiry on failed, abandoned, or expired payment; reconcile reservation rows against the inventory ledger.
-- [ ] Never accept price, tax, stock, payment status, or tenant ownership from the browser as authoritative.
+- [x] Choose the active main fulfillment branch deterministically and ensure it belongs to the order's tenant; support stock-checked staff reassignment.
+- [x] Reserve or decrement inventory within a database transaction with row locking and sufficient-stock checks. Cancellation releases holds; payment consumes them. Automatic expiry remains a follow-up.
+- [x] Never accept price, tax, stock, payment status, or tenant ownership from the browser as authoritative.
 - [ ] Initialize provider payments server-side; verify webhook signature and then independently verify provider status, reference, amount, and currency before marking an order paid or fulfilling it.
 - [ ] Store provider references and event identifiers with uniqueness constraints; handle duplicated, delayed, out-of-order, and invalid events safely.
-- [ ] Keep merchant order payment configuration separate from platform subscription billing credentials and records.
-- [ ] Provide tenant staff screens for order review, fulfillment status, cancellation, refunds, and audit history. Use queued notifications where appropriate.
+- [x] Keep merchant order payment configuration separate from platform subscription billing credentials and records.
+- [x] Provide tenant staff screens for order review, fulfillment status, cancellation, refunds, and audit history. Customer notifications remain a follow-up.
 
 ### 16.6 — Customer order status and delivery tracking
 
-- [ ] Provide an order confirmation and a customer-accessible order status page; do not expose order details through sequential IDs or guessable references alone.
-- [ ] For guest access, issue a cryptographically random, order-scoped tracking credential; persist only its digest, make it revocable/expirable, and rate-limit lookup/credential issuance. An authenticated customer account can be supported as an alternative.
-- [ ] Return the minimum information required to identify the order and show status. Exclude full address, payment credentials, internal notes, and unrelated customer/order data from public tracking responses.
-- [ ] Record status changes as an append-only order timeline with actor, timestamp, and tenant context; separate payment status from fulfillment/shipment status.
-- [ ] In v1, support manual fulfillment updates and tracking number/carrier fields only if shipping is selected. Defer carrier API integrations until a specific provider is chosen.
+- [x] Provide an order confirmation and a customer-accessible order status page; do not expose order details through sequential IDs or guessable references alone.
+- [x] For guest access, issue a cryptographically random, order-scoped tracking credential and persist only its digest. Public lookups are rate-limited; revocation/expiry remains a follow-up.
+- [x] Return the minimum information required to identify the order and show status. Exclude full address, payment credentials, internal notes, and unrelated customer/order data from public tracking responses.
+- [x] Record status changes as an append-only order timeline with actor, timestamp, and tenant context; keep payment status separate.
+- [x] In v1, support manual fulfillment updates and tracking number/carrier fields only if shipping is selected. Defer carrier API integrations until a specific provider is chosen.
 - [ ] Notify customers about confirmation and important status changes without putting bearer tracking credentials or sensitive personal data in logs.
 
 ### 16.7 — Storefront analytics and progress tracking
@@ -620,10 +623,11 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 
 ### 16.8 — Security, tests, and rollout gates
 
-- [ ] Add feature tests for active/inactive tenant resolution, unpublished products, cross-tenant slug/ID tampering, private-field exposure, cart tampering, order status transitions, stock concurrency, and idempotent checkout.
+- [x] Add feature tests for storefront enable/disable, tenant settings authorization and payload isolation, inactive tenants, unpublished products, cross-tenant product IDs, and private-field exposure.
+- [x] Add feature tests for cart tampering, guarded order status/payment transitions, stock reservation protection, branch reassignment, and idempotent checkout. Add true concurrent checkout testing before production rollout.
 - [ ] Add payment tests for invalid signatures, mismatched amount/currency/reference, duplicate and out-of-order webhooks, provider failures, and retry behavior.
-- [ ] Add tracking tests for token entropy/lookup, revocation/expiry, throttling, and absence of sensitive fields; test analytics allowlisting, tenant scoping, and server-confirmed purchase counts.
-- [ ] Rate-limit public search, cart, checkout, tracking lookups, and credential issuance; preserve CSRF for stateful browser writes and use strict output validation.
+- [x] Add tracking tests for token entropy, valid/invalid guest credentials, throttling, and absence of sensitive fields. Explicit token revocation/expiry and analytics event/report tests remain.
+- [x] Rate-limit storefront cart writes, checkout, and guest status lookups by tenant and client; preserve CSRF for stateful browser writes and validate accepted input fields. Add a search limiter if public search is introduced.
 - [ ] Audit logs for tenant store setting/publication changes, order state transitions, refunds, and privileged tracking access. Redact secrets and personal data from logs/analytics.
 - [ ] Review accessibility, mobile layout, image upload/storage policy, CSP, cache headers, retention/deletion, and incident handling before production.
 - [ ] Pilot with selected tenants, reconcile a complete order/payment/stock/refund path, then enable storefronts in controlled rollout.

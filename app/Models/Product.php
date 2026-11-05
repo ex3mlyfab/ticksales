@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\ProductFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -80,6 +81,72 @@ class Product extends Model
             'is_active' => 'boolean',
             'is_storefront_published' => 'boolean',
         ];
+    }
+
+    /**
+     * Scope products that have enough public content and pricing to be listed in a storefront.
+     */
+    public function scopeStorefrontListable(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('is_storefront_published', true)
+            ->where(function (Builder $query): void {
+                $query->where(function (Builder $query): void {
+                    $query->where('has_variants', false)
+                        ->whereNotNull('description')
+                        ->whereRaw("TRIM(description) <> ''")
+                        ->whereNotNull('selling_price')
+                        ->whereRaw('CAST(selling_price AS DECIMAL(15,4)) > 0');
+                })->orWhere(function (Builder $query): void {
+                    $query->where('has_variants', true)
+                        ->whereNotNull('description')
+                        ->whereRaw("TRIM(description) <> ''")
+                        ->whereHas('variants', function (Builder $variants): void {
+                            $variants->where('is_active', true)
+                                ->whereNotNull('name')
+                                ->whereRaw("TRIM(name) <> ''")
+                                ->whereNotNull('selling_price')
+                                ->whereRaw('CAST(selling_price AS DECIMAL(15,4)) > 0');
+                        })
+                        ->whereDoesntHave('variants', function (Builder $variants): void {
+                            $variants->where('is_active', true)
+                                ->where(function (Builder $variants): void {
+                                    $variants->whereNull('name')
+                                        ->orWhereRaw("TRIM(name) = ''")
+                                        ->orWhereNull('selling_price')
+                                        ->orWhereRaw('CAST(selling_price AS DECIMAL(15,4)) <= 0');
+                                });
+                        });
+                });
+            });
+    }
+
+    public function isStorefrontListable(): bool
+    {
+        if (
+            ! $this->is_active
+            || ! $this->is_storefront_published
+            || ! filled($this->name)
+            || ! filled($this->description)
+        ) {
+            return false;
+        }
+
+        if (! $this->has_variants) {
+            return $this->selling_price !== null && (float) $this->selling_price > 0;
+        }
+
+        $activeVariants = $this->variants()
+            ->where('is_active', true)
+            ->get(['name', 'selling_price']);
+
+        return $activeVariants->isNotEmpty()
+            && $activeVariants->every(function (ProductVariant $variant): bool {
+                return filled($variant->name)
+                    && $variant->selling_price !== null
+                    && (float) $variant->selling_price > 0;
+            });
     }
 
     /**

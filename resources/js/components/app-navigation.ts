@@ -12,6 +12,7 @@ import {
     ReceiptText,
     Ruler,
     Settings,
+    ShoppingBag,
     Store,
     Tags,
     Truck,
@@ -46,6 +47,7 @@ import { index as registerSessionsIndex } from '@/routes/register-sessions';
 import { index as saleReturnsIndex } from '@/routes/sale-returns';
 import { index as stockAdjustmentsIndex } from '@/routes/stock-adjustments';
 import { index as stockTransfersIndex } from '@/routes/stock-transfers';
+import { index as storefrontOrdersIndex } from '@/routes/tenant/storefront/orders';
 import { index as suppliersIndex } from '@/routes/suppliers';
 import { index as taxRatesIndex } from '@/routes/tax-rates';
 import {
@@ -301,8 +303,11 @@ const appNavigation: AppNavSection[] = [
     },
 ];
 
-export function getAppNavigation(permissions: string[]): AppNavSection[] {
-    return appNavigation
+export function getAppNavigation(
+    permissions: string[],
+    tenantId: string | null = null,
+): AppNavSection[] {
+    const navigation = appNavigation
         .map((section) => ({
             ...section,
             items: section.items.filter(
@@ -310,6 +315,16 @@ export function getAppNavigation(permissions: string[]): AppNavSection[] {
                     item.permission === undefined ||
                     permissions.includes(item.permission),
             ),
-        }))
-        .filter((section) => section.items.length > 0);
+        }));
+    const salesSection = navigation.find((section) => section.title === 'Sales');
+
+    if (tenantId !== null && permissions.includes('sales.view') && salesSection !== undefined) {
+        salesSection.items.splice(1, 0, {
+            title: 'Online orders',
+            href: storefrontOrdersIndex({ tenant: tenantId }),
+            icon: ShoppingBag,
+        });
+    }
+
+    return navigation.filter((section) => section.items.length > 0);
 }
