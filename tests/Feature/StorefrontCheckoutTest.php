@@ -6,6 +6,7 @@ use App\Actions\Storefront\ManageStorefrontOrderAction;
 use App\Models\Branch;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\StorefrontAnalyticsEvent;
 use App\Models\StorefrontOrder;
 use App\Models\StorefrontOrderEvent;
 use App\Models\StorefrontPaymentEvent;
@@ -15,8 +16,11 @@ use App\Models\Tenant;
 use App\Models\TenantSetting;
 use App\Models\TenantUser;
 use App\Models\User;
+use App\Notifications\StorefrontOrderStatusNotification;
 use App\Support\Payments\PaystackStorefrontCheckout;
+use App\Support\StorefrontAnalytics;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -278,7 +282,10 @@ test('staff storefront order actions are recorded in the audit log', function ()
     $this->actingAs($user)
         ->withSession(['active_tenant_id' => $tenant->id])
         ->post(route('tenant.storefront.orders.accept', [$tenant->id, $order->id]))
-        ->assertRedirect();
+        ->assertRedirect()
+        ->assertSessionHasNoErrors();
+
+    expect($order->fresh()->status)->toBe('accepted');
 
     $this->assertDatabaseHas('audit_logs', [
         'tenant_id' => $tenant->id,
@@ -561,6 +568,13 @@ test('confirmed offline payments consume stock and paid cancellations require an
         ->and($cancelledOrder->refund_handled_externally)->toBeTrue()
         ->and((float) $inventory->fresh()->quantity)->toBe(20.0)
         ->and(StorefrontOrderEvent::query()->where('storefront_order_id', $order->id)->count())->toBe(3);
+
+    $this->assertDatabaseHas('audit_logs', [
+        'tenant_id' => $tenant->id,
+        'event' => 'storefront.order.refund_recorded',
+        'auditable_type' => StorefrontOrder::class,
+        'auditable_id' => $order->id,
+    ]);
 });
 
 test('terminal storefront orders can erase customer personal data without deleting the order', function () {
@@ -590,6 +604,13 @@ test('terminal storefront orders can erase customer personal data without deleti
             ->where('storefront_order_id', $order->id)
             ->where('event', 'customer_data_erased')
             ->exists())->toBeTrue();
+
+    $this->assertDatabaseHas('audit_logs', [
+        'tenant_id' => $tenant->id,
+        'event' => 'storefront.order.customer_data_erased',
+        'auditable_type' => StorefrontOrder::class,
+        'auditable_id' => $order->id,
+    ]);
 });
 
 test('active storefront orders cannot erase customer personal data', function () {
@@ -607,6 +628,7 @@ test('active storefront orders cannot erase customer personal data', function ()
 
 test('customer data retention command only erases old terminal orders', function () {
     config()->set('storefront.customer_data_retention_days', 30);
+    config()->set('storefront.analytics_event_retention_days', 90);
     $fixture = createStorefrontCheckoutFixture();
     $tenant = $fixture['tenant'];
     $oldOrder = StorefrontOrder::factory()->create([
@@ -633,6 +655,22 @@ test('customer data retention command only erases old terminal orders', function
         'created_at' => now()->subDays(31),
         'updated_at' => now()->subDays(31),
     ]);
+    $oldAnalyticsEvent = StorefrontAnalyticsEvent::query()->create([
+        'tenant_id' => $tenant->id,
+        'product_id' => $fixture['product']->id,
+        'event' => 'product_viewed',
+        'session_hash' => hash('sha256', 'old-retention-session'),
+    ]);
+    $oldAnalyticsEvent->forceFill([
+        'created_at' => now()->subDays(91),
+        'updated_at' => now()->subDays(91),
+    ])->save();
+    $recentAnalyticsEvent = StorefrontAnalyticsEvent::query()->create([
+        'tenant_id' => $tenant->id,
+        'product_id' => $fixture['product']->id,
+        'event' => 'product_viewed',
+        'session_hash' => hash('sha256', 'recent-retention-session'),
+    ]);
 
     $this->artisan('storefront:purge-customer-data')
         ->assertSuccessful();
@@ -642,7 +680,9 @@ test('customer data retention command only erases old terminal orders', function
         ->and($recentOrder->refresh()->personal_data_erased_at)->toBeNull()
         ->and($recentOrder->customer_email)->toBe('recent@example.test')
         ->and($activeOrder->refresh()->personal_data_erased_at)->toBeNull()
-        ->and($activeOrder->customer_email)->toBe('active@example.test');
+        ->and($activeOrder->customer_email)->toBe('active@example.test')
+        ->and(StorefrontAnalyticsEvent::query()->whereKey($oldAnalyticsEvent->id)->exists())->toBeFalse()
+        ->and(StorefrontAnalyticsEvent::query()->whereKey($recentAnalyticsEvent->id)->exists())->toBeTrue();
 });
 
 test('cash payment can only be confirmed when the order is ready for handoff', function () {
@@ -888,6 +928,13 @@ test('staff can update local delivery tracking and guests can view it', function
             ->where('order.carrier_name', 'Swift Courier')
             ->where('order.tracking_number', 'SWIFT-12345')
         );
+
+    $this->assertDatabaseHas('audit_logs', [
+        'tenant_id' => $tenant->id,
+        'event' => 'storefront.order.tracking_accessed',
+        'auditable_type' => StorefrontOrder::class,
+        'auditable_id' => $order->id,
+    ]);
 });
 
 test('delivery tracking rejects pickup orders and terminal orders', function () {
@@ -950,6 +997,53 @@ test('delivery tracking is isolated by tenant', function () {
         ->assertNotFound();
 
     expect($otherOrder->fresh()->tracking_number)->toBeNull();
+});
+
+test('storefront checkout sends a privacy-safe confirmation notification', function () {
+    Notification::fake();
+    $fixture = createStorefrontCheckoutFixture();
+    $tenant = $fixture['tenant'];
+    $session = storefrontCheckoutSession($tenant, $fixture['product']);
+
+    $this->withSession($session)
+        ->post(route('storefront.checkout.store', $tenant->slug), [
+            'customer_name' => 'Guest Shopper',
+            'customer_phone' => '555-0101',
+            'customer_email' => 'shopper@example.test',
+            'fulfillment_method' => 'pickup',
+            'payment_method' => 'cash',
+            'idempotency_key' => $session['storefront_checkout_idempotency_'.$tenant->id],
+        ])
+        ->assertRedirect();
+
+    Notification::assertSentOnDemand(
+        StorefrontOrderStatusNotification::class,
+        fn (StorefrontOrderStatusNotification $notification): bool => true,
+    );
+});
+
+test('staff status changes send notification without requiring customer access', function () {
+    Notification::fake();
+    $fixture = createStorefrontCheckoutFixture();
+    $tenant = $fixture['tenant'];
+    $user = User::factory()->create();
+    attachUserToTenant($user, $tenant);
+    $order = StorefrontOrder::factory()->create([
+        'tenant_id' => $tenant->id,
+        'branch_id' => $fixture['branch']->id,
+        'customer_email' => 'shopper@example.test',
+        'status' => 'pending',
+    ]);
+
+    $this->actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->post(route('tenant.storefront.orders.accept', [$tenant->id, $order->id]))
+        ->assertRedirect();
+
+    Notification::assertSentOnDemand(
+        StorefrontOrderStatusNotification::class,
+        fn (StorefrontOrderStatusNotification $notification): bool => true,
+    );
 });
 
 it('rejects mismatched Paystack transaction details', function (string $mismatch) {
@@ -1029,6 +1123,178 @@ it('rejects mismatched Paystack transaction details', function (string $mismatch
         ->and(StorefrontPaymentEvent::query()->count())->toBe(0);
 })->with(['amount', 'currency', 'reference']);
 
+test('Paystack webhook rejects missing signatures without confirming payment', function () {
+    $fixture = createStorefrontCheckoutFixture(settingsOverrides: [
+        'paystack_enabled' => true,
+        'paystack_secret' => 'sk_test_storefront_secret',
+    ]);
+    $fixture['tenant']->update(['currency' => 'NGN']);
+    $tenant = $fixture['tenant']->fresh();
+    $session = storefrontCheckoutSession($tenant, $fixture['product']);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://api.paystack.co/transaction/initialize' => function ($request) {
+            return Http::response([
+                'status' => true,
+                'data' => [
+                    'authorization_url' => 'https://checkout.paystack.com/session',
+                    'reference' => $request['reference'],
+                ],
+            ]);
+        },
+    ]);
+
+    $this->withSession($session)->post(route('storefront.checkout.store', $tenant->slug), [
+        'customer_name' => 'Paystack Shopper',
+        'customer_phone' => '555-0102',
+        'customer_email' => 'paystack@example.test',
+        'fulfillment_method' => 'pickup',
+        'payment_method' => 'paystack',
+        'idempotency_key' => $session['storefront_checkout_idempotency_'.$tenant->id],
+    ]);
+    $order = StorefrontOrder::query()->sole();
+
+    $rawPayload = json_encode([
+        'event' => 'charge.success',
+        'data' => [
+            'id' => 123456,
+            'reference' => $order->provider_reference,
+        ],
+    ], JSON_THROW_ON_ERROR);
+
+    $this->call(
+        'POST',
+        route('storefront.paystack.webhook'),
+        server: [
+            'CONTENT_TYPE' => 'application/json',
+        ],
+        content: $rawPayload,
+    )->assertBadRequest();
+
+    expect($order->fresh()->payment_status)->toBe('unpaid')
+        ->and(StorefrontPaymentEvent::query()->count())->toBe(0);
+});
+
+test('non-success Paystack transaction statuses leave payment unpaid and create no payment event', function (string $providerStatus) {
+    $fixture = createStorefrontCheckoutFixture(settingsOverrides: [
+        'paystack_enabled' => true,
+        'paystack_secret' => 'sk_test_storefront_secret',
+    ]);
+    $fixture['tenant']->update(['currency' => 'NGN']);
+    $tenant = $fixture['tenant']->fresh();
+    $session = storefrontCheckoutSession($tenant, $fixture['product']);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://api.paystack.co/transaction/initialize' => function ($request) {
+            return Http::response([
+                'status' => true,
+                'data' => [
+                    'authorization_url' => 'https://checkout.paystack.com/session',
+                    'reference' => $request['reference'],
+                ],
+            ]);
+        },
+    ]);
+
+    $this->withSession($session)->post(route('storefront.checkout.store', $tenant->slug), [
+        'customer_name' => 'Paystack Shopper',
+        'customer_phone' => '555-0102',
+        'customer_email' => 'paystack@example.test',
+        'fulfillment_method' => 'pickup',
+        'payment_method' => 'paystack',
+        'idempotency_key' => $session['storefront_checkout_idempotency_'.$tenant->id],
+    ]);
+    $order = StorefrontOrder::query()->sole();
+
+    Http::fake([
+        'https://api.paystack.co/transaction/verify/*' => Http::response([
+            'status' => true,
+            'data' => [
+                'id' => 123456,
+                'status' => $providerStatus,
+                'reference' => $order->provider_reference,
+                'amount' => 2200,
+                'currency' => 'NGN',
+            ],
+        ]),
+    ]);
+
+    app(PaystackStorefrontCheckout::class)->verify($order->fresh());
+
+    expect($order->fresh()->payment_status)->toBe('unpaid')
+        ->and(StorefrontPaymentEvent::query()->count())->toBe(0);
+})->with(['failed', 'abandoned', 'reversed']);
+
+test('Paystack webhook event id must match the independently verified transaction id', function () {
+    $fixture = createStorefrontCheckoutFixture(settingsOverrides: [
+        'paystack_enabled' => true,
+        'paystack_secret' => 'sk_test_storefront_secret',
+    ]);
+    $fixture['tenant']->update(['currency' => 'NGN']);
+    $tenant = $fixture['tenant']->fresh();
+    $session = storefrontCheckoutSession($tenant, $fixture['product']);
+
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://api.paystack.co/transaction/initialize' => function ($request) {
+            return Http::response([
+                'status' => true,
+                'data' => [
+                    'authorization_url' => 'https://checkout.paystack.com/session',
+                    'reference' => $request['reference'],
+                ],
+            ]);
+        },
+    ]);
+
+    $this->withSession($session)->post(route('storefront.checkout.store', $tenant->slug), [
+        'customer_name' => 'Paystack Shopper',
+        'customer_phone' => '555-0102',
+        'customer_email' => 'paystack@example.test',
+        'fulfillment_method' => 'pickup',
+        'payment_method' => 'paystack',
+        'idempotency_key' => $session['storefront_checkout_idempotency_'.$tenant->id],
+    ]);
+    $order = StorefrontOrder::query()->sole();
+
+    Http::fake([
+        'https://api.paystack.co/transaction/verify/*' => Http::response([
+            'status' => true,
+            'data' => [
+                'id' => 123456,
+                'status' => 'success',
+                'reference' => $order->provider_reference,
+                'amount' => 2200,
+                'currency' => 'NGN',
+            ],
+        ]),
+    ]);
+
+    $payload = [
+        'event' => 'charge.success',
+        'data' => [
+            'id' => 999999,
+            'reference' => $order->provider_reference,
+        ],
+    ];
+    $rawPayload = json_encode($payload, JSON_THROW_ON_ERROR);
+
+    $this->call(
+        'POST',
+        route('storefront.paystack.webhook'),
+        server: [
+            'HTTP_X_PAYSTACK_SIGNATURE' => hash_hmac('sha512', $rawPayload, 'sk_test_storefront_secret'),
+            'CONTENT_TYPE' => 'application/json',
+        ],
+        content: $rawPayload,
+    )->assertOk();
+
+    expect($order->fresh()->payment_status)->toBe('unpaid')
+        ->and(StorefrontPaymentEvent::query()->count())->toBe(0);
+});
+
 test('Paystack provider failure leaves payment unpaid and a later verification can retry successfully', function () {
     $fixture = createStorefrontCheckoutFixture(settingsOverrides: [
         'paystack_enabled' => true,
@@ -1088,4 +1354,40 @@ test('Paystack provider failure leaves payment unpaid and a later verification c
 
     expect($order->fresh()->payment_status)->toBe('paid')
         ->and(StorefrontPaymentEvent::query()->where('provider_event_id', '789012')->count())->toBe(1);
+});
+
+test('storefront product analytics are opt-in and tenant scoped with pseudonymous session hashes', function () {
+    $fixture = createStorefrontCheckoutFixture(settingsOverrides: [
+        'is_storefront_analytics_enabled' => true,
+    ]);
+    $tenant = $fixture['tenant'];
+    $product = $fixture['product'];
+
+    $this->get(route('storefront.products.show', [$tenant->slug, $product->id]))
+        ->assertOk();
+
+    $event = StorefrontAnalyticsEvent::query()->sole();
+
+    expect($event->tenant_id)->toBe($tenant->id)
+        ->and($event->product_id)->toBe($product->id)
+        ->and($event->event)->toBe('product_viewed')
+        ->and(strlen($event->session_hash))->toBe(64);
+});
+
+test('storefront analytics are disabled by default and reject events outside the allowlist', function () {
+    $fixture = createStorefrontCheckoutFixture();
+    $tenant = $fixture['tenant'];
+    $product = $fixture['product'];
+
+    $this->get(route('storefront.products.show', [$tenant->slug, $product->id]))
+        ->assertOk();
+
+    app(StorefrontAnalytics::class)->record(
+        request: request(),
+        tenant: $tenant,
+        event: 'email_entered',
+        productId: $product->id,
+    );
+
+    expect(StorefrontAnalyticsEvent::query()->count())->toBe(0);
 });

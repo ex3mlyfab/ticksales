@@ -599,8 +599,8 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 - [x] Choose the active main fulfillment branch deterministically and ensure it belongs to the order's tenant; support stock-checked staff reassignment.
 - [x] Reserve or decrement inventory within a database transaction with row locking and sufficient-stock checks. Cancellation releases holds; payment consumes them. Automatic expiry remains a follow-up.
 - [x] Never accept price, tax, stock, payment status, or tenant ownership from the browser as authoritative.
-- [ ] Initialize provider payments server-side; verify webhook signature and then independently verify provider status, reference, amount, and currency before marking an order paid or fulfilling it.
-- [ ] Store provider references and event identifiers with uniqueness constraints; handle duplicated, delayed, out-of-order, and invalid events safely.
+- [x] Initialize provider payments server-side; verify webhook signature and then independently verify provider status, reference, amount, and currency before marking an order paid or fulfilling it.
+- [x] Store provider references and event identifiers with uniqueness constraints; handle duplicated, delayed, out-of-order, and invalid events safely.
 - [x] Keep merchant order payment configuration separate from platform subscription billing credentials and records.
 - [x] Provide tenant staff screens for order review, fulfillment status, cancellation, refunds, and audit history. Customer notifications remain a follow-up.
 
@@ -611,24 +611,24 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 - [x] Return the minimum information required to identify the order and show status. Exclude full address, payment credentials, internal notes, and unrelated customer/order data from public tracking responses.
 - [x] Record status changes as an append-only order timeline with actor, timestamp, and tenant context; keep payment status separate.
 - [x] In v1, support manual fulfillment updates and tracking number/carrier fields only if shipping is selected. Defer carrier API integrations until a specific provider is chosen.
-- [ ] Notify customers about confirmation and important status changes without putting bearer tracking credentials or sensitive personal data in logs.
+- [x] Notify customers about confirmation and important status changes without putting bearer tracking credentials or sensitive personal data in logs.
 
 ### 16.7 — Storefront analytics and progress tracking
 
-- [ ] Define a small first-party event allowlist: product viewed, add/remove cart item, checkout started, and order paid. Treat purchase events as server-confirmed order/payment events, not client claims.
-- [ ] Scope every event to a tenant/store and use a random pseudonymous session identifier where needed; do not collect payment data, email, phone, full IP, or free-form form contents for analytics.
-- [ ] Document consent behavior, purpose, retention/deletion period, and tenant visibility before analytics collection is enabled; avoid third-party trackers in v1.
-- [ ] Add tenant-scoped reports for funnel counts and product performance, with aggregation and authorization that prevent cross-tenant disclosure.
+- [x] Define a small first-party event allowlist: product viewed, add/remove cart item, checkout started, and order paid. Treat purchase events as server-confirmed order/payment events, not client claims.
+- [x] Scope every event to a tenant/store and use a random pseudonymous session identifier where needed; do not collect payment data, email, phone, full IP, or free-form form contents for analytics.
+- [x] Document consent behavior, purpose, retention/deletion period, and tenant visibility before analytics collection is enabled; avoid third-party trackers in v1.
+- [x] Add tenant-scoped reports for funnel counts and product performance, with aggregation and authorization that prevent cross-tenant disclosure.
 - [ ] Track engineering progress against this phase's checkboxes and acceptance gates; keep implementation issues/tasks linked to these subsections, record blockers/decisions, and mark work complete only after tests pass.
 
 ### 16.8 — Security, tests, and rollout gates
 
 - [x] Add feature tests for storefront enable/disable, tenant settings authorization and payload isolation, inactive tenants, unpublished products, cross-tenant product IDs, and private-field exposure.
 - [x] Add feature tests for cart tampering, guarded order status/payment transitions, stock reservation protection, branch reassignment, and idempotent checkout. Add true concurrent checkout testing before production rollout.
-- [ ] Add payment tests for invalid signatures, mismatched amount/currency/reference, duplicate and out-of-order webhooks, provider failures, and retry behavior.
-- [x] Add tracking tests for token entropy, valid/invalid guest credentials, throttling, and absence of sensitive fields. Explicit token revocation/expiry and analytics event/report tests remain.
+- [x] Add payment tests for invalid signatures, mismatched amount/currency/reference, duplicate and out-of-order webhooks, provider failures, and retry behavior.
+- [x] Add tracking tests for token entropy, valid/invalid guest credentials, throttling, absence of sensitive fields, analytics opt-in behavior, tenant-scoped reporting, and analytics retention.
 - [x] Rate-limit storefront cart writes, checkout, and guest status lookups by tenant and client; preserve CSRF for stateful browser writes and validate accepted input fields. Add a search limiter if public search is introduced.
-- [ ] Audit logs for tenant store setting/publication changes, order state transitions, refunds, and privileged tracking access. Redact secrets and personal data from logs/analytics.
+- [x] Audit logs for tenant store setting/publication changes, order state transitions, refunds, and privileged tracking access. Redact secrets and personal data from logs/analytics.
 - [ ] Review accessibility, mobile layout, image upload/storage policy, CSP, cache headers, retention/deletion, and incident handling before production.
 - [ ] Pilot with selected tenants, reconcile a complete order/payment/stock/refund path, then enable storefronts in controlled rollout.
 

@@ -35,6 +35,16 @@ class SecurityHeaders
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(self), geolocation=(self), microphone=()');
 
+        if ($request->user() !== null
+            || $request->is('*/cart*')
+            || $request->is('*/checkout*')
+            || $request->is('*/orders*')) {
+            $response->headers->set(
+                'Cache-Control',
+                'private, no-store, max-age=0, must-revalidate',
+            );
+        }
+
         return $response;
     }
 

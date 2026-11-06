@@ -11,4 +11,5 @@ Route::middleware(['auth', 'verified', 'tenant'])->group(function () {
     Route::get('reports/expenses', [ReportController::class, 'expenses'])->name('reports.expenses')->middleware('permission:reports.view');
     Route::get('reports/profit-loss', [ReportController::class, 'profitLoss'])->name('reports.profit-loss')->middleware('permission:reports.view');
     Route::get('reports/balance-sheet', [ReportController::class, 'balanceSheet'])->name('reports.balance-sheet')->middleware('permission:reports.view');
+    Route::get('reports/storefront-analytics', [ReportController::class, 'storefrontAnalytics'])->name('reports.storefront-analytics')->middleware('permission:reports.view');
 });

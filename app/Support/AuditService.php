@@ -38,6 +38,9 @@ class AuditService
         ?string $userAgent = null,
         ?Tenant $tenant = null
     ): AuditLog {
+        $oldValues = $this->redactSensitiveValues($oldValues);
+        $newValues = $this->redactSensitiveValues($newValues);
+
         // Get tenant from request attributes (set by SetTenantContext middleware),
         // or fall back to an explicitly supplied tenant (e.g. platform-admin
         // operations on a specific tenant).
@@ -177,6 +180,55 @@ class AuditService
         } catch (\Throwable) {
             return null;
         }
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $values
+     * @return array<string, mixed>|null
+     */
+    protected function redactSensitiveValues(?array $values): ?array
+    {
+        if ($values === null) {
+            return null;
+        }
+
+        $sensitiveKeys = [
+            'paystack_secret',
+            'paystack_secret_key',
+            'secret',
+            'secret_key',
+            'password',
+            'token',
+            'tracking_token',
+            'tracking_token_hash',
+            'tracking_number',
+            'provider_reference',
+            'payment_reference',
+            'customer_name',
+            'customer_phone',
+            'customer_email',
+            'email',
+            'phone',
+            'delivery_address',
+            'address',
+            'cancellation_note',
+            'refund_note',
+        ];
+
+        $redact = function (array $input) use (&$redact, $sensitiveKeys): array {
+            foreach ($input as $key => $value) {
+                $normalizedKey = strtolower((string) $key);
+                if (in_array($normalizedKey, $sensitiveKeys, true)) {
+                    $input[$key] = '[redacted]';
+                } elseif (is_array($value)) {
+                    $input[$key] = $redact($value);
+                }
+            }
+
+            return $input;
+        };
+
+        return $redact($values);
     }
 
     /**

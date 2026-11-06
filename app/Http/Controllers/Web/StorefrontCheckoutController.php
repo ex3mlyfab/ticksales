@@ -8,8 +8,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorefrontCheckoutRequest;
 use App\Models\Branch;
 use App\Models\Tenant;
+use App\Notifications\StorefrontOrderStatusNotification;
 use App\Support\Payments\PaystackPaymentException;
 use App\Support\Payments\PaystackStorefrontCheckout;
+use App\Support\StorefrontAnalytics;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -19,9 +21,10 @@ use Inertia\Response;
 
 class StorefrontCheckoutController extends Controller
 {
-    public function show(Request $request, Tenant $tenant, StorefrontCart $cart): Response
+    public function show(Request $request, Tenant $tenant, StorefrontCart $cart, StorefrontAnalytics $analytics): Response
     {
         $this->assertStorefrontEnabled($tenant);
+        $analytics->record($request, $tenant, 'checkout_started');
 
         $idempotencyKey = 'storefront_checkout_idempotency_'.$tenant->id;
         $trackingTokenKey = 'storefront_checkout_tracking_'.$tenant->id;
@@ -103,6 +106,7 @@ class StorefrontCheckoutController extends Controller
 
         $request->session()->put('storefront_order_tracking_'.$order->id, $trackingToken);
         $request->session()->forget($cart->sessionKey($tenant));
+        StorefrontOrderStatusNotification::sendForOrder($order, 'order_placed');
 
         if ($order->payment_method === 'paystack') {
             try {

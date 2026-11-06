@@ -1,5 +1,8 @@
 <?php
 
+use App\Models\Tenant;
+use App\Models\User;
+
 use function Pest\Laravel\get;
 
 test('web responses carry baseline security headers', function () {
@@ -57,4 +60,20 @@ test('each request receives a fresh csp nonce', function () {
     $second = get('/login')->assertOk()->headers->get('Content-Security-Policy');
 
     expect($first)->not->toBe($second);
+});
+
+test('authenticated responses use private no-store caching', function () {
+    $user = User::factory()->create();
+    $tenant = Tenant::factory()->create();
+    attachUserToTenant($user, $tenant);
+
+    $response = \Pest\Laravel\actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->get('/products');
+
+    $response->assertOk();
+    expect($response->headers->get('Cache-Control'))
+        ->toContain('private')
+        ->toContain('no-store')
+        ->toContain('max-age=0');
 });

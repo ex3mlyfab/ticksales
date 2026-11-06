@@ -61,7 +61,12 @@ class UpdateProductRequest extends FormRequest
             'has_variants' => ['required', 'boolean'],
             'track_inventory' => ['required', 'boolean'],
             'alert_quantity' => ['required', 'integer', 'min:0'],
-            'image_path' => ['nullable', 'string', 'max:255'],
+            'image_path' => [
+                'nullable',
+                'string',
+                'max:255',
+                'regex:/\A(?!.*(?:\.\.|[?#\\\\]))[A-Za-z0-9][A-Za-z0-9._\/-]*\z/u',
+            ],
             'is_active' => ['required', 'boolean'],
             'is_storefront_published' => ['sometimes', 'boolean'],
         ];

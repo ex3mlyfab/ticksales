@@ -6,12 +6,15 @@ use App\Models\StorefrontOrder;
 use App\Models\StorefrontOrderEvent;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Support\AuditService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class EraseStorefrontCustomerDataAction
 {
+    public function __construct(private readonly AuditService $auditService) {}
+
     public function erase(Tenant $tenant, StorefrontOrder $order, ?User $actor = null): StorefrontOrder
     {
         return DB::transaction(function () use ($tenant, $order, $actor): StorefrontOrder {
@@ -70,6 +73,20 @@ class EraseStorefrontCustomerDataAction
                     'source' => $actor === null ? 'retention_policy' : 'staff_request',
                 ],
             ]);
+
+            $this->auditService->log(
+                'storefront.order.customer_data_erased',
+                StorefrontOrder::class,
+                $lockedOrder->id,
+                oldValues: [
+                    'personal_data_erased_at' => null,
+                ],
+                newValues: [
+                    'personal_data_erased_at' => $lockedOrder->personal_data_erased_at,
+                    'source' => $actor === null ? 'retention_policy' : 'staff_request',
+                ],
+                tenant: $tenant,
+            );
 
             return $lockedOrder->refresh();
         }, 3);

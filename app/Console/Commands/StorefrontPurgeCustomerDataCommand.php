@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Actions\Storefront\EraseStorefrontCustomerDataAction;
+use App\Models\StorefrontAnalyticsEvent;
 use App\Models\StorefrontOrder;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -35,7 +36,13 @@ class StorefrontPurgeCustomerDataCommand extends Command
                 }
             });
 
+        $analyticsDays = max(1, (int) config('storefront.analytics_event_retention_days', 90));
+        $analyticsPurged = StorefrontAnalyticsEvent::query()
+            ->where('created_at', '<=', now()->subDays($analyticsDays))
+            ->delete();
+
         $this->info("Purged customer data from {$purged} storefront order(s).");
+        $this->info("Purged {$analyticsPurged} storefront analytics event(s).");
 
         return self::SUCCESS;
     }

@@ -7,6 +7,8 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Tenant;
 use App\Models\TenantBranding;
+use App\Support\StorefrontAnalytics;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -33,7 +35,7 @@ class StorefrontController extends Controller
         ]);
     }
 
-    public function product(Tenant $tenant, Product $product): Response
+    public function product(Request $request, Tenant $tenant, Product $product, StorefrontAnalytics $analytics): Response
     {
         abort_unless(
             $tenant->is_active
@@ -43,6 +45,13 @@ class StorefrontController extends Controller
                 && $product->is_storefront_published
                 && $product->load('variants')->isStorefrontListable(),
             404,
+        );
+
+        $analytics->record(
+            request: $request,
+            tenant: $tenant,
+            event: 'product_viewed',
+            productId: $product->id,
         );
 
         $variants = ProductVariant::query()

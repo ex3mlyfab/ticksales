@@ -23,6 +23,7 @@ use Illuminate\Support\Carbon;
  * @property bool $require_customer_on_sale
  * @property bool $loyalty_enabled
  * @property bool $is_storefront_enabled
+ * @property bool $is_storefront_analytics_enabled
  * @property string|null $bank_transfer_instructions
  * @property string|null $storefront_description
  * @property string|null $storefront_email
@@ -58,6 +59,7 @@ class TenantSetting extends Model
         'require_customer_on_sale',
         'loyalty_enabled',
         'is_storefront_enabled',
+        'is_storefront_analytics_enabled',
         'bank_transfer_instructions',
         'storefront_description',
         'storefront_email',
@@ -86,6 +88,7 @@ class TenantSetting extends Model
             'require_customer_on_sale' => 'boolean',
             'loyalty_enabled' => 'boolean',
             'is_storefront_enabled' => 'boolean',
+            'is_storefront_analytics_enabled' => 'boolean',
             'storefront_pickup_enabled' => 'boolean',
             'storefront_delivery_enabled' => 'boolean',
             'paystack_enabled' => 'boolean',

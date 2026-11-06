@@ -10,13 +10,18 @@ use App\Models\StorefrontOrderEvent;
 use App\Models\StorefrontStockReservation;
 use App\Models\Tenant;
 use App\Models\User;
+use App\Notifications\StorefrontOrderStatusNotification;
 use App\Support\AuditService;
+use App\Support\StorefrontAnalytics;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 class ManageStorefrontOrderAction
 {
-    public function __construct(protected AuditService $auditService) {}
+    public function __construct(
+        protected AuditService $auditService,
+        protected StorefrontAnalytics $storefrontAnalytics,
+    ) {}
 
     public function accept(Tenant $tenant, StorefrontOrder $order, User $actor): StorefrontOrder
     {
@@ -30,7 +35,7 @@ class ManageStorefrontOrderAction
 
     public function complete(Tenant $tenant, StorefrontOrder $order, User $actor): StorefrontOrder
     {
-        return DB::transaction(function () use ($tenant, $order, $actor): StorefrontOrder {
+        $completedOrder = DB::transaction(function () use ($tenant, $order, $actor): StorefrontOrder {
             $lockedOrder = $this->lockOrder($tenant, $order);
 
             if ($lockedOrder->status !== 'ready') {
@@ -49,6 +54,9 @@ class ManageStorefrontOrderAction
 
             return $lockedOrder->refresh();
         }, 3);
+        StorefrontOrderStatusNotification::sendForOrder($completedOrder, 'status_changed');
+
+        return $completedOrder;
     }
 
     public function confirmPayment(
@@ -57,7 +65,8 @@ class ManageStorefrontOrderAction
         User $actor,
         ?string $paymentReference,
     ): StorefrontOrder {
-        return DB::transaction(function () use ($tenant, $order, $actor, $paymentReference): StorefrontOrder {
+        $wasPaid = $order->payment_status === 'paid';
+        $confirmedOrder = DB::transaction(function () use ($tenant, $order, $actor, $paymentReference): StorefrontOrder {
             $lockedOrder = $this->lockOrder($tenant, $order);
 
             if (in_array($lockedOrder->status, ['cancelled', 'completed'], true)) {
@@ -157,9 +166,20 @@ class ManageStorefrontOrderAction
                 ],
                 tenant: $tenant,
             );
+            StorefrontOrderStatusNotification::sendForOrder($lockedOrder, 'payment_confirmed');
 
             return $lockedOrder->refresh();
         }, 3);
+
+        if (! $wasPaid) {
+            $this->storefrontAnalytics->record(
+                request: request(),
+                tenant: $tenant,
+                event: 'order_paid',
+            );
+        }
+
+        return $confirmedOrder;
     }
 
     public function cancel(
@@ -264,6 +284,26 @@ class ManageStorefrontOrderAction
                 ],
                 tenant: $tenant,
             );
+
+            if ($previousPaymentStatus === 'paid' && $lockedOrder->payment_status === 'refunded') {
+                $this->auditService->log(
+                    'storefront.order.refund_recorded',
+                    StorefrontOrder::class,
+                    $lockedOrder->id,
+                    [
+                        'payment_status' => $previousPaymentStatus,
+                        'refund_handled_externally' => false,
+                        'refund_note' => null,
+                    ],
+                    [
+                        'payment_status' => 'refunded',
+                        'refund_handled_externally' => true,
+                        'refund_note' => $refundNote,
+                    ],
+                    tenant: $tenant,
+                );
+            }
+            StorefrontOrderStatusNotification::sendForOrder($lockedOrder, 'order_cancelled');
 
             return $lockedOrder->refresh();
         }, 3);
@@ -402,6 +442,7 @@ class ManageStorefrontOrderAction
                 ],
                 tenant: $tenant,
             );
+            StorefrontOrderStatusNotification::sendForOrder($lockedOrder, 'delivery_tracking_updated');
 
             return $lockedOrder->refresh();
         }, 3);
@@ -461,6 +502,7 @@ class ManageStorefrontOrderAction
                 ],
                 tenant: $tenant,
             );
+            StorefrontOrderStatusNotification::sendForOrder($order, 'status_changed');
 
             return $lockedOrder->refresh();
         }, 3);
@@ -473,7 +515,7 @@ class ManageStorefrontOrderAction
         string $expectedStatus,
         string $newStatus,
     ): StorefrontOrder {
-        return DB::transaction(function () use ($tenant, $order, $actor, $expectedStatus, $newStatus): StorefrontOrder {
+        $changedOrder = DB::transaction(function () use ($tenant, $order, $actor, $expectedStatus, $newStatus): StorefrontOrder {
             $lockedOrder = $this->lockOrder($tenant, $order);
 
             if ($lockedOrder->status !== $expectedStatus) {
@@ -486,6 +528,9 @@ class ManageStorefrontOrderAction
 
             return $lockedOrder->refresh();
         }, 3);
+        StorefrontOrderStatusNotification::sendForOrder($changedOrder, 'status_changed');
+
+        return $changedOrder;
     }
 
     private function recordStatusChange(Tenant $tenant, StorefrontOrder $order, User $actor, string $newStatus): void

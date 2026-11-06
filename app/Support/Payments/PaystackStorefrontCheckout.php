@@ -7,6 +7,8 @@ use App\Models\StorefrontOrder;
 use App\Models\StorefrontOrderEvent;
 use App\Models\StorefrontPaymentEvent;
 use App\Models\TenantSetting;
+use App\Notifications\StorefrontOrderStatusNotification;
+use App\Support\StorefrontAnalytics;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -103,10 +105,6 @@ class PaystackStorefrontCheckout
     {
         return DB::transaction(function () use ($order, $providerEventId): StorefrontOrder {
             $lockedOrder = StorefrontOrder::query()->lockForUpdate()->findOrFail($order->id);
-            if ($lockedOrder->payment_status === 'paid') {
-                return $lockedOrder;
-            }
-
             $settings = TenantSetting::query()->where('tenant_id', $lockedOrder->tenant_id)->firstOrFail();
             if (! $this->isEnabled($settings) || blank($lockedOrder->provider_reference)) {
                 throw new PaystackPaymentException('Paystack verification is not configured for this order.');
@@ -142,13 +140,44 @@ class PaystackStorefrontCheckout
             $eventId = $providerEventId !== ''
                 ? $providerEventId
                 : (string) data_get($transaction, 'id');
+            $transactionEventId = (string) data_get($transaction, 'id');
 
-            if ($eventId === '' || StorefrontPaymentEvent::query()
+            if ($eventId === '' || $transactionEventId === '') {
+                throw new PaystackPaymentException('Paystack did not return a transaction event identifier.');
+            }
+
+            if ($providerEventId !== '' && ! hash_equals($transactionEventId, $eventId)) {
+                throw new PaystackPaymentException('The webhook event did not match the verified Paystack transaction.');
+            }
+
+            $existingEvent = StorefrontPaymentEvent::query()
                 ->where('provider', 'paystack')
                 ->where('provider_event_id', $eventId)
-                ->exists()) {
-                if ($eventId === '') {
-                    throw new PaystackPaymentException('Paystack did not return a transaction event identifier.');
+                ->lockForUpdate()
+                ->first();
+
+            if ($existingEvent !== null
+                && ($existingEvent->tenant_id !== $lockedOrder->tenant_id
+                    || $existingEvent->storefront_order_id !== $lockedOrder->id)) {
+                throw new PaystackPaymentException('This Paystack event is associated with a different order.');
+            }
+
+            if ($lockedOrder->payment_status === 'paid') {
+                if ($existingEvent === null) {
+                    if ($existingEvent === null) {
+                        StorefrontPaymentEvent::query()->create([
+                            'tenant_id' => $lockedOrder->tenant_id,
+                            'storefront_order_id' => $lockedOrder->id,
+                            'provider' => 'paystack',
+                            'provider_event_id' => $eventId,
+                            'event_type' => 'charge.success',
+                            'payload' => [
+                                'reference' => data_get($transaction, 'reference'),
+                                'amount' => data_get($transaction, 'amount'),
+                                'currency' => data_get($transaction, 'currency'),
+                            ],
+                        ]);
+                    }
                 }
 
                 return $lockedOrder->refresh();
@@ -206,6 +235,12 @@ class PaystackStorefrontCheckout
                     'provider_event_id' => $eventId,
                 ],
             ]);
+            StorefrontOrderStatusNotification::sendForOrder($lockedOrder, 'payment_confirmed');
+            app(StorefrontAnalytics::class)->record(
+                request: request(),
+                tenant: $lockedOrder->tenant,
+                event: 'order_paid',
+            );
 
             return $lockedOrder->refresh();
         }, 3);

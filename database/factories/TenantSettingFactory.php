@@ -33,6 +33,7 @@ class TenantSettingFactory extends Factory
             'require_customer_on_sale' => false,
             'loyalty_enabled' => false,
             'is_storefront_enabled' => true,
+            'is_storefront_analytics_enabled' => false,
             'bank_transfer_instructions' => null,
             'storefront_description' => null,
             'storefront_email' => null,

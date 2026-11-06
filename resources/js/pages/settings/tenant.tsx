@@ -20,6 +20,7 @@ type Props = {
     currency: string;
     storefront: {
         is_storefront_enabled: boolean;
+        is_storefront_analytics_enabled: boolean;
         bank_transfer_instructions: string | null;
         storefront_description: string | null;
         storefront_email: string | null;
@@ -42,6 +43,8 @@ export default function TenantSettingsPage({
 }: Props) {
     const form = useForm({
         is_storefront_enabled: storefront.is_storefront_enabled,
+        is_storefront_analytics_enabled:
+            storefront.is_storefront_analytics_enabled,
         bank_transfer_instructions:
             storefront.bank_transfer_instructions ?? '',
         storefront_description:
@@ -113,6 +116,36 @@ export default function TenantSettingsPage({
                         </div>
 
                         <InputError message={form.errors.is_storefront_enabled} />
+
+                        <div className="flex items-start gap-3">
+                            <Checkbox
+                                id="is_storefront_analytics_enabled"
+                                checked={form.data.is_storefront_analytics_enabled}
+                                onCheckedChange={(checked) =>
+                                    form.setData(
+                                        'is_storefront_analytics_enabled',
+                                        checked === true,
+                                    )
+                                }
+                                disabled={!canUpdate || form.processing}
+                            />
+                            <div className="grid gap-1">
+                                <Label htmlFor="is_storefront_analytics_enabled">
+                                    Storefront analytics
+                                </Label>
+                                <p className="text-sm text-muted-foreground">
+                                    Collect pseudonymous funnel and product
+                                    events only for this tenant. Used to improve
+                                    the store experience; events are removed
+                                    after 90 days and never include payment,
+                                    email, phone, IP, or form contents. Disabled by default.
+                                </p>
+                            </div>
+                        </div>
+
+                        <InputError
+                            message={form.errors.is_storefront_analytics_enabled}
+                        />
 
                         <div className="grid gap-2">
                             <Label htmlFor="bank_transfer_instructions">

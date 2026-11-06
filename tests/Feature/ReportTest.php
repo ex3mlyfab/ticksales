@@ -11,6 +11,7 @@ use App\Models\RegisterSession;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\SalePayment;
+use App\Models\StorefrontAnalyticsEvent;
 use App\Models\Tenant;
 use App\Models\User;
 
@@ -22,6 +23,45 @@ test('guests are redirected from report routes', function () {
     get('/reports/inventory')->assertRedirect('/login');
     get('/reports/register-sessions')->assertRedirect('/login');
     get('/reports/expenses')->assertRedirect('/login');
+    get('/reports/storefront-analytics')->assertRedirect('/login');
+});
+
+test('storefront analytics report is tenant scoped and aggregates funnel and product events', function () {
+    $tenant = Tenant::factory()->create();
+    $otherTenant = Tenant::factory()->create();
+    $product = Product::factory()->create(['tenant_id' => $tenant->id]);
+    $otherProduct = Product::factory()->create(['tenant_id' => $otherTenant->id]);
+    $user = User::factory()->create();
+    attachUserToTenant($user, $tenant);
+
+    foreach (['product_viewed', 'cart_item_added', 'checkout_started', 'order_paid'] as $event) {
+        StorefrontAnalyticsEvent::query()->create([
+            'tenant_id' => $tenant->id,
+            'product_id' => $product->id,
+            'event' => $event,
+            'session_hash' => hash('sha256', "tenant-session-{$event}"),
+        ]);
+    }
+    StorefrontAnalyticsEvent::query()->create([
+        'tenant_id' => $otherTenant->id,
+        'product_id' => $otherProduct->id,
+        'event' => 'product_viewed',
+        'session_hash' => hash('sha256', 'other-tenant-session'),
+    ]);
+
+    actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->get('/reports/storefront-analytics')
+        ->assertOk()
+        ->assertInertia(fn ($page) => $page
+            ->component('reports/storefront-analytics')
+            ->where('summary.sessions', 4)
+            ->where('summary.events', 4)
+            ->where('summary.paid_orders', 1)
+            ->where('funnel.0.count', 1)
+            ->where('funnel.3.count', 1)
+            ->has('product_performance', 1)
+            ->where('product_performance.0.product_id', $product->id));
 });
 
 test('sales report renders with summary and daily breakdown', function () {

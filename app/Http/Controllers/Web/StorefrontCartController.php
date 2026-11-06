@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Tenant;
+use App\Support\StorefrontAnalytics;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -29,7 +30,7 @@ class StorefrontCartController extends Controller
         ]);
     }
 
-    public function add(Request $request, Tenant $tenant, StorefrontCart $cart): RedirectResponse
+    public function add(Request $request, Tenant $tenant, StorefrontCart $cart, StorefrontAnalytics $analytics): RedirectResponse
     {
         $this->assertStorefrontEnabled($tenant);
 
@@ -69,6 +70,13 @@ class StorefrontCartController extends Controller
             'quantity' => $quantity,
         ];
         $request->session()->put($cart->sessionKey($tenant), $lines);
+        $analytics->record(
+            request: $request,
+            tenant: $tenant,
+            event: 'cart_item_added',
+            productId: $product->id,
+            variantId: $variant?->id,
+        );
 
         return back()->with('success', 'Product added to your cart.');
     }
@@ -107,7 +115,7 @@ class StorefrontCartController extends Controller
         return back();
     }
 
-    public function destroy(Request $request, Tenant $tenant, string $product, StorefrontCart $cart): RedirectResponse
+    public function destroy(Request $request, Tenant $tenant, string $product, StorefrontCart $cart, StorefrontAnalytics $analytics): RedirectResponse
     {
         $this->assertStorefrontEnabled($tenant);
         $data = $request->validate([
@@ -116,6 +124,13 @@ class StorefrontCartController extends Controller
         $lines = $cart->lines($request, $tenant);
         unset($lines[$product.':'.($data['variant_id'] ?? '')]);
         $request->session()->put($cart->sessionKey($tenant), $lines);
+        $analytics->record(
+            request: $request,
+            tenant: $tenant,
+            event: 'cart_item_removed',
+            productId: $product,
+            variantId: $data['variant_id'] ?? null,
+        );
 
         return back();
     }

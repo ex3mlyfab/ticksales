@@ -10,8 +10,10 @@ use App\Models\RegisterSession;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\SalePayment;
+use App\Models\StorefrontAnalyticsEvent;
 use App\Support\Financials\BranchBalanceSheet;
 use App\Support\Financials\BranchProfitAndLoss;
+use App\Support\StorefrontAnalytics;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -119,6 +121,74 @@ class ReportController extends Controller
                 'branch_id' => $branchId,
             ],
             'branches' => $branches,
+        ]);
+    }
+
+    public function storefrontAnalytics(Request $request): Response
+    {
+        $tenant = $request->attributes->get('tenant');
+        $from = Carbon::parse($request->query('from', now()->subDays(30)->toDateString()))->startOfDay();
+        $to = Carbon::parse($request->query('to', today()->toDateString()))->endOfDay();
+
+        abort_if($tenant === null, 403);
+
+        $events = StorefrontAnalyticsEvent::query()
+            ->where('tenant_id', $tenant->id)
+            ->whereBetween('created_at', [$from, $to])
+            ->with('product:id,name')
+            ->get(['event', 'session_hash', 'product_id']);
+
+        $funnel = collect(StorefrontAnalytics::ALLOWED_EVENTS)
+            ->mapWithKeys(function (string $event): array {
+                return [$event => 0];
+            });
+
+        foreach ($events->groupBy('event') as $event => $rows) {
+            if ($funnel->has($event)) {
+                $funnel[$event] = $rows->pluck('session_hash')->unique()->count();
+            }
+        }
+
+        $productPerformance = $events
+            ->whereNotNull('product_id')
+            ->groupBy('product_id')
+            ->map(function ($rows): array {
+                $product = $rows->first()?->product;
+
+                return [
+                    'product_id' => $rows->first()->product_id,
+                    'name' => $product?->name ?? __('Deleted product'),
+                    'product_views' => $rows->where('event', 'product_viewed')->count(),
+                    'cart_additions' => $rows->where('event', 'cart_item_added')->count(),
+                    'cart_removals' => $rows->where('event', 'cart_item_removed')->count(),
+                ];
+            })
+            ->values()
+            ->sortByDesc('product_views')
+            ->take(10)
+            ->values();
+
+        return Inertia::render('reports/storefront-analytics', [
+            'enabled' => $tenant->tenantSetting?->is_storefront_analytics_enabled ?? false,
+            'summary' => [
+                'sessions' => $events->pluck('session_hash')->unique()->count(),
+                'events' => $events->count(),
+                'product_views' => $events->where('event', 'product_viewed')->count(),
+                'checkout_starts' => $events->where('event', 'checkout_started')->count(),
+                'paid_orders' => $events->where('event', 'order_paid')->count(),
+            ],
+            'funnel' => [
+                ['name' => __('Product views'), 'key' => 'product_viewed', 'count' => $funnel['product_viewed']],
+                ['name' => __('Cart additions'), 'key' => 'cart_item_added', 'count' => $funnel['cart_item_added']],
+                ['name' => __('Checkouts started'), 'key' => 'checkout_started', 'count' => $funnel['checkout_started']],
+                ['name' => __('Paid orders'), 'key' => 'order_paid', 'count' => $funnel['order_paid']],
+            ],
+            'product_performance' => $productPerformance,
+            'filters' => [
+                'from' => $from->toDateString(),
+                'to' => $to->toDateString(),
+            ],
+            'retention_days' => (int) config('storefront.analytics_event_retention_days', 90),
         ]);
     }
 

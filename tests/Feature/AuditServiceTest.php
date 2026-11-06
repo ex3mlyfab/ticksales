@@ -110,3 +110,29 @@ test('audit service stores events with correct schema', function () {
     expect($log->old_values)->toBe(['name' => 'Old Name']);
     expect($log->new_values)->toBe(['name' => 'New Name']);
 });
+
+test('audit service redacts sensitive values in nested payloads', function () {
+    $service = app(AuditService::class);
+
+    $log = $service->log(
+        event: 'storefront.settings.updated',
+        auditableType: Tenant::class,
+        auditableId: '01m42ny1kp8qr5v9aawbxen3hy',
+        oldValues: [
+            'paystack_secret_key' => 'old-secret',
+            'customer' => ['customer_email' => 'private@example.test', 'customer_name' => 'Private Customer'],
+        ],
+        newValues: [
+            'tracking_number' => 'SWIFT-12345',
+            'refund_note' => 'External refund completed',
+            'enabled' => true,
+        ],
+    );
+
+    expect($log->old_values['paystack_secret_key'])->toBe('[redacted]')
+        ->and($log->old_values['customer']['customer_email'])->toBe('[redacted]')
+        ->and($log->old_values['customer']['customer_name'])->toBe('[redacted]')
+        ->and($log->new_values['tracking_number'])->toBe('[redacted]')
+        ->and($log->new_values['refund_note'])->toBe('[redacted]')
+        ->and($log->new_values['enabled'])->toBeTrue();
+});

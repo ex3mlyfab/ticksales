@@ -185,9 +185,23 @@ class ProductController extends Controller
             $productData['is_storefront_published'] = $validated['is_storefront_published'];
         }
 
+        $previousPublicationStatus = (bool) $product->is_storefront_published;
         $product->update($productData);
 
         $auditService->updated($product, $validated);
+
+        if (array_key_exists('is_storefront_published', $validated)
+            && $previousPublicationStatus !== (bool) $validated['is_storefront_published']) {
+            $auditService->log(
+                (bool) $validated['is_storefront_published']
+                    ? 'product.storefront_published'
+                    : 'product.storefront_unpublished',
+                Product::class,
+                $product->id,
+                ['is_storefront_published' => $previousPublicationStatus],
+                ['is_storefront_published' => (bool) $validated['is_storefront_published']],
+            );
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Product updated.')]);
 

@@ -5,18 +5,20 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Models\StorefrontOrder;
 use App\Models\Tenant;
+use App\Support\AuditService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class StorefrontOrderTrackingController extends Controller
 {
-    public function show(Request $request, Tenant $tenant, StorefrontOrder $storefrontOrder): Response
+    public function show(Request $request, Tenant $tenant, StorefrontOrder $storefrontOrder, AuditService $auditService): Response
     {
         abort_unless(
             $tenant->is_active && ($tenant->tenantSetting?->is_storefront_enabled ?? true),
             404,
         );
+        abort_unless($storefrontOrder->tenant_id === $tenant->id, 404);
 
         $trackingToken = $request->session()->get('storefront_order_tracking_'.$storefrontOrder->id);
         $isCustomer = $request->user()?->id !== null
@@ -25,6 +27,16 @@ class StorefrontOrderTrackingController extends Controller
             && hash_equals($storefrontOrder->tracking_token_hash, hash('sha256', $trackingToken));
 
         abort_unless($isCustomer || $hasTrackingToken, 404);
+
+        $auditService->log(
+            'storefront.order.tracking_accessed',
+            StorefrontOrder::class,
+            $storefrontOrder->id,
+            newValues: [
+                'access_method' => $isCustomer ? 'customer_account' : 'tracking_token',
+            ],
+            tenant: $tenant,
+        );
 
         $storefrontOrder->load(['items:id,storefront_order_id,name,quantity,unit_price,line_total', 'branch:id,name']);
 

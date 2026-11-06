@@ -41,6 +41,7 @@ import {
     profitLoss as reportsProfitLoss,
     registerSessions as reportsRegisterSessions,
     sales as reportsSales,
+    storefrontAnalytics as reportsStorefrontAnalytics,
 } from '@/routes/reports';
 import { index as registersIndex } from '@/routes/registers';
 import { index as registerSessionsIndex } from '@/routes/register-sessions';
@@ -280,6 +281,12 @@ const appNavigation: AppNavSection[] = [
                 title: 'Balance sheet report',
                 href: reportsBalanceSheet(),
                 icon: Landmark,
+                permission: 'reports.view',
+            },
+            {
+                title: 'Storefront analytics',
+                href: reportsStorefrontAnalytics(),
+                icon: BarChart3,
                 permission: 'reports.view',
             },
         ],

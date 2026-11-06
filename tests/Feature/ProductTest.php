@@ -120,6 +120,28 @@ test('published variant products cannot be created without variants', function (
         ->assertSessionHasErrors(['is_storefront_published']);
 });
 
+test('product image paths must remain within public storage paths', function () {
+    $tenant = Tenant::factory()->create();
+    $user = User::factory()->create();
+    attachUserToTenant($user, $tenant);
+
+    actingAs($user)
+        ->withSession(['active_tenant_id' => $tenant->id])
+        ->post('/products', [
+            'tenant_id' => $tenant->id,
+            'name' => 'Unsafe image product',
+            'description' => 'A product with an invalid image path',
+            'cost_price' => 10,
+            'selling_price' => 20,
+            'has_variants' => false,
+            'track_inventory' => false,
+            'alert_quantity' => 0,
+            'is_active' => true,
+            'image_path' => '../private/secret.jpg',
+        ])
+        ->assertSessionHasErrors(['image_path']);
+});
+
 test('authenticated users can update a product', function () {
     $tenant = Tenant::factory()->create();
     $user = User::factory()->create();
@@ -161,6 +183,13 @@ test('authenticated users can update a product', function () {
     expect($product->selling_price)->toBe('24.0000');
     expect($product->alert_quantity)->toBe(3);
     expect($product->is_storefront_published)->toBeTrue();
+
+    $this->assertDatabaseHas('audit_logs', [
+        'tenant_id' => $tenant->id,
+        'event' => 'product.storefront_published',
+        'auditable_type' => Product::class,
+        'auditable_id' => $product->id,
+    ]);
 });
 
 test('updating a product without the storefront field preserves its publication state', function () {

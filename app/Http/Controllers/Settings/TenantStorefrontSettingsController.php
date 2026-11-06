@@ -23,6 +23,7 @@ class TenantStorefrontSettingsController extends Controller
             'currency' => $tenant->currency,
             'storefront' => [
                 'is_storefront_enabled' => $tenant->tenantSetting?->is_storefront_enabled ?? true,
+                'is_storefront_analytics_enabled' => $tenant->tenantSetting?->is_storefront_analytics_enabled ?? false,
                 'bank_transfer_instructions' => $tenant->tenantSetting?->bank_transfer_instructions,
                 'storefront_description' => $tenant->tenantSetting?->storefront_description,
                 'storefront_email' => $tenant->tenantSetting?->storefront_email,
@@ -46,6 +47,7 @@ class TenantStorefrontSettingsController extends Controller
     {
         $validated = $request->validate([
             'is_storefront_enabled' => ['required', 'boolean'],
+            'is_storefront_analytics_enabled' => ['sometimes', 'boolean'],
             'bank_transfer_instructions' => ['nullable', 'string', 'max:2000'],
             'storefront_description' => ['nullable', 'string', 'max:5000'],
             'storefront_email' => ['nullable', 'email', 'max:255'],
