@@ -4,6 +4,7 @@ import {
     Building2,
     CloudOff,
     Package,
+    ShoppingBag,
     Plug,
     ShieldCheck,
     ShoppingCart,
@@ -87,6 +88,12 @@ const offerings: Offering[] = [
 ];
 
 const platformCapabilities = [
+    {
+        icon: ShoppingBag,
+        title: 'Public marketplace',
+        description:
+            'Make stores and products available to shoppers through the online marketplace.',
+    },
     {
         icon: ShieldCheck,
         title: 'Roles & permissions',

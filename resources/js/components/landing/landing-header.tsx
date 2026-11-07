@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useAppearance } from '@/hooks/use-appearance';
 import { cn } from '@/lib/utils';
 import { dashboard, login, register } from '@/routes';
+import { marketplace } from '@/routes/storefront';
 
 const navLinks = [
     { label: 'Features', href: '#features' },
@@ -57,6 +58,12 @@ export default function LandingHeader() {
                             {link.label}
                         </a>
                     ))}
+                    <Link
+                        href={marketplace.url()}
+                        className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+                    >
+                        Marketplace
+                    </Link>
                 </nav>
 
                 <div className="ml-auto flex items-center gap-2">
@@ -138,6 +145,13 @@ export default function LandingHeader() {
                                 {link.label}
                             </a>
                         ))}
+                        <Link
+                            href={marketplace.url()}
+                            onClick={() => setIsMenuOpen(false)}
+                            className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background focus-visible:outline-none"
+                        >
+                            Marketplace
+                        </Link>
                         <div className="mt-2 flex flex-col gap-2">
                             {auth.user ? (
                                 <Button asChild>

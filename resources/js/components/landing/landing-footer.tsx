@@ -2,6 +2,7 @@ import { Link, usePage } from '@inertiajs/react';
 
 import Brand from '@/components/landing/brand';
 import { dashboard, login, register } from '@/routes';
+import { marketplace } from '@/routes/storefront';
 
 const productLinks = [
     { label: 'Features', href: '#features' },
@@ -14,7 +15,7 @@ const productLinks = [
  * Landing page footer.
  */
 export default function LandingFooter() {
-    const { auth } = usePage().props;
+    const { auth, name } = usePage().props;
 
     return (
         <footer className="border-t border-border bg-muted/30">
@@ -23,7 +24,7 @@ export default function LandingFooter() {
                     <div className="max-w-sm">
                         <Brand />
                         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
-                            TickSales is a multi-tenant point of sale and
+                            {name} is a multi-tenant point of sale and
                             inventory platform for retail, food and distribution
                             businesses.
                         </p>
@@ -43,6 +44,14 @@ export default function LandingFooter() {
                                         </a>
                                     </li>
                                 ))}
+                                <li>
+                                    <Link
+                                        href={marketplace.url()}
+                                        className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                                    >
+                                        Marketplace
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
 
@@ -95,7 +104,7 @@ export default function LandingFooter() {
 
                 <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
                     <p className="text-xs text-muted-foreground">
-                        © {new Date().getFullYear()} TickSales. All rights
+                        © {new Date().getFullYear()} {name}. All rights
                         reserved.
                     </p>
                     <p className="text-xs text-muted-foreground">

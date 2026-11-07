@@ -10,6 +10,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { dashboard, register } from '@/routes';
+import { marketplace } from '@/routes/storefront';
 
 const catalogueTiles = [
     { name: 'Arabica Coffee', price: '4.50' },
@@ -66,6 +67,8 @@ export default function LandingHero() {
                         TickSales brings point of sale, inventory, purchasing,
                         customers and reporting together, so your team can serve
                         the counter faster and know exactly what is selling.
+                        Your public marketplace also keeps products available
+                        to browse and buy online.
                     </p>
 
                     <div
@@ -102,7 +105,9 @@ export default function LandingHero() {
                             variant="outline"
                             className="w-full sm:w-auto"
                         >
-                            <a href="#pricing">See plans</a>
+                            <Link href={marketplace.url()}>
+                                Browse marketplace
+                            </Link>
                         </Button>
                     </div>
 
@@ -121,6 +126,10 @@ export default function LandingHero() {
                         <li className="flex items-center gap-1.5">
                             <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
                             Cancel anytime
+                        </li>
+                        <li className="flex items-center gap-1.5">
+                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                            Public marketplace included
                         </li>
                     </ul>
                 </div>
