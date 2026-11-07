@@ -160,7 +160,27 @@ php artisan storage:link
 ```
 
 If using cloud storage for attachments (e.g. S3), set `FILESYSTEM_DISK=s3` and the
-`AWS_*` variables. Attachments (expense files, product images) default to the `local` disk.
+`AWS_*` variables. The public storefront currently serves product and branding images from
+the Laravel `public` disk, so its object paths, cache headers, backups, and deletion policy
+must be provisioned explicitly.
+
+### Storefront upload and storage policy
+
+- Store product images and tenant branding under tenant-specific paths on the public disk.
+- Keep paths tenant-independent only in the application's public asset directory; customer
+  uploads must never share paths with executable or web-root configuration files.
+- Accept image uploads as server validation permits, enforce a file-size limit and verified
+  MIME type, and regenerate or normalize dimensions before publication when image processing
+  is available.
+- Reject paths containing traversal segments, query/fragment characters, backslashes, or
+  values that escape the tenant's storage namespace. Existing `image_path` database values
+  remain display-path references and are not executable URLs.
+- Do not store payment data, checkout email/phone values, order tracking tokens, or analytics
+  payloads in object storage. Attachments containing personal or financial records require
+  a private disk and signed or authorized access.
+- Include public storefront assets in backup coverage, monitor object-storage capacity, and
+  define retention/deletion when the tenant is removed or a product is unpublished. Do not
+  automatically expose deleted tenant objects through stale public URLs.
 
 ---
 
@@ -181,3 +201,40 @@ php artisan optimize:clear
 
 Frontend changes are versioned by hashed filenames, so roll back the deployed bundle to the
 previous release (keep prior `public/build` snapshots).
+
+## 11. Storefront incident and pilot procedure
+
+### Incident triggers
+
+- Payment callback failures, provider amount/currency/reference mismatch, duplicate or
+  out-of-order webhooks.
+- Stock reservations that exceed inventory, failed releases/cancellations, or branch mismatch.
+- Tenant data exposure, tracking credential leakage, unexpected public product publication,
+  CSP or cache-header regression, and storage deletion or compromise.
+
+### Immediate response
+
+1. Disable the affected storefront setting or payment method; do not disable tenant isolation
+   or delete order/audit records.
+2. Preserve provider event IDs, webhook payload metadata, order references, audit logs, and
+   database snapshots needed for reconciliation. Do not log payment secrets or customer PII.
+3. Verify provider status independently before changing payment state; use the existing
+   transaction and guarded order-state transitions.
+4. Reconcile tenant, branch, product/variant, reservation, order, payment, refund, audit, and
+   tracking records before reopening checkout.
+5. Announce rollback or re-enable decisions only after the selected tenant's records are
+   balanced and the same regression has been reproduced safely.
+
+### Pilot reconciliation
+
+For each selected tenant, reconcile at least one complete sample path:
+
+- Browser checkout creates one order and one idempotent reservation.
+- Payment confirmation or staff confirmation changes only the expected payment/state fields.
+- Pickup/delivery completion consumes inventory as designed.
+- Cancellation releases inventory and preserves its timeline/audit event.
+- Refund restores inventory and records the refund/payment status consistently.
+- Public tracking shows the minimum status fields and no full address, internal notes, or
+  unrelated customer data.
+- Tenant-scoped analytics retain only the allowlisted pseudonymous aggregates and respect the
+  configured retention period.

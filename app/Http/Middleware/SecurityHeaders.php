@@ -65,12 +65,13 @@ class SecurityHeaders
             $ws = preg_replace('#^http#', 'ws', rtrim($devServer, '/'));
 
             $script[] = $devServer;
-            $style[] = $devServer;
-            $style[] = "'unsafe-inline'"; // Vite dev injects styles via JS without a nonce
+            $style = ["'self'", $devServer, "'unsafe-inline'"]; // Vite and React inject styles without a nonce.
             $connect[] = $devServer;
             $connect[] = $ws;
             $img[] = $devServer;
             $font[] = $devServer;
+        } else {
+            $style = ["'self'", "'unsafe-inline'"];
         }
 
         return implode('; ', [
@@ -81,6 +82,7 @@ class SecurityHeaders
             "form-action 'self'",
             'script-src '.implode(' ', $script),
             'style-src '.implode(' ', $style),
+            "style-src-attr 'unsafe-inline'",
             'connect-src '.implode(' ', $connect),
             'img-src '.implode(' ', $img),
             'font-src '.implode(' ', $font),

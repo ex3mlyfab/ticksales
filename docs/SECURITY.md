@@ -197,12 +197,20 @@ In production, passwords must:
 
 ## 11. File Upload Security
 
-- Only allow specific MIME types (images, PDFs)
-- Validate MIME from file content (not just extension)
-- Store uploads outside public root
-- Generate signed URLs for access
-- Scan for malware in production (configurable)
-- Maximum file size enforced
+- Public storefront images and tenant branding are exposed deliberately from the Laravel
+  `public` disk; no payment, customer, tracking, analytics, audit, or attachment data belongs
+  there. Private expense and financial attachments should use a private disk with authorized
+  or signed access.
+- Validate image extensions and MIME from file content, not only filenames.
+- Enforce tenant-scoped storage paths and reject traversal, fragments, query strings,
+  backslashes, and unexpected path prefixes.
+- Enforce a configured maximum file size and normalize or rasterize untrusted image content
+  before publication when server-side processing is enabled.
+- Back public objects by malware-controlled or reputation-controlled ingress where tenant
+  uploads are operationally available; quarantine and log suspicious objects without exposing
+  their contents publicly.
+- Include object inventory and deletion in tenant-retention procedures. Unpublish or remove
+  public references before deleting a public storage object.
 
 ---
 

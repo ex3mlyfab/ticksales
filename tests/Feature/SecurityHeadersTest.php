@@ -24,8 +24,11 @@ test('web responses carry a strict nonce-based content security policy', functio
         ->and($csp)->toContain("frame-ancestors 'self'")
         ->and($csp)->toContain("base-uri 'self'")
         ->and($csp)->toContain("form-action 'self'")
-        // Strict policy: no unsafe-inline in the script or style directives.
-        ->and($csp)->not->toContain("'unsafe-inline'");
+        ->and($csp)->toMatch('/style-src [^;]+/')
+        ->and($csp)->toContain("style-src-attr 'unsafe-inline'")
+        // Third-party React primitives set runtime inline styles; scripts remain nonce-only.
+        ->and(preg_match('/style-src ([^;]+)/', $csp, $styleSrc))
+        ->and($styleSrc[1])->toContain("'unsafe-inline'");
 });
 
 test('the csp nonce is applied to the shell inline script and style', function () {

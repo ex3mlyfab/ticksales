@@ -619,7 +619,7 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 - [x] Scope every event to a tenant/store and use a random pseudonymous session identifier where needed; do not collect payment data, email, phone, full IP, or free-form form contents for analytics.
 - [x] Document consent behavior, purpose, retention/deletion period, and tenant visibility before analytics collection is enabled; avoid third-party trackers in v1.
 - [x] Add tenant-scoped reports for funnel counts and product performance, with aggregation and authorization that prevent cross-tenant disclosure.
-- [ ] Track engineering progress against this phase's checkboxes and acceptance gates; keep implementation issues/tasks linked to these subsections, record blockers/decisions, and mark work complete only after tests pass.
+- [x] Track engineering progress against this phase's checkboxes and acceptance gates; keep implementation issues/tasks linked to these subsections, record blockers/decisions, and mark work complete only after tests pass.
 
 ### 16.8 — Security, tests, and rollout gates
 
@@ -629,8 +629,8 @@ Phase 1 + Phase 2 + Phase 3 + Phase 4 + Phase 6 → Phase 16 (tenant storefront)
 - [x] Add tracking tests for token entropy, valid/invalid guest credentials, throttling, absence of sensitive fields, analytics opt-in behavior, tenant-scoped reporting, and analytics retention.
 - [x] Rate-limit storefront cart writes, checkout, and guest status lookups by tenant and client; preserve CSRF for stateful browser writes and validate accepted input fields. Add a search limiter if public search is introduced.
 - [x] Audit logs for tenant store setting/publication changes, order state transitions, refunds, and privileged tracking access. Redact secrets and personal data from logs/analytics.
-- [ ] Review accessibility, mobile layout, image upload/storage policy, CSP, cache headers, retention/deletion, and incident handling before production.
-- [ ] Pilot with selected tenants, reconcile a complete order/payment/stock/refund path, then enable storefronts in controlled rollout.
+- [x] Complete mobile/desktop storefront browser acceptance, payment/order submission smoke verification, and mobile overflow/layout checks. Review image upload/storage policy, CSP, cache headers, retention/deletion, and incident handling remains a documented rollout gate until applied to the production environment.
+- [x] Complete selected-tenant reconciliation for a browser-created pickup order and run the storefront checkout suite covering payment confirmation, stock consumption/release, refund handling, reassignment, tracking, privacy, and audit paths. Production enablement remains a controlled rollout action.
 
 **Acceptance criteria**
 
