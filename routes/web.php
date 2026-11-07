@@ -11,6 +11,8 @@ use App\Http\Controllers\Web\StorefrontPaystackController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', LandingController::class)->name('home');
+Route::get('/stores', [StorefrontController::class, 'directory'])->name('storefront.directory');
+Route::get('/marketplace', [StorefrontController::class, 'marketplace'])->name('storefront.marketplace');
 Route::get('/shop/{tenant:slug}', [StorefrontController::class, 'show'])->name('storefront.show');
 Route::get('/shop/{tenant:slug}/products/{product}', [StorefrontController::class, 'product'])
     ->scopeBindings()
