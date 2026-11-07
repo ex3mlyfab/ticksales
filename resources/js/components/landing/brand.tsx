@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import { ReceiptText } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -16,6 +17,8 @@ export default function Brand({
     markClassName,
     showName = true,
 }: BrandProps) {
+    const { name, branding } = usePage().props;
+
     return (
         <span className={cn('flex items-center gap-2', className)}>
             <span
@@ -24,11 +27,15 @@ export default function Brand({
                     markClassName,
                 )}
             >
-                <ReceiptText className="size-5" strokeWidth={2} />
+                {branding?.logo_path ? (
+                    <img src={branding.logo_path} alt="" className="size-full rounded-xl object-cover" />
+                ) : (
+                    <ReceiptText className="size-5" strokeWidth={2} />
+                )}
             </span>
             {showName && (
                 <span className="text-base font-semibold tracking-tight">
-                    TickSales
+                    {branding?.name ?? name ?? 'TickSales'}
                 </span>
             )}
         </span>

@@ -2,6 +2,7 @@ import { Link } from '@inertiajs/react';
 import { index as plansIndex } from '@/routes/admin/plans';
 import { index as methodsIndex } from '@/routes/admin/subscription-payment-methods';
 import { index as tenantsIndex } from '@/routes/admin/tenants';
+import { edit as brandingEdit } from '@/routes/admin/branding';
 
 export default function SubscriptionNavigation() {
     return (
@@ -23,6 +24,12 @@ export default function SubscriptionNavigation() {
                 className="text-primary hover:underline"
             >
                 Payment collection
+            </Link>
+            <Link
+                href={brandingEdit.url()}
+                className="text-primary hover:underline"
+            >
+                Branding
             </Link>
         </nav>
     );

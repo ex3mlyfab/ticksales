@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, usePage } from '@inertiajs/react';
 import { Check, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
@@ -24,10 +24,10 @@ const featureLabels: Record<string, string> = {
     priority_support: 'Priority support',
 };
 
-const formatPrice = (value: number): string =>
-    new Intl.NumberFormat('en-US', {
+const formatPrice = (value: number, currency: string): string =>
+    new Intl.NumberFormat('en-NG', {
         style: 'currency',
-        currency: 'USD',
+        currency,
         minimumFractionDigits: 2,
     }).format(value);
 
@@ -43,6 +43,7 @@ const branchLabel = (maxBranches: number): string => {
  * Subscription plans section, driven by the plans configured in the database.
  */
 export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
+    const { currency } = usePage().props;
     const [billingCycle, setBillingCycle] = useState<BillingCycle>('monthly');
     const isYearly = billingCycle === 'yearly';
 
@@ -128,7 +129,7 @@ export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
 
                                     <div className="mt-5 flex items-baseline gap-1.5">
                                         <span className="text-4xl font-semibold tracking-tight">
-                                            {formatPrice(price)}
+                                            {formatPrice(price, currency ?? 'NGN')}
                                         </span>
                                         <span className="text-sm text-muted-foreground">
                                             /month

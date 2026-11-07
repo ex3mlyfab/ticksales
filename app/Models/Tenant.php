@@ -57,6 +57,10 @@ class Tenant extends Model
         'plan',
     ];
 
+    protected $attributes = [
+        'currency' => 'NGN',
+    ];
+
     /**
      * Get the attributes that should be cast.
      *

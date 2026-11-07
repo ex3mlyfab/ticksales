@@ -2,10 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ApplicationSetting;
 use App\Models\Branch;
 use App\Models\Tenant;
 use App\Support\TenantContext;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -42,10 +44,13 @@ class HandleInertiaRequests extends Middleware
         $branch = $this->resolveBranch($request, $tenant);
         $permissions = $request->user()?->permissions($tenant)?->pluck('name')->values()->all() ?? [];
         $branding = $this->resolveBranding($tenant);
+        $applicationSetting = ApplicationSetting::query()->first();
+        $currency = $applicationSetting?->currency ?? 'NGN';
 
         return [
             ...parent::share($request),
-            'name' => config('app.name'),
+            'name' => $applicationSetting?->app_name ?? config('app.name', 'TickSales'),
+            'currency' => $currency,
             'auth' => [
                 'user' => $request->user(),
             ],
@@ -114,15 +119,13 @@ class HandleInertiaRequests extends Middleware
     protected function resolveBranding(mixed $tenant): array
     {
         $branding = $tenant?->tenantBranding()->first();
-        $name = config('app.name');
-
-        if ($tenant !== null) {
-            $name = $tenant->name;
-        }
+        $applicationSetting = ApplicationSetting::query()->first();
+        $logoPath = $applicationSetting?->logo_path ?? $branding?->logo_path;
+        $name = $applicationSetting?->app_name ?? config('app.name', 'TickSales');
 
         return [
             'name' => $name,
-            'logo_path' => $branding?->logo_path ?? null,
+            'logo_path' => $logoPath ? Storage::disk('public')->url($logoPath) : null,
             'favicon_path' => $branding?->favicon_path ?? null,
             'primary_color' => $branding?->primary_color ?? '#111827',
             'secondary_color' => $branding?->secondary_color ?? '#f5f5f4',

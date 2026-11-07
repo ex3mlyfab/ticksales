@@ -74,6 +74,7 @@ class TenantController extends Controller
         ]);
 
         $validated['slug'] = $validated['slug'] ?? Str::slug($validated['name']);
+        $validated['currency'] = strtoupper($validated['currency'] ?? 'NGN');
 
         $tenant = Tenant::query()->create($validated);
 
