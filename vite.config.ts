@@ -14,8 +14,11 @@ export default defineConfig({
             input: ['resources/css/app.css', 'resources/js/app.tsx'],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
+                bunny('Inter', {
                     weights: [400, 500, 600],
+                }),
+                bunny('Manrope', {
+                    weights: [500, 600, 700, 800],
                 }),
             ],
         }),
@@ -35,15 +38,15 @@ export default defineConfig({
                 enabled: true,
             },
             manifest: {
-                name: 'TickSales POS',
-                short_name: 'TickSales',
+                name: 'Sokora',
+                short_name: 'Sokora',
                 description:
-                    'Retail sales, inventory, and cashier workflows for modern stores.',
+                    'The Business Operating Platform: retail, food service and distribution.',
                 start_url: '/',
                 scope: '/',
                 display: 'standalone',
-                background_color: '#f8fafc',
-                theme_color: '#0f172a',
+                background_color: '#F6F4ED',
+                theme_color: '#102B26',
                 icons: [
                     {
                         src: '/favicon.svg',

@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Checkbox, Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -47,7 +47,7 @@ export default function DiscountCreatePage() {
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}
@@ -72,7 +72,7 @@ export default function DiscountCreatePage() {
                                         </option>
                                     </select>
                                     {errors.type && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.type}
                                         </p>
                                     )}
@@ -101,7 +101,7 @@ export default function DiscountCreatePage() {
                                         required
                                     />
                                     {errors.value && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.value}
                                         </p>
                                     )}
@@ -129,7 +129,7 @@ export default function DiscountCreatePage() {
                                             }
                                         />
                                         {errors.min_purchase_amount && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.min_purchase_amount}
                                             </p>
                                         )}
@@ -156,7 +156,7 @@ export default function DiscountCreatePage() {
                                             }
                                         />
                                         {errors.max_discount_amount && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.max_discount_amount}
                                             </p>
                                         )}
@@ -181,7 +181,7 @@ export default function DiscountCreatePage() {
                                             }
                                         />
                                         {errors.starts_at && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.starts_at}
                                             </p>
                                         )}
@@ -204,7 +204,7 @@ export default function DiscountCreatePage() {
                                             }
                                         />
                                         {errors.ends_at && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.ends_at}
                                             </p>
                                         )}

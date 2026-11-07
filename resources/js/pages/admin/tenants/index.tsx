@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+﻿import { Head, Link } from '@inertiajs/react';
 import SubscriptionNavigation from '@/components/admin/subscription-navigation';
 import { create, show } from '@/routes/admin/tenants';
 
@@ -22,7 +22,7 @@ export default function Index({ tenants }: { tenants: Tenant[] }) {
                     <h1 className="text-2xl font-semibold">Tenants</h1>
                     <Link
                         href={create.url()}
-                        className="rounded bg-slate-900 px-3 py-2 text-sm text-white"
+                        className="rounded bg-forest px-3 py-2 text-sm text-white"
                     >
                         New tenant
                     </Link>
@@ -31,7 +31,7 @@ export default function Index({ tenants }: { tenants: Tenant[] }) {
                 <div className="rounded border bg-white p-4 shadow-sm">
                     <ul className="divide-y">
                         {tenants.length === 0 && (
-                            <li className="py-6 text-sm text-slate-500">
+                            <li className="py-6 text-sm text-muted-foreground">
                                 No tenants have been created.
                             </li>
                         )}
@@ -44,17 +44,17 @@ export default function Index({ tenants }: { tenants: Tenant[] }) {
                                     <div className="font-medium">
                                         {tenant.name}
                                     </div>
-                                    <div className="text-sm text-slate-500">
-                                        {tenant.email} · {tenant.slug}
+                                    <div className="text-sm text-muted-foreground">
+                                        {tenant.email} Â· {tenant.slug}
                                     </div>
-                                    <div className="mt-1 text-sm text-slate-600">
-                                        {tenant.plan_name ?? 'No plan'} ·{' '}
+                                    <div className="mt-1 text-sm text-muted-foreground">
+                                        {tenant.plan_name ?? 'No plan'} Â·{' '}
                                         {tenant.subscription_status}
                                     </div>
                                 </div>
                                 <Link
                                     href={show.url(tenant.id)}
-                                    className="text-sm font-medium text-slate-700"
+                                    className="text-sm font-medium text-foreground"
                                 >
                                     Manage subscription
                                 </Link>

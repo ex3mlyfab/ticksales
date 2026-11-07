@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Checkbox, Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -49,7 +49,7 @@ export default function SupplierCreatePage() {
                                             required
                                         />
                                         {errors.name && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.name}
                                             </p>
                                         )}
@@ -71,7 +71,7 @@ export default function SupplierCreatePage() {
                                             placeholder="contact@supplier.com"
                                         />
                                         {errors.email && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.email}
                                             </p>
                                         )}
@@ -94,7 +94,7 @@ export default function SupplierCreatePage() {
                                             placeholder="+1 (555) 123-4567"
                                         />
                                         {errors.phone && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.phone}
                                             </p>
                                         )}
@@ -117,7 +117,7 @@ export default function SupplierCreatePage() {
                                             placeholder="VAT/GST number"
                                         />
                                         {errors.tax_number && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.tax_number}
                                             </p>
                                         )}
@@ -141,7 +141,7 @@ export default function SupplierCreatePage() {
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.address && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.address}
                                         </p>
                                     )}

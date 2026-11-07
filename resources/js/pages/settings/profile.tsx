@@ -1,4 +1,4 @@
-import { Form, Head, usePage } from '@inertiajs/react';
+﻿import { Form, Head, usePage } from '@inertiajs/react';
 import { Link } from '@inertiajs/react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/delete-user';
@@ -102,7 +102,7 @@ export default function Profile({
 
                                         {status ===
                                             'verification-link-sent' && (
-                                            <div className="mt-2 text-sm font-medium text-green-600">
+                                            <div className="mt-2 text-sm font-medium text-success">
                                                 A new verification link has been
                                                 sent to your email address.
                                             </div>

@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+﻿import { Head, Link } from '@inertiajs/react';
 import { Form, useForm } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button, Input, Label } from '@/components/ui';
@@ -161,7 +161,7 @@ export default function ProfitLossReportPage({
                     <div
                         className={`rounded-xl border bg-card p-4 shadow-sm ${
                             Number(summary.net_profit) < 0
-                                ? 'text-red-600'
+                                ? 'text-destructive'
                                 : ''
                         }`}
                     >

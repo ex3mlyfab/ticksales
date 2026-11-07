@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+﻿import { useMemo, useState } from 'react';
 import { useForm } from '@inertiajs/react';
 import { Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
@@ -164,7 +164,7 @@ export default function SaleReturnCreatePage({ sales, paymentMethods }: Props) {
                                             ))}
                                         </select>
                                         {errors.sale_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.sale_id}
                                             </p>
                                         )}
@@ -216,7 +216,7 @@ export default function SaleReturnCreatePage({ sales, paymentMethods }: Props) {
                                         placeholder="e.g. Customer changed their mind, damaged item"
                                     />
                                     {errors.reason && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.reason}
                                         </p>
                                     )}
@@ -322,7 +322,7 @@ export default function SaleReturnCreatePage({ sales, paymentMethods }: Props) {
                                 )}
 
                                 {errors['items'] && (
-                                    <p className="text-sm text-red-500">
+                                    <p className="text-sm text-destructive">
                                         Select at least one item to return.
                                     </p>
                                 )}

@@ -1,4 +1,4 @@
-import { Head, usePage } from '@inertiajs/react';
+﻿import { Head, usePage } from '@inertiajs/react';
 import {
     Banknote,
     Package,
@@ -42,7 +42,7 @@ function MetricCard({ metric }: { metric: Metric }) {
     return (
         <Card className="gap-4 p-5">
             <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-medium text-muted-foreground">
+                <p className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                     {metric.label}
                 </p>
                 <span
@@ -52,7 +52,7 @@ function MetricCard({ metric }: { metric: Metric }) {
                 </span>
             </div>
             <div>
-                <p className="text-2xl font-semibold tracking-tight tabular-nums">
+                <p className="text-2xl font-semibold tracking-tight tabular-figures">
                     {metric.value}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
@@ -72,32 +72,28 @@ export default function Dashboard() {
             value: stats.orders_today.toLocaleString(),
             description: 'Completed today',
             icon: <ShoppingCart aria-hidden="true" className="size-4" />,
-            iconClassName:
-                'bg-sky-100 text-sky-700 dark:bg-sky-950/70 dark:text-sky-300',
+            iconClassName: 'bg-muted text-muted-foreground',
         },
         {
             label: 'Items sold',
             value: Number(stats.items_sold_today).toFixed(2),
             description: 'Units moved today',
             icon: <Package aria-hidden="true" className="size-4" />,
-            iconClassName:
-                'bg-violet-100 text-violet-700 dark:bg-violet-950/70 dark:text-violet-300',
+            iconClassName: 'bg-muted text-muted-foreground',
         },
         {
             label: 'Average ticket',
             value: `$${Number(stats.average_ticket).toFixed(2)}`,
             description: 'Sales per order',
             icon: <ReceiptText aria-hidden="true" className="size-4" />,
-            iconClassName:
-                'bg-indigo-100 text-indigo-700 dark:bg-indigo-950/70 dark:text-indigo-300',
+            iconClassName: 'bg-muted text-muted-foreground',
         },
         {
             label: 'Low stock',
             value: stats.inventory_alerts.toLocaleString(),
             description: 'Items need attention',
             icon: <TriangleAlert aria-hidden="true" className="size-4" />,
-            iconClassName:
-                'bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300',
+            iconClassName: 'bg-warning/15 text-forest dark:bg-warning/10 dark:text-warning',
         },
     ];
 
@@ -121,24 +117,24 @@ export default function Dashboard() {
                     aria-label="Today's performance"
                     className="grid gap-4 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.95fr)]"
                 >
-                    <Card className="justify-between gap-8 border-emerald-200/80 bg-emerald-50 p-6 dark:border-emerald-900/70 dark:bg-emerald-950/30">
+                    <Card className="justify-between gap-8 border-transparent bg-forest p-6 shadow-sm">
                         <div className="flex items-center justify-between gap-4">
                             <div>
-                                <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+                                <p className="text-xs font-semibold tracking-wider text-lime uppercase">
                                     Sales today
                                 </p>
-                                <p className="mt-1 text-xs text-emerald-800/75 dark:text-emerald-200/70">
+                                <p className="mt-1 text-xs text-sidebar-foreground/70">
                                     Total recorded revenue
                                 </p>
                             </div>
-                            <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-100 text-emerald-800 dark:bg-emerald-900/70 dark:text-emerald-200">
+                            <span className="flex size-10 items-center justify-center rounded-xl bg-lime/15 text-lime">
                                 <Banknote
                                     aria-hidden="true"
                                     className="size-5"
                                 />
                             </span>
                         </div>
-                        <p className="text-4xl font-semibold tracking-tight text-emerald-950 tabular-nums dark:text-emerald-100">
+                        <p className="text-4xl font-semibold tracking-tight text-sidebar-primary-foreground tabular-nums">
                             ${Number(stats.total_sales_today).toFixed(2)}
                         </p>
                     </Card>
@@ -162,7 +158,7 @@ export default function Dashboard() {
                                     Best sellers from today&apos;s orders
                                 </p>
                             </div>
-                            <span className="flex size-9 items-center justify-center rounded-lg bg-violet-100 text-violet-700 dark:bg-violet-950/70 dark:text-violet-300">
+                            <span className="flex size-9 items-center justify-center rounded-lg bg-muted text-muted-foreground">
                                 <Package
                                     aria-hidden="true"
                                     className="size-4"
@@ -222,7 +218,7 @@ export default function Dashboard() {
                                     Stock that is nearing its reorder point
                                 </p>
                             </div>
-                            <span className="flex size-9 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300">
+                            <span className="flex size-9 items-center justify-center rounded-lg bg-warning/15 text-forest dark:bg-warning/10 dark:text-warning">
                                 <TriangleAlert
                                     aria-hidden="true"
                                     className="size-4"
@@ -231,8 +227,8 @@ export default function Dashboard() {
                         </CardHeader>
                         <CardContent>
                             {lowStock.length === 0 ? (
-                                <div className="rounded-lg bg-emerald-50 px-4 py-6 text-center dark:bg-emerald-950/30">
-                                    <p className="text-sm font-medium text-emerald-900 dark:text-emerald-200">
+                                <div className="rounded-lg bg-muted/60 px-4 py-6 text-center">
+                                    <p className="text-sm font-medium">
                                         Stock is looking good
                                     </p>
                                     <p className="mt-1 text-sm text-muted-foreground">
@@ -248,7 +244,7 @@ export default function Dashboard() {
                                             className="flex items-center justify-between gap-4 py-3 first:pt-0 last:pb-0"
                                         >
                                             <div className="flex min-w-0 items-center gap-3">
-                                                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-950/70 dark:text-amber-300">
+                                                <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-warning/15 text-forest dark:bg-warning/10 dark:text-warning">
                                                     <TriangleAlert
                                                         aria-hidden="true"
                                                         className="size-4"
@@ -264,7 +260,7 @@ export default function Dashboard() {
                                                     </p>
                                                 </div>
                                             </div>
-                                            <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800 tabular-nums dark:bg-amber-950/70 dark:text-amber-200">
+                                            <span className="shrink-0 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-semibold text-forest tabular-nums dark:bg-warning/10 dark:text-warning">
                                                 {item.quantity} on hand
                                             </span>
                                         </div>

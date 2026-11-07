@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, edit, destroy } from '@/routes/product-units';
@@ -85,7 +85,7 @@ export default function ProductUnitIndexPage({ units }: Props) {
                                         >
                                             <button
                                                 type="submit"
-                                                className="text-sm text-red-500 hover:text-red-700"
+                                                className="text-sm text-destructive hover:text-destructive"
                                                 onClick={(e) => { if (!confirm('Are you sure you want to delete this unit?')) e.preventDefault(); }}
                                             >
                                                 Delete

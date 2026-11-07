@@ -1,4 +1,4 @@
-import { ClipboardList, LayoutDashboard, Store } from 'lucide-react';
+﻿import { ClipboardList, LayoutDashboard, Store } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 import Reveal from '@/components/landing/reveal';
@@ -41,7 +41,7 @@ export default function LandingWorkflow() {
         >
             <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
                 <Reveal className="mx-auto max-w-2xl text-center">
-                    <p className="text-sm font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+                    <p className="text-sm font-semibold tracking-wider text-commerce uppercase dark:text-commerce">
                         How it works
                     </p>
                     <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -64,7 +64,7 @@ export default function LandingWorkflow() {
                             <Reveal key={step.title} delay={index * 90}>
                                 <div className="relative flex h-full flex-col items-center text-center lg:px-4">
                                     <span className="relative z-10 flex size-18 items-center justify-center rounded-2xl border border-border bg-card shadow-sm">
-                                        <step.icon className="size-7 text-emerald-600 dark:text-emerald-400" />
+                                        <step.icon className="size-7 text-commerce dark:text-commerce" />
                                     </span>
                                     <span className="mt-5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                                         Step {index + 1}

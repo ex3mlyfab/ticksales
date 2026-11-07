@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, post, destroy } from '@/routes/stock-adjustments';
@@ -70,7 +70,7 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                                             {adj.reference_no}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {adj.branch_name} •{' '}
+                                            {adj.branch_name} â€¢{' '}
                                             {adj.items.length} item(s)
                                         </p>
                                     </div>
@@ -78,8 +78,8 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                                         <span
                                             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                                 adj.status === 'posted'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                                    ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                    : 'bg-warning/15 text-forest dark:bg-warning/15 dark:text-warning'
                                             }`}
                                         >
                                             {adj.status}
@@ -91,7 +91,7 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                                             >
                                                 <button
                                                     type="submit"
-                                                    className="text-sm text-blue-500 hover:text-blue-700"
+                                                    className="text-sm text-info hover:text-info"
                                                 >
                                                     Post
                                                 </button>
@@ -107,7 +107,7 @@ export default function StockAdjustmentIndexPage({ adjustments }: Props) {
                                         >
                                             <button
                                                 type="submit"
-                                                className="text-sm text-red-500 hover:text-red-700"
+                                                className="text-sm text-destructive hover:text-destructive"
                                                 onClick={(e) => { if (!confirm('Are you sure you want to delete this adjustment?')) e.preventDefault(); }}
                                             >
                                                 Delete

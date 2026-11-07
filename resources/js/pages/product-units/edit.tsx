@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -51,7 +51,7 @@ export default function ProductUnitEditPage({ unit }: Props) {
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}
@@ -74,7 +74,7 @@ export default function ProductUnitEditPage({ unit }: Props) {
                                         placeholder="e.g. kg, pcs, bx"
                                     />
                                     {errors.abbreviation && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.abbreviation}
                                         </p>
                                     )}

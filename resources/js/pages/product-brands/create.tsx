@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Input, Label } from '@/components/ui';
@@ -37,10 +37,10 @@ export default function ProductBrandCreatePage() {
                                     setData('name', e.target.value)
                                 }
                                 placeholder="Enter brand name"
-                                className={errors.name ? 'border-red-500' : ''}
+                                className={errors.name ? 'border-destructive' : ''}
                             />
                             {errors.name && (
-                                <p className="text-sm text-red-500">
+                                <p className="text-sm text-destructive">
                                     {errors.name}
                                 </p>
                             )}

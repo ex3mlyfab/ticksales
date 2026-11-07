@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Checkbox, Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -71,7 +71,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}
@@ -96,7 +96,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                         </option>
                                     </select>
                                     {errors.type && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.type}
                                         </p>
                                     )}
@@ -120,7 +120,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                         required
                                     />
                                     {errors.value && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.value}
                                         </p>
                                     )}
@@ -148,7 +148,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                             }
                                         />
                                         {errors.min_purchase_amount && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.min_purchase_amount}
                                             </p>
                                         )}
@@ -175,7 +175,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                             }
                                         />
                                         {errors.max_discount_amount && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.max_discount_amount}
                                             </p>
                                         )}
@@ -200,7 +200,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                             }
                                         />
                                         {errors.starts_at && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.starts_at}
                                             </p>
                                         )}
@@ -223,7 +223,7 @@ export default function DiscountEditPage({ discount }: Props) {
                                             }
                                         />
                                         {errors.ends_at && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.ends_at}
                                             </p>
                                         )}

@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -97,7 +97,7 @@ export default function StockAdjustmentCreatePage({
                                             ))}
                                         </select>
                                         {errors.branch_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.branch_id}
                                             </p>
                                         )}
@@ -118,7 +118,7 @@ export default function StockAdjustmentCreatePage({
                                             placeholder="e.g. Damaged, expired, correction"
                                         />
                                         {errors.reason && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.reason}
                                             </p>
                                         )}
@@ -175,7 +175,7 @@ export default function StockAdjustmentCreatePage({
                                                 {(errors as Record<string, string | undefined>)[
                                                     'items.*.product_id'
                                                 ] && (
-                                                    <p className="text-xs text-red-500">
+                                                    <p className="text-xs text-destructive">
                                                         Product is required
                                                     </p>
                                                 )}
@@ -212,7 +212,7 @@ export default function StockAdjustmentCreatePage({
                                                 {(errors as Record<string, string | undefined>)[
                                                     'items.*.quantity_adjusted'
                                                 ] && (
-                                                    <p className="text-xs text-red-500">
+                                                    <p className="text-xs text-destructive">
                                                         Quantity must not be
                                                         zero
                                                     </p>
@@ -252,7 +252,7 @@ export default function StockAdjustmentCreatePage({
                                                     onClick={() =>
                                                         removeItem(index)
                                                     }
-                                                    className="text-sm text-red-500 hover:text-red-700"
+                                                    className="text-sm text-destructive hover:text-destructive"
                                                 >
                                                     Remove
                                                 </button>

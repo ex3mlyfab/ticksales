@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { post, edit, index } from '@/routes/purchase-orders';
@@ -43,7 +43,7 @@ export default function PurchaseOrderShowPage({ order }: Props) {
                 <Heading
                     variant="small"
                     title={order.reference_no}
-                    description={`Supplier ${order.supplier?.name ?? '-'} • ${order.branch?.name ?? '-'}`}
+                    description={`Supplier ${order.supplier?.name ?? '-'} â€¢ ${order.branch?.name ?? '-'}`}
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
@@ -51,7 +51,7 @@ export default function PurchaseOrderShowPage({ order }: Props) {
                         <h2 className="text-lg font-semibold">Items</h2>
                         <div className="flex items-center gap-2">
                             <span
-                                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${order.status === 'posted' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}
+                                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${order.status === 'posted' ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success' : 'bg-warning/15 text-forest dark:bg-warning/15 dark:text-warning'}`}
                             >
                                 {order.status}
                             </span>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\TenantAccent;
 use Database\Factories\TenantBrandingFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -51,6 +52,29 @@ class TenantBranding extends Model
         'border_radius',
         'theme_preset',
     ];
+
+    /**
+     * The accent colours a tenant is permitted to choose from.
+     *
+     * Tenant branding is limited to business identity (logo, favicon)
+     * and one curated accent. The platform's foundational design tokens
+     * — background, primary, sidebar, status colours — stay fixed.
+     *
+     * @return list<string>
+     */
+    public static function permittedAccents(): array
+    {
+        return TenantAccent::permittedHexes();
+    }
+
+    /**
+     * The tenant's permitted accent, or null when none is set (the
+     * platform's default accent applies instead).
+     */
+    public function permittedAccent(): ?TenantAccent
+    {
+        return TenantAccent::fromStored($this->accent_color);
+    }
 
     /**
      * Get the tenant that owns the branding.

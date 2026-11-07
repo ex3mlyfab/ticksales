@@ -1,4 +1,4 @@
-import { Form, Head } from '@inertiajs/react';
+﻿import { Form, Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button, Input, Label } from '@/components/ui';
 import { storefrontAnalytics } from '@/routes/reports';
@@ -47,7 +47,7 @@ export default function StorefrontAnalyticsPage({
                 />
 
                 {!enabled && (
-                    <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 px-4 py-3 text-sm">
+                    <div className="rounded-xl border border-warning/30 bg-warning/100/5 px-4 py-3 text-sm">
                         Analytics collection is currently disabled in Tenant settings.
                     </div>
                 )}

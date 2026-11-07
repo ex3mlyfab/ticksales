@@ -23,7 +23,8 @@ return new class extends Migration
 
         DB::table('application_settings')->insert([
             'id' => (string) Str::ulid(),
-            'app_name' => 'TickSales',
+            'app_name' => 'Sokora',
+            'app_name' => 'Sokora',
             'currency' => 'NGN',
             'logo_path' => null,
             'created_at' => now(),

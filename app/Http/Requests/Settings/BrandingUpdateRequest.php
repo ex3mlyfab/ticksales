@@ -2,12 +2,17 @@
 
 namespace App\Http\Requests\Settings;
 
+use App\Models\TenantBranding;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class BrandingUpdateRequest extends FormRequest
 {
     /**
-     * Get the validation rules that apply to the request.
+     * Tenant branding is limited to identity (logo, favicon) and one
+     * permitted accent from the curated list. Foundational design tokens
+     * — colours, sidebar styling, radius and theme presets — are
+     * platform-owned and cannot be modified by tenants.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
@@ -16,12 +21,22 @@ class BrandingUpdateRequest extends FormRequest
         return [
             'logo_path' => ['nullable', 'string', 'max:255'],
             'favicon_path' => ['nullable', 'string', 'max:255'],
-            'primary_color' => ['nullable', 'string', 'size:7'],
-            'secondary_color' => ['nullable', 'string', 'size:7'],
-            'accent_color' => ['nullable', 'string', 'size:7'],
-            'sidebar_style' => ['required', 'string'],
-            'border_radius' => ['required', 'string'],
-            'theme_preset' => ['required', 'string'],
+            'accent_color' => [
+                'nullable',
+                'string',
+                Rule::in(TenantBranding::permittedAccents()),
+            ],
         ];
+    }
+
+    /**
+     * Normalise accent hex values so a permitted accent can be sent in
+     * either case (e.g. #279c78) while still matching the curated list.
+     */
+    protected function prepareForValidation(): void
+    {
+        if (is_string($accent = $this->input('accent_color'))) {
+            $this->merge(['accent_color' => strtoupper(trim($accent))]);
+        }
     }
 }

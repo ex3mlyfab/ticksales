@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+﻿import { Head, useForm } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { Button } from '@/components/ui/button';
@@ -53,7 +53,7 @@ export default function CustomerGroupEditPage({ group }: Props) {
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}
@@ -78,7 +78,7 @@ export default function CustomerGroupEditPage({ group }: Props) {
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.description && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.description}
                                         </p>
                                     )}
@@ -105,7 +105,7 @@ export default function CustomerGroupEditPage({ group }: Props) {
                                         required
                                     />
                                     {errors.discount_rate && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.discount_rate}
                                         </p>
                                     )}

@@ -19,7 +19,7 @@ class ApplicationSetting extends Model
     ];
 
     protected $attributes = [
-        'app_name' => 'TickSales',
+        'app_name' => 'Sokora',
         'currency' => 'NGN',
     ];
 }

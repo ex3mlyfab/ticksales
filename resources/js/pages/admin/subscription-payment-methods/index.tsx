@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+﻿import { Head, Link } from '@inertiajs/react';
 import SubscriptionNavigation from '@/components/admin/subscription-navigation';
 import { create, edit } from '@/routes/admin/subscription-payment-methods';
 
@@ -51,7 +51,7 @@ export default function PaymentMethodsIndex({
                                         {method.name}
                                     </h2>
                                     <span
-                                        className={`rounded-full px-2 py-0.5 text-xs ${method.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 'bg-muted text-muted-foreground'}`}
+                                        className={`rounded-full px-2 py-0.5 text-xs ${method.is_active ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success' : 'bg-muted text-muted-foreground'}`}
                                     >
                                         {method.is_active
                                             ? 'Active'
@@ -62,7 +62,7 @@ export default function PaymentMethodsIndex({
                                     {method.instructions}
                                 </p>
                                 <p className="text-xs text-muted-foreground">
-                                    Sort order {method.sort_order} ·{' '}
+                                    Sort order {method.sort_order} Â·{' '}
                                     {method.subscription_payments_count}{' '}
                                     recorded payments
                                 </p>

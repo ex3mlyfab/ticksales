@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import { useState } from 'react';
 import Heading from '@/components/heading';
@@ -244,15 +244,15 @@ export default function PosIndexPage({
                 <div
                     className={`rounded-xl border p-4 ${
                         openSession
-                            ? 'border-green-300 bg-green-50'
-                            : 'border-yellow-300 bg-yellow-50'
+                            ? 'border-success/40 bg-success/10'
+                            : 'border-warning/40 bg-warning/10'
                     }`}
                 >
                     {openSession ? (
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm font-medium">
-                                    Register {openSession.register_name} — Open
+                                    Register {openSession.register_name} â€” Open
                                 </p>
                                 <p className="text-xs text-muted-foreground">
                                     Opening balance:{' '}
@@ -373,7 +373,7 @@ export default function PosIndexPage({
                                                         }
                                                         className="h-6 w-6 rounded-full border text-xs"
                                                     >
-                                                        −
+                                                        âˆ’
                                                     </button>
                                                     <input
                                                         type="number"
@@ -456,7 +456,7 @@ export default function PosIndexPage({
                                                             item.product_id,
                                                         )
                                                     }
-                                                    className="text-xs text-red-500 hover:text-red-700"
+                                                    className="text-xs text-destructive hover:text-destructive"
                                                 >
                                                     Remove
                                                 </button>
@@ -589,14 +589,14 @@ export default function PosIndexPage({
                                     </Button>
 
                                     {!isOnline && (
-                                        <p className="mt-2 text-center text-xs text-amber-600">
-                                            Offline — {pendingCount} sale(s)
+                                        <p className="mt-2 text-center text-xs text-warning">
+                                            Offline â€” {pendingCount} sale(s)
                                             queued for sync.
                                         </p>
                                     )}
 
                                     {isOnline && pendingCount > 0 && (
-                                        <p className="mt-2 text-center text-xs text-emerald-600">
+                                        <p className="mt-2 text-center text-xs text-commerce">
                                             {pendingCount} queued sale(s) will
                                             sync on reconnect.
                                         </p>
@@ -604,12 +604,12 @@ export default function PosIndexPage({
 
                                     {syncing && (
                                         <p className="mt-2 text-center text-xs text-muted-foreground">
-                                            Syncing queued sales…
+                                            Syncing queued salesâ€¦
                                         </p>
                                     )}
 
                                     {expiredCount > 0 && (
-                                        <p className="mt-2 text-center text-xs text-red-600">
+                                        <p className="mt-2 text-center text-xs text-destructive">
                                             {expiredCount} expired queued
                                             sale(s) were discarded (older than
                                             48h).

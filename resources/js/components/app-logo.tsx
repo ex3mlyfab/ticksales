@@ -11,11 +11,11 @@ export default function AppLogo() {
                 {branding?.logo_path ? (
                     <img src={branding.logo_path} alt="" className="size-8 rounded-md object-cover" />
                 ) : (
-                    <AppLogoIcon className="size-5 fill-current text-white dark:text-black" />
+                    <AppLogoIcon className="size-5 text-forest" />
                 )}
             </div>
-            <div className="ml-1 grid flex-1 text-left text-sm">
-                <span className="mb-0.5 truncate leading-tight font-semibold">
+            <div className="ml-1 grid flex-1 text-left text-sm font-display">
+                <span className="mb-0.5 truncate leading-tight font-bold tracking-display">
                     {name}
                 </span>
             </div>

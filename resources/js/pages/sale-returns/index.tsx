@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, show } from '@/routes/sale-returns';
@@ -78,8 +78,8 @@ export default function SaleReturnIndexPage({ returns }: Props) {
                                                 'Walk-in'}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {saleReturn.sale_reference} •{' '}
-                                            {saleReturn.branch_name ?? ''} •{' '}
+                                            {saleReturn.sale_reference} â€¢{' '}
+                                            {saleReturn.branch_name ?? ''} â€¢{' '}
                                             {saleReturn.items.length} item(s)
                                         </p>
                                         <p className="text-sm text-muted-foreground">
@@ -101,7 +101,7 @@ export default function SaleReturnIndexPage({ returns }: Props) {
                                             {saleReturn.refund_method_name ??
                                                 '-'}
                                         </span>
-                                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                                        <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-forest dark:text-success">
                                             {saleReturn.status}
                                         </span>
                                         <Link

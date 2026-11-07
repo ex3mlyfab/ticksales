@@ -22,11 +22,11 @@
         {{-- Inline style to set the HTML background color based on our theme in app.css --}}
         <style nonce="{{ $cspNonce }}">
             html {
-                background-color: oklch(1 0 0);
+                background-color: oklch(0.967 0.01 93.6);
             }
 
             html.dark {
-                background-color: oklch(0.145 0 0);
+                background-color: oklch(0.243 0.024 248.8);
             }
         </style>
 

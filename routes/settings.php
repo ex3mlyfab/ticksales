@@ -29,7 +29,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('settings/tenant', [TenantStorefrontSettingsController::class, 'edit'])
         ->name('tenant.settings')
         ->middleware('permission:settings.view');
-    Route::inertia('settings/branding', 'settings/branding')->name('tenant.branding')->middleware('permission:settings.view');
+    Route::get(
+        'settings/branding',
+        [TenantBrandingSettingsController::class, 'edit'],
+    )->name('tenant.branding')->middleware('permission:settings.view');
 
     Route::put('settings/tenant', [TenantStorefrontSettingsController::class, 'update'])
         ->name('tenant.settings.update')

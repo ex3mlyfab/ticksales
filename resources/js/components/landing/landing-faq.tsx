@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react';
+﻿import { ChevronDown } from 'lucide-react';
 
 import Reveal from '@/components/landing/reveal';
 
@@ -8,7 +8,7 @@ const questions = [
         answer: 'Every new workspace starts with a trial period, so you can load your catalogue, ring up a few test sales and get a feel for the reports before choosing a plan.',
     },
     {
-        question: 'Can I use TickSales on more than one device?',
+        question: 'Can I use Sokora on more than one device?',
         answer: 'Yes. The web app runs in any modern browser, and the installable progressive web app keeps selling on a tablet or phone even when the connection drops.',
     },
     {
@@ -36,7 +36,7 @@ export default function LandingFaq() {
         >
             <div className="mx-auto w-full max-w-3xl px-5 sm:px-8">
                 <Reveal className="text-center">
-                    <p className="text-sm font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+                    <p className="text-sm font-semibold tracking-wider text-commerce uppercase dark:text-commerce">
                         Questions
                     </p>
                     <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">

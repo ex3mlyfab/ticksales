@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -95,7 +95,7 @@ export default function StockTransferCreatePage({ branches, products }: Props) {
                                             ))}
                                         </select>
                                         {errors.from_branch_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.from_branch_id}
                                             </p>
                                         )}
@@ -137,7 +137,7 @@ export default function StockTransferCreatePage({ branches, products }: Props) {
                                                 ))}
                                         </select>
                                         {errors.to_branch_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.to_branch_id}
                                             </p>
                                         )}
@@ -254,7 +254,7 @@ export default function StockTransferCreatePage({ branches, products }: Props) {
                                                     onClick={() =>
                                                         removeItem(index)
                                                     }
-                                                    className="text-sm text-red-500 hover:text-red-700"
+                                                    className="text-sm text-destructive hover:text-destructive"
                                                 >
                                                     Remove
                                                 </button>

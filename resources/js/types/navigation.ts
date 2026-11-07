@@ -40,10 +40,6 @@ export type Branding = {
     name: string;
     logo_path?: string | null;
     favicon_path?: string | null;
-    primary_color?: string;
-    secondary_color?: string;
-    accent_color?: string;
-    sidebar_style?: string;
-    border_radius?: string;
-    theme_preset?: string;
+    /** Hex of a permitted accent (App\Enums\TenantAccent), or null for the platform default. */
+    accent_color?: string | null;
 };

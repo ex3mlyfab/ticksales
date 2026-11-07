@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+﻿import { Link, usePage } from '@inertiajs/react';
 
 import Brand from '@/components/landing/brand';
 import { dashboard, login, register } from '@/routes';
@@ -104,7 +104,7 @@ export default function LandingFooter() {
 
                 <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 sm:flex-row">
                     <p className="text-xs text-muted-foreground">
-                        © {new Date().getFullYear()} {name}. All rights
+                        Â© {new Date().getFullYear()} {name}. All rights
                         reserved.
                     </p>
                     <p className="text-xs text-muted-foreground">

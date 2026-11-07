@@ -49,7 +49,7 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
-            'name' => $applicationSetting?->app_name ?? config('app.name', 'TickSales'),
+            'name' => $applicationSetting?->app_name ?? config('app.name', 'Sokora'),
             'currency' => $currency,
             'auth' => [
                 'user' => $request->user(),
@@ -120,19 +120,21 @@ class HandleInertiaRequests extends Middleware
     {
         $branding = $tenant?->tenantBranding()->first();
         $applicationSetting = ApplicationSetting::query()->first();
-        $logoPath = $applicationSetting?->logo_path ?? $branding?->logo_path;
-        $name = $applicationSetting?->app_name ?? config('app.name', 'TickSales');
+
+        // A tenant's business name and logo lead within its own context;
+        // the platform master brand applies everywhere else.
+        $name = $tenant?->name
+            ?? $applicationSetting?->app_name
+            ?? config('app.name', 'Sokora');
+        $logoPath = $tenant !== null
+            ? ($branding?->logo_path ?? $applicationSetting?->logo_path)
+            : $applicationSetting?->logo_path;
 
         return [
             'name' => $name,
             'logo_path' => $logoPath ? Storage::disk('public')->url($logoPath) : null,
-            'favicon_path' => $branding?->favicon_path ?? null,
-            'primary_color' => $branding?->primary_color ?? '#111827',
-            'secondary_color' => $branding?->secondary_color ?? '#f5f5f4',
-            'accent_color' => $branding?->accent_color ?? '#0f172a',
-            'sidebar_style' => $branding?->sidebar_style ?? 'default',
-            'border_radius' => $branding?->border_radius ?? '0.625rem',
-            'theme_preset' => $branding?->theme_preset ?? 'neutral',
+            'favicon_path' => $branding?->favicon_path,
+            'accent_color' => $branding?->permittedAccent()?->value,
         ];
     }
 

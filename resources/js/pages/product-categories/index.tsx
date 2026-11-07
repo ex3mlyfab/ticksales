@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 
 interface ProductCategory {
@@ -64,8 +64,8 @@ export default function ProductCategoryIndexPage({ categories }: Props) {
                                     <span
                                         className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                             category.is_active
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-gray-100 text-gray-800'
+                                                ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                : 'bg-secondary text-secondary-foreground'
                                         }`}
                                     >
                                         {category.is_active

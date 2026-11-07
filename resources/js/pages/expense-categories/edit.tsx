@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+﻿import { useForm, Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button, Input, Label } from '@/components/ui';
 import Link from '@/components/link';
@@ -44,7 +44,7 @@ export default function ExpenseCategoryEditPage({ category }: Props) {
                                         }
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}

@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, edit, destroy } from '@/routes/registers';
@@ -62,7 +62,7 @@ export default function RegisterIndexPage({ registers }: Props) {
                                             {register.name}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {register.branch_name} •{' '}
+                                            {register.branch_name} â€¢{' '}
                                             {register.sessions_count} session(s)
                                         </p>
                                     </div>
@@ -70,8 +70,8 @@ export default function RegisterIndexPage({ registers }: Props) {
                                         <span
                                             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                                 register.is_active
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                    : 'bg-secondary text-secondary-foreground'
                                             }`}
                                         >
                                             {register.is_active
@@ -94,7 +94,7 @@ export default function RegisterIndexPage({ registers }: Props) {
                                         >
                                             <button
                                                 type="submit"
-                                                className="text-sm text-red-500 hover:text-red-700"
+                                                className="text-sm text-destructive hover:text-destructive"
                                                 onClick={(e) => { if (!confirm('Are you sure you want to delete this register?')) e.preventDefault(); }}
                                             >
                                                 Delete

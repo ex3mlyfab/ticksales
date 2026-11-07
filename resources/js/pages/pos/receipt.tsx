@@ -67,7 +67,7 @@ export default function ReceiptPage({ sale, branding }: Props) {
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <div className="text-center">
                         <h1 className="text-xl font-bold">
-                            {branding?.business_name ?? 'TickSales POS'}
+                            {branding?.business_name ?? 'Sokora'}
                         </h1>
                         {branding?.tagline && (
                             <p className="text-sm text-muted-foreground">

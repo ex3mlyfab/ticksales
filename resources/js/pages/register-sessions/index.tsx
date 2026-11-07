@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 
 interface Session {
@@ -55,11 +55,11 @@ export default function RegisterSessionIndexPage({ sessions }: Props) {
                                         <p className="font-medium">
                                             {session.register_name ??
                                                 'Register'}{' '}
-                                            — {session.branch_name ?? ''}
+                                            â€” {session.branch_name ?? ''}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
                                             Opened by{' '}
-                                            {session.opened_by_name ?? '—'} at{' '}
+                                            {session.opened_by_name ?? 'â€”'} at{' '}
                                             {new Date(
                                                 session.opened_at,
                                             ).toLocaleString()}
@@ -77,8 +77,8 @@ export default function RegisterSessionIndexPage({ sessions }: Props) {
                                         <span
                                             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                                 session.status === 'open'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                    : 'bg-secondary text-secondary-foreground'
                                             }`}
                                         >
                                             {session.status}
@@ -88,8 +88,8 @@ export default function RegisterSessionIndexPage({ sessions }: Props) {
                                                 className={`text-sm ${
                                                     Number(session.variance) ===
                                                     0
-                                                        ? 'text-green-600'
-                                                        : 'text-red-600'
+                                                        ? 'text-success'
+                                                        : 'text-destructive'
                                                 }`}
                                             >
                                                 Variance:{' '}

@@ -1,4 +1,4 @@
-import {
+﻿import {
     BarChart3,
     Boxes,
     Building2,
@@ -128,7 +128,7 @@ export default function LandingFeatures() {
         <section id="features" className="scroll-mt-24 py-20 lg:py-28">
             <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
                 <Reveal className="mx-auto max-w-2xl text-center">
-                    <p className="text-sm font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+                    <p className="text-sm font-semibold tracking-wider text-commerce uppercase dark:text-commerce">
                         What you get
                     </p>
                     <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -144,7 +144,7 @@ export default function LandingFeatures() {
                     {offerings.map((offering, index) => (
                         <Reveal key={offering.title} delay={index * 60}>
                             <article className="group h-full rounded-2xl border border-border bg-card p-6 shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20">
-                                <span className="flex size-11 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 transition-colors group-hover:bg-emerald-500/15 dark:text-emerald-400">
+                                <span className="flex size-11 items-center justify-center rounded-xl bg-commerce/10 text-commerce transition-colors group-hover:bg-commerce/15 dark:text-commerce">
                                     <offering.icon className="size-5" />
                                 </span>
                                 <h3 className="mt-4 text-lg font-semibold">
@@ -159,7 +159,7 @@ export default function LandingFeatures() {
                                             key={point}
                                             className="flex items-center gap-2 text-sm text-muted-foreground"
                                         >
-                                            <span className="size-1.5 rounded-full bg-emerald-500" />
+                                            <span className="size-1.5 rounded-full bg-commerce" />
                                             {point}
                                         </li>
                                     ))}

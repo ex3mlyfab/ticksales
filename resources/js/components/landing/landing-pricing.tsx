@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+﻿import { Link, usePage } from '@inertiajs/react';
 import { Check, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 
@@ -51,7 +51,7 @@ export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
         <section id="pricing" className="scroll-mt-24 py-20 lg:py-28">
             <div className="mx-auto w-full max-w-6xl px-5 sm:px-8">
                 <Reveal className="mx-auto max-w-2xl text-center">
-                    <p className="text-sm font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+                    <p className="text-sm font-semibold tracking-wider text-commerce uppercase dark:text-commerce">
                         Plans
                     </p>
                     <h2 className="mt-3 text-3xl font-semibold tracking-tight text-balance sm:text-4xl">
@@ -82,7 +82,7 @@ export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
                             >
                                 {option.label}
                                 {option.value === 'yearly' && (
-                                    <span className="ml-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                                    <span className="ml-1.5 text-xs font-semibold text-commerce dark:text-commerce">
                                         -20%
                                     </span>
                                 )}
@@ -109,12 +109,12 @@ export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
                                     className={cn(
                                         'relative flex h-full flex-col rounded-2xl border p-6 shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20',
                                         isPopular
-                                            ? 'border-emerald-500/60 bg-card ring-1 ring-emerald-500/30 lg:scale-[1.03]'
+                                            ? 'border-commerce/60 bg-card ring-1 ring-commerce/30 lg:scale-[1.03]'
                                             : 'border-border bg-card',
                                     )}
                                 >
                                     {isPopular && (
-                                        <span className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-emerald-600 px-3 py-1 text-xs font-semibold text-white shadow-sm">
+                                        <span className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-commerce px-3 py-1 text-xs font-semibold text-white shadow-sm">
                                             <Sparkles className="size-3.5" />
                                             Most popular
                                         </span>
@@ -137,13 +137,13 @@ export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
                                     </div>
                                     <p className="mt-1 text-xs text-muted-foreground">
                                         {isYearly
-                                            ? 'Billed yearly · cancel anytime'
-                                            : 'Billed monthly · cancel anytime'}
+                                            ? 'Billed yearly Â· cancel anytime'
+                                            : 'Billed monthly Â· cancel anytime'}
                                     </p>
 
                                     <ul className="mt-6 flex-1 space-y-3">
                                         <li className="flex items-start gap-2.5 text-sm">
-                                            <Check className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                                            <Check className="mt-0.5 size-4 shrink-0 text-commerce dark:text-commerce" />
                                             <span>
                                                 {branchLabel(plan.max_branches)}
                                             </span>
@@ -153,7 +153,7 @@ export default function LandingPricing({ plans }: { plans: LandingPlan[] }) {
                                                 key={feature}
                                                 className="flex items-start gap-2.5 text-sm"
                                             >
-                                                <Check className="mt-0.5 size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                                                <Check className="mt-0.5 size-4 shrink-0 text-commerce dark:text-commerce" />
                                                 <span>
                                                     {featureLabels[feature] ??
                                                         feature}

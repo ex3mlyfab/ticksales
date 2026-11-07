@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Checkbox, Input, Label } from '@/components/ui';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
@@ -97,7 +97,7 @@ export default function ProductEditPage({
                                             required
                                         />
                                         {errors.name && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.name}
                                             </p>
                                         )}
@@ -132,7 +132,7 @@ export default function ProductEditPage({
                                             ))}
                                         </select>
                                         {errors.category_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.category_id}
                                             </p>
                                         )}
@@ -165,7 +165,7 @@ export default function ProductEditPage({
                                             ))}
                                         </select>
                                         {errors.brand_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.brand_id}
                                             </p>
                                         )}
@@ -198,7 +198,7 @@ export default function ProductEditPage({
                                             ))}
                                         </select>
                                         {errors.unit_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.unit_id}
                                             </p>
                                         )}
@@ -232,7 +232,7 @@ export default function ProductEditPage({
                                         ))}
                                     </select>
                                     {errors.tax_rate_id && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.tax_rate_id}
                                         </p>
                                     )}
@@ -250,7 +250,7 @@ export default function ProductEditPage({
                                         placeholder="Optional"
                                     />
                                     {errors.sku && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.sku}
                                         </p>
                                     )}
@@ -271,7 +271,7 @@ export default function ProductEditPage({
                                         placeholder="Optional"
                                     />
                                     {errors.barcode && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.barcode}
                                         </p>
                                     )}
@@ -296,7 +296,7 @@ export default function ProductEditPage({
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.description && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.description}
                                         </p>
                                     )}
@@ -323,7 +323,7 @@ export default function ProductEditPage({
                                             required
                                         />
                                         {errors.cost_price && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.cost_price}
                                             </p>
                                         )}
@@ -349,7 +349,7 @@ export default function ProductEditPage({
                                             required
                                         />
                                         {errors.selling_price && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.selling_price}
                                             </p>
                                         )}
@@ -373,7 +373,7 @@ export default function ProductEditPage({
                                             }
                                         />
                                         {errors.alert_quantity && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.alert_quantity}
                                             </p>
                                         )}

@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Input, Label, Textarea, Checkbox } from '@/components/ui';
@@ -64,10 +64,10 @@ export default function ProductCategoryEditPage({
                                     setData('name', e.target.value)
                                 }
                                 placeholder="Enter category name"
-                                className={errors.name ? 'border-red-500' : ''}
+                                className={errors.name ? 'border-destructive' : ''}
                             />
                             {errors.name && (
-                                <p className="text-sm text-red-500">
+                                <p className="text-sm text-destructive">
                                     {errors.name}
                                 </p>
                             )}
@@ -82,10 +82,10 @@ export default function ProductCategoryEditPage({
                                     setData('slug', e.target.value)
                                 }
                                 placeholder="Enter slug"
-                                className={errors.slug ? 'border-red-500' : ''}
+                                className={errors.slug ? 'border-destructive' : ''}
                             />
                             {errors.slug && (
-                                <p className="text-sm text-red-500">
+                                <p className="text-sm text-destructive">
                                     {errors.slug}
                                 </p>
                             )}

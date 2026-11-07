@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, edit, destroy } from '@/routes/products';
@@ -85,8 +85,8 @@ export default function ProductIndexPage({ products }: Props) {
                                         <span
                                             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                                 product.is_active
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                    : 'bg-secondary text-secondary-foreground'
                                             }`}
                                         >
                                             {product.is_active
@@ -120,7 +120,7 @@ export default function ProductIndexPage({ products }: Props) {
                                         >
                                             <button
                                                 type="submit"
-                                                className="text-sm text-red-500 hover:text-red-700"
+                                                className="text-sm text-destructive hover:text-destructive"
                                                 onClick={(e) => {
                                                     if (
                                                         !confirm(

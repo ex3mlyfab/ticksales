@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button, Checkbox, Input, Label } from '@/components/ui';
@@ -60,7 +60,7 @@ export default function RegisterEditPage({ register, branches }: Props) {
                                             required
                                         />
                                         {errors.name && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.name}
                                             </p>
                                         )}
@@ -95,7 +95,7 @@ export default function RegisterEditPage({ register, branches }: Props) {
                                             ))}
                                         </select>
                                         {errors.branch_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.branch_id}
                                             </p>
                                         )}

@@ -1,6 +1,6 @@
-const businessTypes = [
+﻿const businessTypes = [
     'Retail stores',
-    'Cafés & restaurants',
+    'CafÃ©s & restaurants',
     'Pharmacies',
     'Electronics',
     'Fashion & apparel',
@@ -15,7 +15,7 @@ const businessTypes = [
 export default function LandingProof() {
     return (
         <section
-            aria-label="Businesses built for TickSales"
+            aria-label="Businesses built for Sokora"
             className="border-y border-border bg-muted/30 py-6"
         >
             <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-4 px-5 sm:px-8 md:flex-row md:gap-8">

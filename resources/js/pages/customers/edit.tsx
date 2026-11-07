@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+﻿import { Head, useForm } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { Button } from '@/components/ui/button';
@@ -67,7 +67,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}
@@ -100,7 +100,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                         ))}
                                     </select>
                                     {errors.customer_group_id && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.customer_group_id}
                                         </p>
                                     )}
@@ -123,7 +123,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                             placeholder="e.g. jane@example.com"
                                         />
                                         {errors.email && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.email}
                                             </p>
                                         )}
@@ -144,7 +144,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                             placeholder="e.g. +1 555 000 1234"
                                         />
                                         {errors.phone && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.phone}
                                             </p>
                                         )}
@@ -168,7 +168,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                         className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                                     />
                                     {errors.address && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.address}
                                         </p>
                                     )}
@@ -195,7 +195,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                             required
                                         />
                                         {errors.credit_limit && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.credit_limit}
                                             </p>
                                         )}
@@ -219,7 +219,7 @@ export default function CustomerEditPage({ customer, groups }: Props) {
                                             }
                                         />
                                         {errors.loyalty_points && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.loyalty_points}
                                             </p>
                                         )}

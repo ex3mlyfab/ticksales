@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react';
+﻿import { usePage } from '@inertiajs/react';
 import { ReceiptText } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
@@ -35,7 +35,7 @@ export default function Brand({
             </span>
             {showName && (
                 <span className="text-base font-semibold tracking-tight">
-                    {branding?.name ?? name ?? 'TickSales'}
+                    {branding?.name ?? name ?? 'Sokora'}
                 </span>
             )}
         </span>

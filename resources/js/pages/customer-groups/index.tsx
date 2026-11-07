@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, destroy } from '@/routes/customer-groups';
@@ -65,7 +65,7 @@ export default function CustomerGroupIndexPage({ groups }: Props) {
                                             {group.name}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            Discount: {group.discount_rate}% •{' '}
+                                            Discount: {group.discount_rate}% â€¢{' '}
                                             {group.customer_count} customers
                                         </p>
                                     </div>
@@ -73,8 +73,8 @@ export default function CustomerGroupIndexPage({ groups }: Props) {
                                         <span
                                             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                                 group.is_active
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-gray-100 text-gray-800'
+                                                    ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                    : 'bg-secondary text-secondary-foreground'
                                             }`}
                                         >
                                             {group.is_active
@@ -88,7 +88,7 @@ export default function CustomerGroupIndexPage({ groups }: Props) {
                                             >
                                                 <button
                                                     type="submit"
-                                                    className="text-sm text-red-500 hover:text-red-700"
+                                                    className="text-sm text-destructive hover:text-destructive"
                                                     onClick={(e) => { if (!confirm('Are you sure you want to delete this customer group?')) e.preventDefault(); }}
                                                 >
                                                     Delete

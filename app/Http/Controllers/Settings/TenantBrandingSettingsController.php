@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\BrandingUpdateRequest;
-use App\Models\TenantBranding;
+use App\Models\Tenant;
+use App\Support\TenantContext;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,11 +19,16 @@ class TenantBrandingSettingsController extends Controller
      */
     public function edit(Request $request): Response
     {
-        $branding = $request->tenant->tenantBranding;
+        $branding = $this->tenant($request)->tenantBranding;
 
         return Inertia::render('settings/branding', [
-            'branding' => $branding ?: new TenantBranding,
-            'canEdit' => Auth::user()->can('update tenant branding'),
+            'branding' => [
+                'name' => $tenant->name,
+                'logo_path' => $branding?->logo_path,
+                'favicon_path' => $branding?->favicon_path,
+                'accent_color' => $branding?->permittedAccent()?->value,
+            ],
+            'canEdit' => Auth::user()->can('settings.update'),
         ]);
     }
 
@@ -31,7 +37,8 @@ class TenantBrandingSettingsController extends Controller
      */
     public function update(BrandingUpdateRequest $request): RedirectResponse
     {
-        $branding = $request->tenant->tenantBranding ?? $request->tenant->tenantBranding()->firstOrCreate();
+        $tenant = $this->tenant($request);
+        $branding = $tenant->tenantBranding ?? $tenant->tenantBranding()->firstOrCreate();
 
         $branding->update($request->validated());
 
@@ -45,7 +52,7 @@ class TenantBrandingSettingsController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $branding = $request->tenant->tenantBranding;
+        $branding = $this->tenant($request)->tenantBranding;
 
         if ($branding) {
             $branding->delete();
@@ -54,5 +61,17 @@ class TenantBrandingSettingsController extends Controller
         Inertia::flash('toast', ['type' => 'success', 'message' => __('Branding removed.')]);
 
         return to_route('tenant.branding');
+    }
+
+    /**
+     * The tenant bound to the request by SetTenantContext.
+     */
+    private function tenant(Request $request): Tenant
+    {
+        $tenant = $request->attributes->get('tenant') ?? app(TenantContext::class)->getTenant();
+
+        abort_if($tenant === null, 403);
+
+        return $tenant;
     }
 }

@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { create, post, show, destroy } from '@/routes/purchase-orders';
@@ -77,8 +77,8 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                             {order.reference_no}
                                         </p>
                                         <p className="text-sm text-muted-foreground">
-                                            {order.supplier_name} •{' '}
-                                            {order.branch_name} •{' '}
+                                            {order.supplier_name} â€¢{' '}
+                                            {order.branch_name} â€¢{' '}
                                             {order.items.length} item(s)
                                         </p>
                                     </div>
@@ -86,8 +86,8 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                         <span
                                             className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                                                 order.status === 'posted'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                                    ? 'bg-success/10 text-forest dark:bg-success/15 dark:text-success'
+                                                    : 'bg-warning/15 text-forest dark:bg-warning/15 dark:text-warning'
                                             }`}
                                         >
                                             {order.status}
@@ -99,7 +99,7 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                             >
                                                 <button
                                                     type="submit"
-                                                    className="text-sm text-blue-500 hover:text-blue-700"
+                                                    className="text-sm text-info hover:text-info"
                                                 >
                                                     Receive
                                                 </button>
@@ -121,7 +121,7 @@ export default function PurchaseOrderIndexPage({ orders }: Props) {
                                         >
                                             <button
                                                 type="submit"
-                                                className="text-sm text-red-500 hover:text-red-700"
+                                                className="text-sm text-destructive hover:text-destructive"
                                                 onClick={(e) => { if (!confirm('Are you sure you want to delete this purchase order?')) e.preventDefault(); }}
                                             >
                                                 Delete

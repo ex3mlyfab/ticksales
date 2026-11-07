@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+﻿import { Head, Link, useForm } from '@inertiajs/react';
 import SubscriptionNavigation from '@/components/admin/subscription-navigation';
 import { Input, Label } from '@/components/ui';
 import { index, update } from '@/routes/admin/tenants';
@@ -54,7 +54,7 @@ export default function Edit({
                             }
                         />
                         {form.errors.name && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                                 {form.errors.name}
                             </p>
                         )}
@@ -69,7 +69,7 @@ export default function Edit({
                             }
                         />
                         {form.errors.slug && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                                 {form.errors.slug}
                             </p>
                         )}
@@ -85,7 +85,7 @@ export default function Edit({
                             }
                         />
                         {form.errors.email && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                                 {form.errors.email}
                             </p>
                         )}
@@ -108,7 +108,7 @@ export default function Edit({
                             ))}
                         </select>
                         {form.errors.plan && (
-                            <p className="text-sm text-red-600">
+                            <p className="text-sm text-destructive">
                                 {form.errors.plan}
                             </p>
                         )}
@@ -119,7 +119,7 @@ export default function Edit({
                             disabled={form.processing}
                             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
                         >
-                            {form.processing ? 'Saving…' : 'Save changes'}
+                            {form.processing ? 'Savingâ€¦' : 'Save changes'}
                         </button>
                         <Link
                             href={index.url()}

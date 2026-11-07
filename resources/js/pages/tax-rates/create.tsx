@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+﻿import { Head, useForm } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { Button } from '@/components/ui/button';
@@ -42,7 +42,7 @@ export default function TaxRateCreatePage() {
                                         required
                                     />
                                     {errors.name && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.name}
                                         </p>
                                     )}
@@ -65,7 +65,7 @@ export default function TaxRateCreatePage() {
                                         required
                                     />
                                     {errors.rate && (
-                                        <p className="text-sm text-red-500">
+                                        <p className="text-sm text-destructive">
                                             {errors.rate}
                                         </p>
                                     )}
@@ -88,7 +88,7 @@ export default function TaxRateCreatePage() {
                                     </Label>
                                 </div>
                                 {errors.is_inclusive && (
-                                    <p className="text-sm text-red-500">
+                                    <p className="text-sm text-destructive">
                                         {errors.is_inclusive}
                                     </p>
                                 )}
@@ -108,7 +108,7 @@ export default function TaxRateCreatePage() {
                                     <Label htmlFor="is_active">Active</Label>
                                 </div>
                                 {errors.is_active && (
-                                    <p className="text-sm text-red-500">
+                                    <p className="text-sm text-destructive">
                                         {errors.is_active}
                                     </p>
                                 )}

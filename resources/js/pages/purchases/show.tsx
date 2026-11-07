@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+﻿import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import Link from '@/components/link';
 import { index } from '@/routes/purchases';
@@ -45,13 +45,13 @@ export default function PurchaseShowPage({ purchase }: Props) {
                 <Heading
                     variant="small"
                     title={purchase.reference_no}
-                    description={`Supplier ${purchase.supplier?.name ?? '-'} • ${purchase.branch?.name ?? '-'}`}
+                    description={`Supplier ${purchase.supplier?.name ?? '-'} â€¢ ${purchase.branch?.name ?? '-'}`}
                 />
 
                 <div className="rounded-xl border bg-card p-6 shadow-sm">
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-semibold">Items</h2>
-                        <span className="rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                        <span className="rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-medium text-forest dark:text-success">
                             {purchase.status}
                         </span>
                     </div>

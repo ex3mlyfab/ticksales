@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 
 export function PwaStatus() {
     // Start "online" so the SSR HTML and the first client render agree;
@@ -53,19 +53,19 @@ export function PwaStatus() {
     return (
         <div className="space-y-3">
             {!isOnline && (
-                <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:border-amber-500/50 dark:bg-amber-950/40 dark:text-amber-100">
+                <div className="rounded-md border border-warning/30 bg-warning/10 px-3 py-2 text-sm text-forest dark:border-warning/40 dark:bg-warning/10 dark:text-warning">
                     You are offline. Sales and data entry continue locally and
                     sync once connectivity returns.
                 </div>
             )}
 
             {canInstall && (
-                <div className="flex items-center justify-between rounded-md border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm text-emerald-900 dark:border-emerald-500/50 dark:bg-emerald-950/40 dark:text-emerald-100">
-                    <span>Install TickSales for a faster POS experience.</span>
+                <div className="flex items-center justify-between rounded-md border border-success/25 bg-success/10 px-3 py-2 text-sm text-forest dark:border-success/25 dark:bg-success/15 dark:text-success">
+                    <span>Install Sokora for a faster POS experience.</span>
                     <button
                         type="button"
                         onClick={handleInstall}
-                        className="rounded-md bg-emerald-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-emerald-500"
+                        className="rounded-md bg-forest px-2.5 py-1 text-xs font-medium text-lime hover:bg-forest/90 dark:bg-lime dark:text-forest"
                     >
                         Install app
                     </button>

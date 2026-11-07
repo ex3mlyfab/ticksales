@@ -1,4 +1,4 @@
-import { Link, usePage } from '@inertiajs/react';
+﻿import { Link, usePage } from '@inertiajs/react';
 import {
     ArrowRight,
     CheckCircle2,
@@ -42,14 +42,14 @@ export default function LandingHero() {
                 className="pointer-events-none absolute inset-0 -z-10"
             >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,var(--border)_1px,transparent_0)] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,#000_10%,transparent_75%)] [background-size:28px_28px] opacity-50 dark:opacity-25" />
-                <div className="absolute -top-40 left-1/2 size-[34rem] -translate-x-1/2 rounded-full bg-emerald-400/20 blur-3xl motion-safe:animate-drift dark:bg-emerald-500/10" />
-                <div className="absolute top-10 right-[-6rem] size-72 rounded-full bg-sky-400/20 blur-3xl motion-safe:animate-float dark:bg-sky-500/10" />
+                <div className="absolute -top-40 left-1/2 size-[34rem] -translate-x-1/2 rounded-full bg-commerce/20 blur-3xl motion-safe:animate-drift dark:bg-commerce/10" />
+                <div className="absolute top-10 right-[-6rem] size-72 rounded-full bg-info/20 blur-3xl motion-safe:animate-float dark:bg-info/10" />
             </div>
 
             <div className="mx-auto grid w-full max-w-6xl items-center gap-12 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16">
                 <div className="text-center lg:text-left">
                     <span className="inline-flex items-center gap-2 rounded-full border border-border bg-background/80 px-3 py-1 text-xs font-medium text-muted-foreground shadow-xs backdrop-blur motion-safe:animate-rise">
-                        <Sparkles className="size-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <Sparkles className="size-3.5 text-commerce dark:text-commerce" />
                         Multi-tenant POS for retail, food and distribution
                     </span>
 
@@ -57,14 +57,14 @@ export default function LandingHero() {
                         className="mt-6 text-4xl font-semibold tracking-tight text-balance motion-safe:animate-rise sm:text-5xl lg:text-6xl"
                         style={{ animationDelay: '80ms' }}
                     >
-                        One platform to run every till, stockroom and branch.
+                        One platform. Every part of business.
                     </h1>
 
                     <p
                         className="mx-auto mt-6 max-w-xl text-lg text-pretty text-muted-foreground motion-safe:animate-rise lg:mx-0"
                         style={{ animationDelay: '160ms' }}
                     >
-                        TickSales brings point of sale, inventory, purchasing,
+                        Sokora brings point of sale, inventory, purchasing,
                         customers and reporting together, so your team can serve
                         the counter faster and know exactly what is selling.
                         Your public marketplace also keeps products available
@@ -116,19 +116,19 @@ export default function LandingHero() {
                         style={{ animationDelay: '320ms' }}
                     >
                         <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="size-4 text-commerce dark:text-commerce" />
                             No card required
                         </li>
                         <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="size-4 text-commerce dark:text-commerce" />
                             Works offline
                         </li>
                         <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="size-4 text-commerce dark:text-commerce" />
                             Cancel anytime
                         </li>
                         <li className="flex items-center gap-1.5">
-                            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                            <CheckCircle2 className="size-4 text-commerce dark:text-commerce" />
                             Public marketplace included
                         </li>
                     </ul>
@@ -137,15 +137,15 @@ export default function LandingHero() {
                 <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
                     <div
                         aria-hidden="true"
-                        className="absolute -inset-8 rounded-[2.5rem] bg-gradient-to-br from-emerald-400/25 via-sky-400/15 to-transparent blur-2xl motion-safe:animate-pulse"
+                        className="absolute -inset-8 rounded-[2.5rem] bg-gradient-to-br from-commerce/25 via-info/15 to-transparent blur-2xl motion-safe:animate-pulse"
                     />
 
                     <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-xl shadow-black/5 motion-safe:animate-float dark:shadow-black/30">
                         <div className="flex items-center justify-between border-b border-border bg-muted/40 px-4 py-3">
                             <div className="flex items-center gap-2">
-                                <span className="flex size-2.5 rounded-full bg-emerald-500 motion-safe:animate-pulse" />
+                                <span className="flex size-2.5 rounded-full bg-commerce motion-safe:animate-pulse" />
                                 <span className="text-sm font-medium">
-                                    Register 1 · Front counter
+                                    Register 1 Â· Front counter
                                 </span>
                             </div>
                             <span className="text-xs text-muted-foreground">
@@ -187,7 +187,7 @@ export default function LandingHero() {
                                             className="flex items-center justify-between gap-2 text-xs"
                                         >
                                             <span className="truncate text-muted-foreground">
-                                                {line.quantity} × {line.name}
+                                                {line.quantity} Ã— {line.name}
                                             </span>
                                             <span className="font-medium">
                                                 ${line.total}
@@ -217,9 +217,9 @@ export default function LandingHero() {
                         className="absolute -top-6 -right-2 hidden items-center gap-2 rounded-xl border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur motion-safe:animate-float sm:flex"
                         style={{ animationDelay: '600ms' }}
                     >
-                        <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                        <CheckCircle2 className="size-4 text-commerce dark:text-commerce" />
                         <span className="text-xs font-medium">
-                            Sale completed · $15.44
+                            Sale completed Â· $15.44
                         </span>
                     </div>
 
@@ -227,9 +227,9 @@ export default function LandingHero() {
                         className="absolute -bottom-6 -left-3 hidden items-center gap-2 rounded-xl border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur motion-safe:animate-float sm:flex"
                         style={{ animationDelay: '1.2s' }}
                     >
-                        <PackageCheck className="size-4 text-sky-600 dark:text-sky-400" />
+                        <PackageCheck className="size-4 text-info dark:text-info" />
                         <span className="text-xs font-medium">
-                            Stock updated · 12 units
+                            Stock updated Â· 12 units
                         </span>
                     </div>
 
@@ -237,7 +237,7 @@ export default function LandingHero() {
                         className="absolute -right-4 bottom-16 hidden items-center gap-2 rounded-xl border border-border bg-background/95 px-3 py-2 shadow-lg backdrop-blur motion-safe:animate-float lg:flex"
                         style={{ animationDelay: '1.8s' }}
                     >
-                        <CloudOff className="size-4 text-amber-600 dark:text-amber-400" />
+                        <CloudOff className="size-4 text-warning dark:text-warning" />
                         <span className="text-xs font-medium">
                             Offline sales sync later
                         </span>

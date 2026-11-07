@@ -1,4 +1,4 @@
-import { useForm } from '@inertiajs/react';
+﻿import { useForm } from '@inertiajs/react';
 import { Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button, Input, Label, Textarea } from '@/components/ui';
@@ -133,7 +133,7 @@ export default function PurchaseOrderCreatePage({
                                             ))}
                                         </select>
                                         {errors.branch_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.branch_id}
                                             </p>
                                         )}
@@ -165,7 +165,7 @@ export default function PurchaseOrderCreatePage({
                                             ))}
                                         </select>
                                         {errors.supplier_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.supplier_id}
                                             </p>
                                         )}
@@ -188,7 +188,7 @@ export default function PurchaseOrderCreatePage({
                                             }
                                         />
                                         {errors.order_date && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.order_date}
                                             </p>
                                         )}
@@ -349,7 +349,7 @@ export default function PurchaseOrderCreatePage({
                                                     onClick={() =>
                                                         removeItem(index)
                                                     }
-                                                    className="text-sm text-red-500 hover:text-red-700"
+                                                    className="text-sm text-destructive hover:text-destructive"
                                                 >
                                                     Remove
                                                 </button>

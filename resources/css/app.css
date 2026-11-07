@@ -9,9 +9,11 @@
 
 @theme {
     --font-sans:
-        'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
+        'Inter', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+    --font-display:
+        'Manrope', 'Inter', ui-sans-serif, system-ui, sans-serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
@@ -41,6 +43,23 @@
 
     --color-destructive: var(--destructive);
     --color-destructive-foreground: var(--destructive-foreground);
+
+    --color-success: var(--success);
+    --color-warning: var(--warning);
+    --color-info: var(--info);
+
+    --color-lime: var(--lime);
+    --color-forest: var(--forest);
+    --color-midnight: var(--midnight);
+    --color-commerce: var(--commerce);
+
+    /*
+     | Tenant accent extension token. The platform owns every
+     | foundational token; a tenant may only swap this single variable,
+     | set at runtime from their curated accent choice. Defaults to the
+     | platform accent (Electric Lime) when no accent is chosen.
+     */
+    --color-tenant-accent: var(--tenant-accent);
 
     --color-border: var(--border);
     --color-input: var(--input);
@@ -92,77 +111,108 @@
     }
 }
 
+/*
+ | Sokora design tokens
+ |
+ | Light theme: Warm Ivory canvas, white cards, Deep Forest as the
+ | principal brand colour and Electric Lime reserved for decisions —
+ | primary CTAs, active navigation and key indicators.
+ |
+ | Dark theme: Midnight canvas with Deep Forest surfaces, never a
+ | simple inversion of the light values.
+ */
 :root {
-    --background: oklch(1 0 0);
-    --app-canvas: oklch(0.975 0.008 250);
-    --foreground: oklch(0.145 0 0);
+    --background: oklch(0.967 0.01 93.6);
+    --app-canvas: var(--background);
+    --foreground: oklch(0.235 0.032 180);
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card-foreground: oklch(0.235 0.032 180);
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.52 0.13 164.5);
-    --primary-foreground: oklch(0.99 0.005 165);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.96 0.025 165);
-    --accent-foreground: oklch(0.3 0.07 165);
-    --destructive: oklch(0.577 0.245 27.325);
-    --destructive-foreground: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.87 0 0);
-    --chart-1: oklch(0.646 0.222 41.116);
-    --chart-2: oklch(0.6 0.118 184.704);
-    --chart-3: oklch(0.398 0.07 227.392);
-    --chart-4: oklch(0.828 0.189 84.429);
-    --chart-5: oklch(0.769 0.188 70.08);
+    --popover-foreground: oklch(0.235 0.032 180);
+    --primary: oklch(0.266 0.034 179.8);
+    --primary-foreground: oklch(0.967 0.01 93.6);
+    --secondary: oklch(0.933 0.007 132.4);
+    --secondary-foreground: oklch(0.266 0.034 179.8);
+    --muted: oklch(0.94 0.009 110);
+    --muted-foreground: oklch(0.505 0.02 160);
+    --accent: oklch(0.933 0.007 132.4);
+    --accent-foreground: oklch(0.266 0.034 179.8);
+    --destructive: oklch(0.636 0.162 22.9);
+    --destructive-foreground: oklch(1 0 0);
+    --success: oklch(0.62 0.115 167.4);
+    --warning: oklch(0.765 0.142 73.5);
+    --info: oklch(0.613 0.118 247.8);
+    --lime: oklch(0.905 0.171 124.9);
+    --forest: oklch(0.266 0.034 179.8);
+    --midnight: oklch(0.243 0.024 248.8);
+    --commerce: oklch(0.62 0.115 167.4);
+    --border: oklch(0.933 0.007 132.4);
+    --input: oklch(0.92 0.008 132.4);
+    --ring: oklch(0.62 0.115 167.4);
+    --chart-1: oklch(0.62 0.115 167.4);
+    --chart-2: oklch(0.905 0.171 124.9);
+    --chart-3: oklch(0.765 0.142 73.5);
+    --chart-4: oklch(0.613 0.118 247.8);
+    --chart-5: oklch(0.42 0.05 180);
     --radius: 0.625rem;
-    --sidebar: var(--app-canvas);
-    --sidebar-foreground: oklch(0.145 0 0);
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: oklch(0.922 0 0);
-    --sidebar-ring: oklch(0.87 0 0);
+    /*
+     | Tenant accent extension token: the only variable a tenant may
+     | override at runtime (with a curated permitted accent, see
+     | App\Enums\TenantAccent). Every platform foundation token above
+     | stays fixed for all tenants, in both themes.
+     */
+    --tenant-accent: var(--lime);
+    --sidebar: oklch(0.266 0.034 179.8);
+    --sidebar-foreground: oklch(0.93 0.012 110);
+    --sidebar-primary: oklch(0.905 0.171 124.9);
+    --sidebar-primary-foreground: oklch(0.266 0.034 179.8);
+    --sidebar-accent: oklch(0.905 0.171 124.9);
+    --sidebar-accent-foreground: oklch(0.266 0.034 179.8);
+    --sidebar-border: oklch(0.38 0.02 180);
+    --sidebar-ring: oklch(0.905 0.171 124.9);
 }
 
 .dark {
-    --background: oklch(0.145 0 0);
+    --background: oklch(0.243 0.024 248.8);
     --app-canvas: var(--background);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.145 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.145 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.72 0.14 164.5);
-    --primary-foreground: oklch(0.2 0.04 165);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.3 0.05 165);
-    --accent-foreground: oklch(0.96 0.02 165);
-    --destructive: oklch(0.396 0.141 25.723);
-    --destructive-foreground: oklch(0.637 0.237 25.331);
-    --border: oklch(0.269 0 0);
-    --input: oklch(0.269 0 0);
-    --ring: oklch(0.439 0 0);
-    --chart-1: oklch(0.488 0.243 264.376);
-    --chart-2: oklch(0.696 0.17 162.48);
-    --chart-3: oklch(0.769 0.188 70.08);
-    --chart-4: oklch(0.627 0.265 303.9);
-    --chart-5: oklch(0.645 0.246 16.439);
-    --sidebar: var(--app-canvas);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: oklch(0.269 0 0);
-    --sidebar-ring: oklch(0.439 0 0);
+    --foreground: oklch(0.93 0.01 155);
+    --card: oklch(0.295 0.022 178);
+    --card-foreground: oklch(0.93 0.01 155);
+    --popover: oklch(0.315 0.022 178);
+    --popover-foreground: oklch(0.93 0.01 155);
+    --primary: oklch(0.905 0.171 124.9);
+    --primary-foreground: oklch(0.266 0.034 179.8);
+    --secondary: oklch(0.32 0.02 240);
+    --secondary-foreground: oklch(0.93 0.01 155);
+    --muted: oklch(0.31 0.02 240);
+    --muted-foreground: oklch(0.72 0.015 160);
+    --accent: oklch(0.34 0.024 176);
+    --accent-foreground: oklch(0.93 0.01 155);
+    --destructive: oklch(0.675 0.16 22.9);
+    --destructive-foreground: oklch(1 0 0);
+    --success: oklch(0.7 0.13 167.4);
+    --warning: oklch(0.8 0.13 73.5);
+    --info: oklch(0.7 0.13 247.8);
+    --lime: oklch(0.905 0.171 124.9);
+    --forest: oklch(0.266 0.034 179.8);
+    --midnight: oklch(0.243 0.024 248.8);
+    --commerce: oklch(0.62 0.115 167.4);
+    --border: oklch(0.325 0.02 220);
+    --input: oklch(0.325 0.02 220);
+    --ring: oklch(0.62 0.115 167.4);
+    --chart-1: oklch(0.7 0.13 167.4);
+    --chart-2: oklch(0.905 0.171 124.9);
+    --chart-3: oklch(0.8 0.13 73.5);
+    --chart-4: oklch(0.7 0.13 247.8);
+    --chart-5: oklch(0.6 0.06 180);
+    --sidebar: oklch(0.266 0.034 179.8);
+    --sidebar-foreground: oklch(0.93 0.012 110);
+    --sidebar-primary: oklch(0.905 0.171 124.9);
+    --sidebar-primary-foreground: oklch(0.266 0.034 179.8);
+    --sidebar-accent: oklch(0.905 0.171 124.9);
+    --sidebar-accent-foreground: oklch(0.266 0.034 179.8);
+    --sidebar-border: oklch(0.4 0.02 180);
+    --sidebar-ring: oklch(0.905 0.171 124.9);
 }
 
 @layer base {
@@ -170,9 +220,27 @@
         @apply border-border;
     }
 
+    h1,
+    h2,
+    h3,
+    h4 {
+        @apply font-display;
+    }
+
     body {
         @apply bg-background text-foreground;
     }
+}
+
+/* Financial figures, quantities and counters should not jitter as they update. */
+@utility tabular-figures {
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-display);
+    font-weight: 600;
+}
+
+@utility tracking-display {
+    letter-spacing: -0.02em;
 }
 
 /* The landing page keeps its motion lightweight and optional. */

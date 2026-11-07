@@ -1,4 +1,4 @@
-import { useForm, Head } from '@inertiajs/react';
+﻿import { useForm, Head } from '@inertiajs/react';
 import Heading from '@/components/heading';
 import { Button, Input, Label, Textarea } from '@/components/ui';
 import Link from '@/components/link';
@@ -84,7 +84,7 @@ export default function ExpenseCreatePage({
                                             ))}
                                         </select>
                                         {errors.branch_id && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.branch_id}
                                             </p>
                                         )}
@@ -136,7 +136,7 @@ export default function ExpenseCreatePage({
                                             placeholder="e.g. Electricity bill for October"
                                         />
                                         {errors.description && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.description}
                                             </p>
                                         )}
@@ -159,7 +159,7 @@ export default function ExpenseCreatePage({
                                             }
                                         />
                                         {errors.amount && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.amount}
                                             </p>
                                         )}
@@ -182,7 +182,7 @@ export default function ExpenseCreatePage({
                                             }
                                         />
                                         {errors.expense_date && (
-                                            <p className="text-sm text-red-500">
+                                            <p className="text-sm text-destructive">
                                                 {errors.expense_date}
                                             </p>
                                         )}
